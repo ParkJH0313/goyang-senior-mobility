@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local research methodology and supporting documents
+/docs/
+
+# Project-local temporary files
+/.tmp/
