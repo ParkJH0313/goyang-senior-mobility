@@ -1,10 +1,11 @@
-# 이 dashboard 폴더를 저장소 루트로 올리는 구성입니다.
-# 생성 시 Render 요금과 키를 직접 입력합니다. 이 파일 자체는 배포를 실행하지 않습니다.
+# goyang-senior-mobility/dashboard를 배포하는 구성입니다.
+# 기존 서비스의 무료 플랜과 서비스 이름을 유지합니다.
 services:
   - type: web
-    name: goyang-medical-carbon
+    name: goyang-medical-dashboard
     runtime: node
-    plan: 0.5c-512mb
+    plan: free
+    rootDir: dashboard
     buildCommand: npm ci --omit=dev
     startCommand: npm start
     healthCheckPath: /healthz

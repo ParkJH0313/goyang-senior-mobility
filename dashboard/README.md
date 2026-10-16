@@ -1,6 +1,6 @@
 # 가좌·송포 의료이동 탄소 대시보드
 
-기존 카카오맵 대시보드에 현재 선택 조건을 설명하는 AI 문답을 추가한 독립 배포 폴더입니다. 기본 AI 제공자는 **Gemini**, 기본 모델은 **gemini-3.1-flash-lite**입니다. AI 키를 등록하기 전에는 ‘연결 준비 중’을 표시하며 지도와 탄소 계산은 독립적으로 작동합니다.
+`goyang-senior-mobility` 저장소의 `dashboard/`에서 관리하는 대시보드입니다. 카카오맵과 현재 선택 조건을 설명하는 AI 문답을 제공합니다. 기본 AI 제공자는 **Gemini**, 기본 모델은 **gemini-3.1-flash-lite**입니다. AI 키를 등록하기 전에는 ‘연결 준비 중’을 표시하며 지도와 탄소 계산은 독립적으로 작동합니다.
 
 ## 준비된 기능
 
@@ -18,9 +18,10 @@
 
 Node.js 22.16 이상(권장 24)이 필요합니다. Python, GIS 프로그램, Streamlit, 별도 데이터베이스 설치는 필요하지 않습니다.
 
-Windows PowerShell에서 이 폴더를 열고 다음을 실행합니다.
+Windows PowerShell에서 저장소 루트의 `dashboard` 폴더로 이동한 뒤 실행합니다.
 
 ```powershell
+cd dashboard
 .\start-local.ps1
 ```
 
@@ -33,7 +34,7 @@ npm ci --omit=dev
 npm start
 ```
 
-`npm start`는 `.env`가 있으면 읽을 수 있지만 실제 키 파일은 배포 소스에 포함하지 않습니다. `.env.example`에는 변수 이름만 있습니다. 실행창을 닫으면 로컬 서버는 종료됩니다.
+`npm start`는 `dashboard/.env`가 있으면 읽을 수 있지만 실제 키 파일은 배포 소스에 포함하지 않습니다. 실행창을 닫으면 로컬 서버는 종료됩니다.
 
 ## Gemini 키 등록
 
@@ -48,10 +49,10 @@ OpenAI를 사용하려면 `AI_PROVIDER=openai`, `OPENAI_API_KEY`, `OPENAI_MODEL=
 
 ## Render에 배포
 
-이 폴더의 파일들을 **새 Git 저장소의 루트**로 올리는 구성을 기준으로 합니다. 상위 졸업작품 폴더 전체를 올릴 필요가 없습니다. 배포용 ZIP에도 이 폴더의 실행 파일만 담습니다.
+배포 저장소는 **ParkJH0313/goyang-senior-mobility**, 실행 기준 폴더는 **dashboard**입니다. Blueprint 설정은 저장소 루트의 [`render.yaml`](../render.yaml)에 있습니다.
 
-1. 이 폴더를 GitHub 등의 저장소에 올리고 Render에서 저장소를 연결합니다.
-2. **New → Blueprint**를 선택해 루트의 `render.yaml`을 적용합니다. 소형 상시 실행 서버 `0.5c-512mb`를 지정했으므로 생성 화면의 현재 요금을 확인합니다. 시험용 무료 서버는 `plan: free`로 바꿀 수 있지만 유휴 후 첫 접속이 지연됩니다.
+1. Render 서비스의 연결 저장소를 `ParkJH0313/goyang-senior-mobility`, 브랜치를 `main`, Root Directory를 `dashboard`로 설정합니다.
+2. 기존 서비스는 아래 빌드·시작 명령을 유지합니다. Blueprint로 구성할 경우 저장소 루트의 `render.yaml`을 사용하며, 기존 서비스와 같은 이름과 무료 플랜을 지정합니다.
 3. 생성 과정에서 `KAKAO_JAVASCRIPT_KEY`, `KAKAO_REST_API_KEY`를 입력합니다. Gemini 키는 발급 후 Environment에서 추가해도 됩니다.
 4. 생성된 `https://서비스이름.onrender.com` 주소를 카카오 앱의 **JavaScript SDK 도메인**에 등록합니다.
 5. `/healthz`가 `{"status":"ok"}`를 반환하는지 확인하고 실제 대시보드를 엽니다. 서비스 주소는 Render의 `RENDER_EXTERNAL_URL`에서 자동으로 읽습니다. 자체 도메인을 쓰면 `APP_ORIGIN=https://본인도메인`을 추가합니다(마지막 `/` 제외).
@@ -62,11 +63,11 @@ Blueprint 대신 **New → Web Service**로 만들 때는 아래 값을 사용�
 | 항목 | 값 |
 |---|---|
 | Runtime | Node |
-| Root Directory | 이 dashboard 폴더가 저장소 루트이면 비움 |
+| Root Directory | `dashboard` |
 | Build Command | `npm ci --omit=dev` |
 | Start Command | `npm start` |
 | Health Check Path | `/healthz` |
-| 환경변수 | `.env.example`의 목록 참고. 실제 배포에서는 `HOST=0.0.0.0`, `PORT`는 Render 제공값 |
+| 환경변수 | `../render.yaml`의 목록 참고. 실제 배포에서는 `HOST=0.0.0.0`, `PORT`는 Render 제공값 |
 
 웹사이트 주소를 공유하면 방문자는 설치나 API 키 입력 없이 이용합니다. API 호출 비용은 배포자의 계정에 발생합니다. 현재 구성은 단일 서버용이며 대화·횟수 제한·거리 캐시는 서버 재시작 때 초기화됩니다. 따라서 앱의 횟수 제한은 월 결제금액의 강제 상한이 아닙니다. 대규모 공개 운영에는 공유 저장소 기반 제한이 추가로 필요합니다.
 
@@ -95,5 +96,3 @@ npm run check
 - [OpenAI 함수 호출](https://developers.openai.com/api/docs/guides/function-calling)
 - [Render 웹서비스](https://render.com/docs/web-services), [Blueprint 설정](https://render.com/docs/blueprint-spec)
 - [카카오맵 앱 설정](https://developers.kakao.com/docs/ko/kakaomap/common)
-
-이 폴더는 배포 준비본이며, 외부 서버 생성·결제·공개 배포는 아직 수행하지 않았습니다.

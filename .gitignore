@@ -231,3 +231,7 @@ __marimo__/
 
 # Generated analysis outputs
 /outputs/
+
+# Dashboard assets are maintained source files
+!/dashboard/dist/
+!/dashboard/dist/**

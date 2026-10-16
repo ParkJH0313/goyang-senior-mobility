@@ -147,3 +147,10 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# This app serves these maintained assets directly
+!/dist/
+!/dist/**
+
+# Local UI verification output
+/artifacts/
