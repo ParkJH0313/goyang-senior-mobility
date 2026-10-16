@@ -1,0 +1,4 @@
+# Preserve exact bytes for the override package and its SHA-256 manifests.
+# This disables line-ending conversion without disabling text diffs.
+overrides/** -text whitespace=cr-at-eol
+overrides/evidence/preprocessing_decision_excerpts.md whitespace=cr-at-eol,-blank-at-eof

@@ -1,0 +1,45 @@
+﻿decision_id,topic,decision,v7_disposition,implementation_location,evidence_basis,limits
+D01,기초자료,주거용으로 정리한 건물과 SQLite OSM 등 기존 전처리 결과를 활용,source_specific_then_superseded,data/processed + preprocessing,직접 대화,이후 도로명주소 전자지도 2025-03로 주거 출처 변경. 초기 연속수치지형도/GIS건물 자료를 활성 입력으로 고정하지 않음
+D02,오피스텔,빠졌던 주거 오피스텔 포함,retain_specific_targets,building_decisions.csv,직접 대화 + 이전 상수·기록,최종 확정 9개 ID와 원본 속성 유지. 모든 업무시설을 주거로 확대하지 않음
+D03,개별 주거 판정,소규모 24·대규모 주거 1·대규모 제외 12·인구대조 6·추가 판정 97·잔여 제외 233,retain_specific_targets,building_decisions.csv,이전 코드·통합기록에 사용자 확정으로 기록,이 대화에서 각 건의 원문 확인을 새로 한 것은 아님. 233개는 미확정 후보의 분석 제외이며 비주거 실측 판정 아님
+D04,군부대 건물,제2자유로 33 건물군 41281_506 제외,retain_specific_targets,building_decisions.csv,직접 군부대 제외 지시 + 기존 건물군 기록,"건물군 ID와 구성원 확인, 새 군부대 일반 탐지 규칙 아님"
+D05,출발점 유지,"출발점을 유지하고 최근접 지상 보행망으로 연결, 접속거리만큼 보행시간 가산",covered_by_v7_with_targets,origin_decisions.csv + steps/02_origins.py,직접 대화,속도는 v7 시나리오값. 출발점을 망 위로 옮겨 접속비용을 없애지 않음
+D06,주거건물 교차,출발점 접속선의 주거건물 충돌을 단독 제외 사유로 쓰지 않음,covered_by_v7,steps/02_origins.py,직접 대화,공공 보행 불가인 군부대·철도·하천까지 통과시키는 허용 아님
+D07,검토 후보,후보 표시선 전체가 아니라 실제 채택할 최근접선의 장애물만 판단,covered_by_v7,steps/02_origins.py + review selection,직접 대화,대안선 교차만으로 검토 건수를 늘리지 않음
+D08,출입구 미발견,사방 장벽이나 출입구 누락 시 출발점 유지·직선 근사 허용,retain_specific_targets,origin_decisions.csv,직접 대화,현행 6개 적용선은 미검증 근사. v7의 위험 장벽 제한과 새 좌표 검증을 우선
+D09,먼 접속점,100m 초과라도 최근접 망에 붙이고 실제 길이를 시간에 포함,covered_by_v7,steps/02_origins.py + steps/04_network.py,직접 대화,100m를 자동 제외/일괄 수작업 기준으로 쓰지 않음. v7 연속보행 600초 적격성은 별도
+D10,주거면적 없는 인구격자,고령인구가 있으나 주거 도형 없는 격자를 확인하고 표시,covered_by_v7,steps/02_origins.py,직접 대화 + 최종 기록,미확정 주거 건물을 전부 포함하지 않음. v7의 임시 격자 중심점과 상태 구분 적용
+D11,군부대 출발점,다사42bb59bb 격자 분석 제외,retain_specific_targets,origin_decisions.csv + network_decisions.csv,직접 대화,"원래 인구는 보존, 접근성 0점/인구 재분배로 처리하지 않음"
+D12,출발지 분리망,최초 4개 망을 망 간 최소 간격 위치에서 연결,retain_specific_targets,network_decisions.csv,직접 대화,최종 5개 중 추가 1개는 같은 규칙 재적용. 개별 사용자 승인 5개로 표시하지 않음
+D13,의료기관 대리점,31개 종합·상급종합병원의 주소 좌표를 대리 도착점으로 허용,retain_specific_targets,facility_decisions.csv,직접 선택 응답,실제 외래 출입구 확인 아님. 주소/좌표 변경 시 재검증
+D14,의료기관 분리망,6개 의료기관이 붙은 3개 분리망도 최소 간격으로 주망 연결,retain_specific_targets,network_decisions.csv + walk_access_decisions.csv,직접 선택 응답,0m는 동일 위치 노드 결합. 출입점 2개의 통과는 가정이며 현장 개방 확인 아님
+D15,OSM 방향,사용자 확인 17개 footway 양방향 허용,retain_specific_targets,walk_access_decisions.csv,이전 코드·통합기록에 사용자 확정으로 기록,원본 태그 유지. 다른 길/명시적 보행금지에 일괄 적용하지 않음
+D16,OSM 별도 보도,48개 도로의 별도 보도 연결 가능 판단 유지,retain_specific_targets,walk_access_decisions.csv,이전 코드·통합기록에 사용자 확정으로 기록,"원래 별도 보도선을 사용, 차도 중심선을 보도로 새로 만들지 않음"
+D17,OSM 통행 불가,OSM way 1273992540·1273992592 보행 제외,retain_specific_targets,walk_access_decisions.csv,이전 코드·통합기록에 사용자 확정으로 기록,"W054는 과거 화면번호, 적용 키는 OSM way ID"
+D18,기존 좌표 보완,의료기관 35개 저장된 카카오 지오코딩 유지,retain_stored_evidence,facility_decisions.csv + evidence/geocoded_facilities.csv,기존 processed 및 통합기록,2025-03 주소를 2026-10-11 조회. 이번에 새 API 조회/원응답 감사하지 않음
+D19,서비스 POI,자전거 대여 customers 태그 2개를 기관 접속 장벽으로 보지 않음,implementation_rule,walk_access_decisions.csv,이전 코드 규칙 적용,사용자의 개별 현장확인으로 격상하지 않음
+D20,제외 교통수단,고속철도·시외버스·GTX 탑승 제외,covered_by_v7,run.py + steps/04_network.py,직접 대화,GTX역 출입구를 버스정류장 보행 진입에 쓰는 것까지 금지하는 규칙 아님
+D21,대곡역,별도 상하부 통로 연결 반영을 취소하고 관련 검토 결과 정리,cancelled_proposal,implementation_notes.md,직접 대화: 그냥 반영하지말고,추가 연결선을 만들지 않음. 기존 정상 출입구/일반 환승망을 모두 제거하라는 뜻 아님
+D22,철도 내부,"출입구↔승강장 180초, 일반 내부 환승 240초, 확인된 같은 승강장 120초",covered_by_v7,run.py + steps/04_network.py,사용자: 제안대로 처리,"120초 현재 실제 채택 0건. 내부 이동은 보행, 일반 지상망 통과 지름길로 사용 금지"
+D23,추가 탑승,최초 탑승 외 추가 탑승 준비 60초,covered_by_v7,run.py + routing,승인된 기존 내부시간 제안/기록,동일 차량 유지에 붙이지 않음. 대기·보행·GTFS 최소시간과 중복 가산 금지
+D24,최소 환승시간,"예전 max(240, GTFS 최소시간-60) 보행 환산식은 폐기",superseded_by_v7,run.py + routing,v7 최신 시간 분리 규정,물리적 보행과 최소 경과시간을 별개로 저장. 이 행은 새로운 사용자 승인 수치가 아님
+D25,신호,신호 대기시간 우선 제외,covered_by_v7,run.py + walk graph,직접 대화,횡단보도 이동거리 자체는 포함. 신호·보행을 모두 0으로 처리하지 않음
+D26,중앙정류장,(중) 등 중앙정류장은 인근 횡단보도 중간→정류장 접속,covered_by_v7,steps/04_network.py,직접 대화,같은 높이와 실제 망 접속 고려. 검색 거리·각도는 코드 기준이지 사용자 현장 확인 아님
+D27,중앙 횡단 누락,근처 횡단보도가 없으면 도로 횡단을 가정하고 중간점 경유,retain_specific_targets,transit_decisions.csv,직접 대화,"76개 적용 도형 보존. 30개 도로쌍 중간점·46개 정류장점 근사 구분, field_verified=False"
+D28,일반 담장,제안된 일반 담장 접속 근사 기준 채택,retain_specific_targets,transit_decisions.csv,직접 제안 승인 + 기존 적용표,"기존 9개만 식별해 유지, 철도·고속도로·하천·군부대 횡단으로 확대하지 않음"
+D29,추가 정류장 분리망,기존 최소 간격 정책으로 정류장망 접속,rule_application_preserved,network_decisions.csv,기존 Step4 규칙 적용 71개,71개를 사용자가 하나씩 확인했다는 뜻 아님. 양끝 도형·고도·통행권한 재검증
+D30,원릉,"B를 출입구로 확정, 철도 횡단 없는 남측 접속 채택",retain_specific_targets,transit_decisions.csv,직접 대화: B가 출입구 맞다니까,OSM 7394341200 좌표와 선택된 접근선 보존. A안은 폐기
+D31,송추,"사용자 근사좌표 126.9739933,37.7197653 출입구 적용",retain_specific_targets,transit_decisions.csv,직접 좌표 이미지,측량 좌표 아님. 북측 최근접 도로 대신 남측 지정 접근선 유지
+D32,운정 출입구,"2번 126.7283265,37.7160602 및 1번 126.7283170,37.7162979",retain_specific_targets,transit_decisions.csv,직접 좌표 이미지·지도·로드뷰,"2번→A, 1번→B. 보도는 사용자 설명의 도로와 같은 층, 지상 연결 도형은 근사"
+D33,운정 환승,"지하차도 차도 보행 금지, A↔B도 역 출입구를 통한 지상 경유",retain_specific_targets,transit_decisions.csv + walk_access_decisions.csv,직접 대화·선택 응답,OSM 1346991709·1346991710 보행만 제외. 버스 주행/역 진입을 삭제하지 않음
+D34,056 보완,BIS 누락 지선을 BusMaps 좌표·경로 및 2025년 출발표로 보완하고 기존056 교체,retain_specific_source_input,transit_056/,직접 위치안 채택·교체 지시,원자료 기준연도 불명인 BusMaps와 2·4월 시간표 결합. 특정 2025-03 일자 실측운행으로 표현 금지
+D35,056 중간 시각,공통구간 기존 시각과 지선 거리 환산으로 시간표 구성,adopted_model_assumption,transit_056/README.md,채택된 보완 모형 코드·기록,"32/24/24 평일 출발만 직접 시간 근거. 중간 시각은 추정, 배차간격을 구간 소요시간으로 사용하지 않음"
+D36,과거 분석군집,가좌동·송포동을 최종 분석 대상으로 선정하고 세 대표군집 비교,superseded_by_v7,steps/07_clusters.py,직접 대화 + v7,예전 C001/C013/C033·41격자·121출발점·902명 목록은 입력에서 제외. v7 인구 상위3개 재선정
+D37,색상·지도,80분 지도에서 개선이 과장되어 보이지 않게 비교 표현 수정,presentation_only,figures rendering,직접 대화,공통 범례·고정 척도와 수치 병기. 의도에 맞게 분석값이나 선정 기준을 조작하는 허용 아님
+D38,보류 실험,환승상한 민감도·2SFCA는 하지 않고 S15 범위 확대 보류,superseded_scope_by_v7,run.py + steps/08_sensitivity.py,직접 대화·선택 응답,v7 세 종류 민감도와 지정 지역 범위 적용. 과거 실험번호를 실행 제어값으로 고정하지 않음
+D39,저장·재개,중단되어도 이어서 실행할 수 있게 저장,covered_by_v7,run_manifest + checkpoints,직접 최초 요청,입력·코드·설정·overrides 지문이 일치하는 완료 구간만 재사용
+D40,제출 구성,"코드·GPKG·CSV·설명MD·전체 결과 중심 PNG 보존, 불필요 검토 결과 정리",covered_by_v7_output_layout,outputs/<run_id>/,반복 직접 요청,예전 Step별 절대경로와 결과 PNG 이름을 새 프로젝트 입력규칙으로 고정하지 않음
+D41,검토 최소화,실제 분석 경로에 영향을 주며 자동 해결 불가인 사항만 사용자 검토,covered_by_v7,review_required.csv,직접 대화,승인 재요청 없이 기존 판단 재사용. ID 소실·속성/도형 충돌이면 적용 중단하고 해당 건만 검토
+D42,원자료,raw가 필요하면 먼저 사용자에게 요청,workflow_constraint,input loader,직접 최초 요청,이번 이전은 processed·이전 결과·코드·기록만 읽음. 과거 특정 raw 조회 허용을 무제한 새 조회 허가로 확대하지 않음
+D43,재실행 기록,결과물에 반복 수정·재실행 경위를 별도 검토 자료로 쌓지 않음,workflow_preference,reports and cleanup,직접 대화,출처·보정·실행 지문은 v7 재현에 필수. 이 override 요청은 해당 판단 근거 보존을 명시적으로 요청한 것
+D44,예전 비용·군집값,0.8m/s·900초·총보행1500초·Rook·하위25% 등 과거 설정 재사용 금지,superseded_by_v7,run.py,v7 최신 기준,0.7m/s·연속600초·총보행상한없음·Queen·하위30%. 기존 점수·경로 캐시도 재계산
