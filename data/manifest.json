@@ -1,0 +1,1947 @@
+{
+  "schema_version": "1.0",
+  "methodology_version": "v7",
+  "scope": "preprocessing",
+  "datasets": [
+    {
+      "dataset_id": "boundaries_raw",
+      "kind": "raw",
+      "provider": "통계지리정보서비스(SGIS)",
+      "source_url": "https://sgis.mods.go.kr/view/pss/openDataIntrcn",
+      "reference_date": "2025-06-30",
+      "license_and_redistribution": "SGIS 제공 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31101_2025_2Q/bnd_sigungu_31101_2025_2Q.cpg",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31101_2025_2Q/bnd_sigungu_31101_2025_2Q.dbf",
+          "sha256": "67b9cd7ba02f96545ce6dccbfe7c1d3fe6e945ca6d5b4a594504a51f967d716a",
+          "bytes": 169
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31101_2025_2Q/bnd_sigungu_31101_2025_2Q.prj",
+          "sha256": "e21b26451491c617318aab7d28abf4d07f5facc2aed1564e082ec8d4268cfa3b",
+          "bytes": 435
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31101_2025_2Q/bnd_sigungu_31101_2025_2Q.shp",
+          "sha256": "2b56d0a841feef46a4c2f58af154c9371a0551eb558012e97009d7c490ea7370",
+          "bytes": 64700,
+          "crs": "PROJCS[\"Korea_2000_Korea_Unified_Coordinate_System\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"Korean_Geodetic_Datum_2002\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6737\"]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",38],PARAMETER[\"central_meridian\",127.5],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",1000000],PARAMETER[\"false_northing\",2000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+          "fields": [
+            "BASE_DATE",
+            "SIGUNGU_CD",
+            "SIGUNGU_NM"
+          ],
+          "features": 1
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31101_2025_2Q/bnd_sigungu_31101_2025_2Q.shx",
+          "sha256": "f921f5b69e38f7067d279851a8296039ca182d7d01197cfac84612651246511a",
+          "bytes": 108
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31103_2025_2Q/bnd_sigungu_31103_2025_2Q.cpg",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31103_2025_2Q/bnd_sigungu_31103_2025_2Q.dbf",
+          "sha256": "c06b7b403674d53367290d14b5d44cb03ce0ec58a190dc4e0a57d4e4d2daebec",
+          "bytes": 169
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31103_2025_2Q/bnd_sigungu_31103_2025_2Q.prj",
+          "sha256": "e21b26451491c617318aab7d28abf4d07f5facc2aed1564e082ec8d4268cfa3b",
+          "bytes": 435
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31103_2025_2Q/bnd_sigungu_31103_2025_2Q.shp",
+          "sha256": "af81380257167d1d2b3ab4f9968cc87d0bf1059492d86725e02f08e8061c1c65",
+          "bytes": 43740,
+          "crs": "PROJCS[\"Korea_2000_Korea_Unified_Coordinate_System\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"Korean_Geodetic_Datum_2002\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6737\"]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",38],PARAMETER[\"central_meridian\",127.5],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",1000000],PARAMETER[\"false_northing\",2000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+          "fields": [
+            "BASE_DATE",
+            "SIGUNGU_CD",
+            "SIGUNGU_NM"
+          ],
+          "features": 1
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31103_2025_2Q/bnd_sigungu_31103_2025_2Q.shx",
+          "sha256": "6c56f4ffcd27b57800fe13f8cf34925a3634c43cbed25e0a1344483362741d97",
+          "bytes": 108
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31104_2025_2Q/bnd_sigungu_31104_2025_2Q.cpg",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31104_2025_2Q/bnd_sigungu_31104_2025_2Q.dbf",
+          "sha256": "7c756ddd9036204eb8143306536971a0f965a89b46c37f0ae8cfaca36acd8a53",
+          "bytes": 169
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31104_2025_2Q/bnd_sigungu_31104_2025_2Q.prj",
+          "sha256": "e21b26451491c617318aab7d28abf4d07f5facc2aed1564e082ec8d4268cfa3b",
+          "bytes": 435
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31104_2025_2Q/bnd_sigungu_31104_2025_2Q.shp",
+          "sha256": "4e7129b83edde9578b25f4a3043cdaee6708d8dec451e60665d75bd9cdf8a447",
+          "bytes": 30188,
+          "crs": "PROJCS[\"Korea_2000_Korea_Unified_Coordinate_System\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"Korean_Geodetic_Datum_2002\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6737\"]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",38],PARAMETER[\"central_meridian\",127.5],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",1000000],PARAMETER[\"false_northing\",2000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+          "fields": [
+            "BASE_DATE",
+            "SIGUNGU_CD",
+            "SIGUNGU_NM"
+          ],
+          "features": 1
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_시군구/bnd_sigungu_31104_2025_2Q/bnd_sigungu_31104_2025_2Q.shx",
+          "sha256": "040b7b0bd8cc400eacb192efbcc6a9f401d90856ad452b2acee002eac661528d",
+          "bytes": 108
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31101_2025_2Q/bnd_dong_31101_2025_2Q.cpg",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31101_2025_2Q/bnd_dong_31101_2025_2Q.dbf",
+          "sha256": "ee9b9284d78048135fa73e6c753b0dfc1f577459ddb5886e0db2cb60f07db40d",
+          "bytes": 1012
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31101_2025_2Q/bnd_dong_31101_2025_2Q.prj",
+          "sha256": "e21b26451491c617318aab7d28abf4d07f5facc2aed1564e082ec8d4268cfa3b",
+          "bytes": 435
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31101_2025_2Q/bnd_dong_31101_2025_2Q.shp",
+          "sha256": "5cbe6ccc97bfa47ebe482a6773cca8db6301a13f52b56d335147ea56a32a16d6",
+          "bytes": 228412,
+          "crs": "PROJCS[\"Korea_2000_Korea_Unified_Coordinate_System\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"Korean_Geodetic_Datum_2002\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6737\"]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",38],PARAMETER[\"central_meridian\",127.5],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",1000000],PARAMETER[\"false_northing\",2000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+          "fields": [
+            "BASE_DATE",
+            "ADM_CD",
+            "ADM_NM"
+          ],
+          "features": 21
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31101_2025_2Q/bnd_dong_31101_2025_2Q.shx",
+          "sha256": "79cf1529155cd20fe37ae61951596fb903af94bed4daf2a774882e2316ee84fd",
+          "bytes": 268
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31103_2025_2Q/bnd_dong_31103_2025_2Q.cpg",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31103_2025_2Q/bnd_dong_31103_2025_2Q.dbf",
+          "sha256": "5ed6ea6c5f9cc5a2ffc57bfaf4e6dc30dd5d03d3d54fcc097d57f037d609423a",
+          "bytes": 634
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31103_2025_2Q/bnd_dong_31103_2025_2Q.prj",
+          "sha256": "e21b26451491c617318aab7d28abf4d07f5facc2aed1564e082ec8d4268cfa3b",
+          "bytes": 435
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31103_2025_2Q/bnd_dong_31103_2025_2Q.shp",
+          "sha256": "dd335a9983fef7dfe50270e052c967306fd49a1da90e14fcd5a68a8d780c63ab",
+          "bytes": 102068,
+          "crs": "PROJCS[\"Korea_2000_Korea_Unified_Coordinate_System\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"Korean_Geodetic_Datum_2002\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6737\"]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",38],PARAMETER[\"central_meridian\",127.5],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",1000000],PARAMETER[\"false_northing\",2000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+          "fields": [
+            "BASE_DATE",
+            "ADM_CD",
+            "ADM_NM"
+          ],
+          "features": 12
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31103_2025_2Q/bnd_dong_31103_2025_2Q.shx",
+          "sha256": "efd9c4f992d10a3aac7f486558105c117444cca1f70537ecac3b569f0f96c85e",
+          "bytes": 196
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31104_2025_2Q/bnd_dong_31104_2025_2Q.cpg",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31104_2025_2Q/bnd_dong_31104_2025_2Q.dbf",
+          "sha256": "1bc0a44d8bd5ee33d5712f623c718caf0ce6fa585f10e8139b42a8a33cad9c42",
+          "bytes": 592
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31104_2025_2Q/bnd_dong_31104_2025_2Q.prj",
+          "sha256": "e21b26451491c617318aab7d28abf4d07f5facc2aed1564e082ec8d4268cfa3b",
+          "bytes": 435
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31104_2025_2Q/bnd_dong_31104_2025_2Q.shp",
+          "sha256": "3dbd5cfde44b716744bb84e3985b2312bd3a143beb32e334e7dcdb0cccd1ea83",
+          "bytes": 79836,
+          "crs": "PROJCS[\"Korea_2000_Korea_Unified_Coordinate_System\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"Korean_Geodetic_Datum_2002\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6737\"]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",38],PARAMETER[\"central_meridian\",127.5],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",1000000],PARAMETER[\"false_northing\",2000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+          "fields": [
+            "BASE_DATE",
+            "ADM_CD",
+            "ADM_NM"
+          ],
+          "features": 11
+        },
+        {
+          "path": "data/raw/경계/고양시 경계/2025년 센서스용 고양시 행정구역경계_읍면동/bnd_dong_31104_2025_2Q/bnd_dong_31104_2025_2Q.shx",
+          "sha256": "fb40101a0819e0e3fc9b5db1bab7f8bc89a8f82cd81b7b73ebd4a9ffd082dfcc",
+          "bytes": 188
+        },
+        {
+          "path": "data/raw/경계/전국 시군구 경계/bnd_sigungu_00_2025_2Q/bnd_sigungu_00_2025_2Q.cpg",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/경계/전국 시군구 경계/bnd_sigungu_00_2025_2Q/bnd_sigungu_00_2025_2Q.dbf",
+          "sha256": "18f7d3a5f0fd8cf12e4a5deca3faf52133db4f7221dfbeccedf94ec06b58ece6",
+          "bytes": 9958
+        },
+        {
+          "path": "data/raw/경계/전국 시군구 경계/bnd_sigungu_00_2025_2Q/bnd_sigungu_00_2025_2Q.prj",
+          "sha256": "e21b26451491c617318aab7d28abf4d07f5facc2aed1564e082ec8d4268cfa3b",
+          "bytes": 435
+        },
+        {
+          "path": "data/raw/경계/전국 시군구 경계/bnd_sigungu_00_2025_2Q/bnd_sigungu_00_2025_2Q.shp",
+          "sha256": "85523b10411652aa6b5c286a82eff7e77c7e563d5f644eb62a221a121f7e3968",
+          "bytes": 97462924,
+          "crs": "PROJCS[\"Korea_2000_Korea_Unified_Coordinate_System\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"Korean_Geodetic_Datum_2002\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6737\"]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",38],PARAMETER[\"central_meridian\",127.5],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",1000000],PARAMETER[\"false_northing\",2000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+          "fields": [
+            "BASE_DATE",
+            "SIGUNGU_CD",
+            "SIGUNGU_NM"
+          ],
+          "features": 252
+        },
+        {
+          "path": "data/raw/경계/전국 시군구 경계/bnd_sigungu_00_2025_2Q/bnd_sigungu_00_2025_2Q.shx",
+          "sha256": "9fbaeb394ffde8be2fce4e47f2420ac63942fbbdf6c15cf2c71ac69136b9428c",
+          "bytes": 2116
+        }
+      ]
+    },
+    {
+      "dataset_id": "boundaries",
+      "kind": "processed",
+      "schema_version": "1.0",
+      "provider": "통계지리정보서비스(SGIS)",
+      "source_url": "https://sgis.mods.go.kr/view/pss/openDataIntrcn",
+      "reference_date": "2025-06-30",
+      "license_and_redistribution": "SGIS 제공 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/processed/boundaries.gpkg",
+          "sha256": "65cb3dda4b4772f4725c64c33b3c61a21a8857073de5db192c75aecc3331c629",
+          "bytes": 1744896,
+          "crs": "EPSG:5179",
+          "tables": {
+            "goyang_boundary": {
+              "rows": 1,
+              "fields": [
+                "fid",
+                "geom",
+                "boundary_id",
+                "sgis_code",
+                "name_ko",
+                "level",
+                "parent_code",
+                "sido_name",
+                "is_goyang",
+                "base_date",
+                "source_file",
+                "source_row",
+                "geometry_repaired",
+                "area_m2",
+                "area_km2"
+              ]
+            },
+            "goyang_dong": {
+              "rows": 44,
+              "fields": [
+                "fid",
+                "geom",
+                "boundary_id",
+                "sgis_code",
+                "name_ko",
+                "level",
+                "parent_code",
+                "sido_name",
+                "is_goyang",
+                "base_date",
+                "source_file",
+                "source_row",
+                "geometry_repaired",
+                "area_m2",
+                "area_km2"
+              ]
+            },
+            "goyang_sigungu": {
+              "rows": 3,
+              "fields": [
+                "fid",
+                "geom",
+                "boundary_id",
+                "sgis_code",
+                "name_ko",
+                "level",
+                "parent_code",
+                "sido_name",
+                "is_goyang",
+                "base_date",
+                "source_file",
+                "source_row",
+                "geometry_repaired",
+                "area_m2",
+                "area_km2"
+              ]
+            },
+            "study_area": {
+              "rows": 1,
+              "fields": [
+                "fid",
+                "geom",
+                "boundary_id",
+                "sgis_code",
+                "name_ko",
+                "level",
+                "parent_code",
+                "sido_name",
+                "is_goyang",
+                "base_date",
+                "source_file",
+                "source_row",
+                "geometry_repaired",
+                "area_m2",
+                "area_km2"
+              ]
+            },
+            "surrounding_sigungu": {
+              "rows": 12,
+              "fields": [
+                "fid",
+                "geom",
+                "boundary_id",
+                "sgis_code",
+                "name_ko",
+                "level",
+                "parent_code",
+                "sido_name",
+                "is_goyang",
+                "base_date",
+                "source_file",
+                "source_row",
+                "geometry_repaired",
+                "area_m2",
+                "area_km2"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dataset_id": "elderly_population_raw",
+      "kind": "raw",
+      "provider": "국토교통부 국토지리정보원",
+      "source_url": "https://map.ngii.go.kr/ms/map/NlipMap.do",
+      "reference_date": "2025-04",
+      "license_and_redistribution": "국토정보플랫폼 원자료별 이용 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 250M_경기도 고양시_202504/vl_blk.cst",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 250M_경기도 고양시_202504/vl_blk.dbf",
+          "sha256": "d17b34ba05b081e8878ff22e58eb1ae40468c127be5e4181eeddc5771c1944b7",
+          "bytes": 2457015
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 250M_경기도 고양시_202504/vl_blk.prj",
+          "sha256": "8038ddf2ce289fdb6432c790495513f3315aab0002b1d985cc605d609e23420b",
+          "bytes": 761
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 250M_경기도 고양시_202504/vl_blk.shp",
+          "sha256": "622b9f0a47d39f409eba0d79bc0bacd488b54924ab1f204aba4aa706f3ef0c15",
+          "bytes": 616588,
+          "crs": "EPSG:5179",
+          "fields": [
+            "gid",
+            "lbl",
+            "val"
+          ],
+          "features": 4533
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 250M_경기도 고양시_202504/vl_blk.shx",
+          "sha256": "a2f4dd8ef0cb3ae8865400b27e1219e97bea6079f2792f9a886f94d5b7404b9a",
+          "bytes": 36364
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 500M_경기도 고양시_202504/vl_blk.cst",
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 500M_경기도 고양시_202504/vl_blk.dbf",
+          "sha256": "1ae343994d8790ecd362877d3665463de12d491e3070cbda3b76ddb205fbd5c8",
+          "bytes": 653781
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 500M_경기도 고양시_202504/vl_blk.prj",
+          "sha256": "8038ddf2ce289fdb6432c790495513f3315aab0002b1d985cc605d609e23420b",
+          "bytes": 761
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 500M_경기도 고양시_202504/vl_blk.shp",
+          "sha256": "021a598bfd794083e4d6665bfbf7517f75df373e7ad55ff1a9fc53017a4a0e38",
+          "bytes": 164116,
+          "crs": "EPSG:5179",
+          "fields": [
+            "gid",
+            "lbl",
+            "val"
+          ],
+          "features": 1206
+        },
+        {
+          "path": "data/raw/고령인구/(B100)국토통계_인구정보-고령 인구 수(전체)-(격자) 500M_경기도 고양시_202504/vl_blk.shx",
+          "sha256": "5ca5aa599a0720854dc2671ee00cbcb679440624122e9df291769c026c77d311",
+          "bytes": 9748
+        }
+      ]
+    },
+    {
+      "dataset_id": "elderly_population",
+      "kind": "processed",
+      "schema_version": "1.0",
+      "provider": "국토교통부 국토지리정보원",
+      "source_url": "https://map.ngii.go.kr/ms/map/NlipMap.do",
+      "reference_date": "2025-04",
+      "license_and_redistribution": "국토정보플랫폼 원자료별 이용 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/processed/elderly_population.gpkg",
+          "sha256": "2ada4d02c4c576403f8e4a78ad1f395aff847ac66943d80adf4a7ca7ce943fcb",
+          "bytes": 2826240,
+          "crs": "EPSG:5179",
+          "tables": {
+            "elderly_250m": {
+              "rows": 4533,
+              "fields": [
+                "fid",
+                "geom",
+                "gid",
+                "lbl",
+                "val",
+                "source_row",
+                "source_file",
+                "reference_month",
+                "grid_size_m",
+                "population_status",
+                "population_known",
+                "population_min",
+                "population_max",
+                "population_estimated",
+                "estimate_method",
+                "range_basis",
+                "joint_solution_count",
+                "group_status",
+                "needs_review",
+                "review_reason",
+                "aggregation_ready",
+                "parent_gid",
+                "aggregation_weight",
+                "origin_required",
+                "population_resolved",
+                "is_imputed"
+              ]
+            },
+            "elderly_500m": {
+              "rows": 1206,
+              "fields": [
+                "fid",
+                "geom",
+                "gid",
+                "lbl",
+                "val",
+                "source_row",
+                "source_file",
+                "reference_month",
+                "grid_size_m",
+                "population_status",
+                "population_known",
+                "population_min",
+                "population_max",
+                "population_estimated",
+                "estimate_method",
+                "range_basis",
+                "joint_solution_count",
+                "group_status",
+                "needs_review",
+                "review_reason",
+                "aggregation_ready",
+                "child_count",
+                "absent_child_count",
+                "available_child_population_sum",
+                "balance_difference",
+                "weight_sum",
+                "population_resolved",
+                "is_imputed"
+              ]
+            },
+            "review_cases": {
+              "rows": 0,
+              "fields": [
+                "fid",
+                "parent_gid",
+                "issue",
+                "detail",
+                "child_count",
+                "absent_child_count",
+                "parent_status",
+                "parent_population_raw",
+                "parent_population_known",
+                "known_child_sum",
+                "masked_child_count",
+                "blank_child_count",
+                "published_child_count",
+                "child_gids",
+                "child_raw_values"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dataset_id": "address_buildings_raw",
+      "kind": "raw",
+      "provider": "행정안전부 / 주소기반산업지원서비스",
+      "source_url": "https://business.juso.go.kr/",
+      "reference_date": "2025-03",
+      "license_and_redistribution": "신청 제공자료; 원본 재배포 허용 여부 별도 확인 필요",
+      "files": [
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SCCO_SIG.dbf",
+          "sha256": "215fd19518e6394ebc8404b8a1b3b87c01947970e37d738f680f94e70e2a8cd9",
+          "bytes": 387
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_BULD.dbf",
+          "sha256": "a9f4c6978c229b19ce4f7727f55b9130f27fa622b17efcf95d20b8a92129c865",
+          "bytes": 48662858
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_BULD.shp",
+          "sha256": "95e8619c183d224c37303a39eb697495fabd4e01ee26b1d799cb95eb90d11a5a",
+          "bytes": 15169252,
+          "crs": "원본 배포본 공통 GRS80_UTMK.prj 적용",
+          "fields": [
+            "BDTYP_CD",
+            "BD_MGT_SN",
+            "BSI_INT_SN",
+            "BSI_ZON_NO",
+            "BULD_MNNM",
+            "BULD_NM",
+            "BULD_NM_DC",
+            "BULD_SE_CD",
+            "BULD_SLNO",
+            "BUL_DPN_SE",
+            "BUL_ENG_NM",
+            "BUL_MAN_NO",
+            "EMD_CD",
+            "EQB_MAN_SN",
+            "GRO_FLO_CO",
+            "LI_CD",
+            "LNBR_MNNM",
+            "LNBR_SLNO",
+            "MNTN_YN",
+            "MVMN_DE",
+            "MVMN_RESN",
+            "MVM_RES_CD",
+            "NTFC_DE",
+            "OPERT_DE",
+            "POS_BUL_NM",
+            "RDS_MAN_NO",
+            "RDS_SIG_CD",
+            "RN_CD",
+            "SIG_CD",
+            "UND_FLO_CO"
+          ],
+          "features": 80566
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_BULD.shx",
+          "sha256": "49966bf43a58d8d9a6f16b4273d933523b0a27128052e648d80b0f547013bca5",
+          "bytes": 644628
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_ENTRC.dbf",
+          "sha256": "446d9b78ff35b85dfabb615a8b49afad87765a3e53ca152a55626143fac3f139",
+          "bytes": 2486094
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_ENTRC.shp",
+          "sha256": "6be5c25e096a46b80cfa10c79478eefb4c3a759c8f393eff2c04aea7e0dd1ae5",
+          "bytes": 1420596,
+          "crs": "원본 배포본 공통 GRS80_UTMK.prj 적용",
+          "fields": [
+            "BUL_MAN_NO",
+            "ENTRC_SE",
+            "ENT_MAN_NO",
+            "EQB_MAN_SN",
+            "OPERT_DE",
+            "SIG_CD"
+          ],
+          "features": 50732
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_ENTRC.shx",
+          "sha256": "ed0077d1e88b59fb4d5fdf46dbe03ffd0b9ccdd45ea5e418c89112bfdb3f41fa",
+          "bytes": 405956
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_EQB.dbf",
+          "sha256": "d6881b84ae88053a273a5aeb074068e3e8b08b74008a2609214abbb504f057f6",
+          "bytes": 375190
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_EQB.shp",
+          "sha256": "b681413368097fdfed1c1a2dbd1924fc5968ec7f3b298e2ba28dcf34e89bb7f6",
+          "bytes": 3510944,
+          "crs": "원본 배포본 공통 GRS80_UTMK.prj 적용",
+          "fields": [
+            "EQB_MAN_SN",
+            "OPERT_DE",
+            "SIG_CD"
+          ],
+          "features": 12502
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPBD_EQB.shx",
+          "sha256": "293055be0f2c854b39cf9225b52494f3460a5dfc2a20e60430f4a54cb0a89152",
+          "bytes": 100116
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/41280/TL_SPRD_MANAGE.dbf",
+          "sha256": "cafaa3cc6e4a1ebf38438208a95750a09451da7c9fb2845605282a4f46287e9a",
+          "bytes": 4296599
+        },
+        {
+          "path": "data/raw/도로명주소_전자지도_고양시_202503/GRS80_UTMK.prj",
+          "sha256": "b3ddd3798dd2831bccec5051dbf8c8f205f4bf4142fbb73f9e3ff8a8969fdc26",
+          "bytes": 406
+        }
+      ]
+    },
+    {
+      "dataset_id": "address_buildings",
+      "kind": "processed",
+      "schema_version": "1.0",
+      "provider": "행정안전부 / 주소기반산업지원서비스",
+      "source_url": "https://business.juso.go.kr/",
+      "reference_date": "2025-03",
+      "license_and_redistribution": "신청 제공자료; 원본 재배포 허용 여부 별도 확인 필요",
+      "files": [
+        {
+          "path": "data/processed/residential_buildings.gpkg",
+          "sha256": "5a68bb5716f3a1f332364a9974f658cd9c5a6e6ed80b8296e719010012407cfb",
+          "bytes": 74280960,
+          "crs": "EPSG:5179",
+          "tables": {
+            "building_decisions": {
+              "rows": 80566,
+              "fields": [
+                "source_id",
+                "use_code",
+                "name",
+                "action",
+                "reason"
+              ]
+            },
+            "building_entrances": {
+              "rows": 30592,
+              "fields": [
+                "fid",
+                "geom",
+                "entrance_id",
+                "entrance_type",
+                "source_building_id",
+                "building_group_id",
+                "linked_buildings"
+              ]
+            },
+            "building_representative_points": {
+              "rows": 39371,
+              "fields": [
+                "fid",
+                "geom",
+                "building_id",
+                "name",
+                "building_group_id",
+                "entrance_id",
+                "entrance_scope"
+              ]
+            },
+            "geometry_audit": {
+              "rows": 46,
+              "fields": [
+                "stage",
+                "source_id",
+                "action",
+                "reason",
+                "area_before_m2",
+                "area_after_m2"
+              ]
+            },
+            "processing_metadata": {
+              "rows": 9,
+              "fields": [
+                "key",
+                "value_json"
+              ]
+            },
+            "residential_buildings": {
+              "rows": 39371,
+              "fields": [
+                "fid",
+                "geom",
+                "building_id",
+                "building_source",
+                "source_id",
+                "link_id",
+                "name",
+                "residential_type",
+                "use_code",
+                "use_name",
+                "legal_dong_code",
+                "reference_date",
+                "decision_reason",
+                "quality_note",
+                "geometry_status",
+                "source_parts",
+                "full_area_m2",
+                "analysis_area_m2",
+                "building_group_id",
+                "building_role",
+                "road_address",
+                "representative_x",
+                "representative_y",
+                "entrance_id",
+                "entrance_scope",
+                "entrance_x",
+                "entrance_y"
+              ]
+            },
+            "residential_coverage": {
+              "rows": 1,
+              "fields": [
+                "fid",
+                "geom",
+                "building_source",
+                "area_m2",
+                "overlap_removed_m2"
+              ]
+            },
+            "residential_parts": {
+              "rows": 39371,
+              "fields": [
+                "fid",
+                "geom",
+                "building_id",
+                "building_source",
+                "source_id",
+                "link_id",
+                "name",
+                "residential_type",
+                "use_code",
+                "use_name",
+                "legal_dong_code",
+                "reference_date",
+                "decision_reason",
+                "quality_note",
+                "geometry_status",
+                "source_parts",
+                "full_area_m2",
+                "analysis_area_m2",
+                "building_group_id",
+                "building_role",
+                "road_address",
+                "representative_x",
+                "representative_y",
+                "entrance_id",
+                "entrance_scope",
+                "entrance_x",
+                "entrance_y"
+              ]
+            },
+            "review_buildings": {
+              "rows": 0,
+              "fields": [
+                "fid",
+                "geom",
+                "building_id",
+                "building_source",
+                "source_id",
+                "link_id",
+                "name",
+                "residential_type",
+                "use_code",
+                "use_name",
+                "legal_dong_code",
+                "reference_date",
+                "decision_reason",
+                "quality_note",
+                "geometry_status",
+                "source_parts",
+                "full_area_m2",
+                "analysis_area_m2",
+                "building_group_id",
+                "building_role",
+                "road_address",
+                "representative_x",
+                "representative_y",
+                "entrance_id",
+                "entrance_scope",
+                "entrance_x",
+                "entrance_y",
+                "review_reason",
+                "raw_building_name",
+                "raw_detail_name",
+                "raw_group_name"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dataset_id": "medical_institutions_raw",
+      "kind": "raw",
+      "provider": "건강보험심사평가원",
+      "source_url": "https://opendata.hira.or.kr/op/opc/selectOpenData.do?sno=11925",
+      "reference_date": "2025-03",
+      "license_and_redistribution": "HIRA 및 좌표보완 Kakao 응답의 각각의 이용·재배포 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/raw/병원/kakao_address_responses.json",
+          "sha256": "ef4e09701477d1bd7a93cb7d197c2600c861d62b0d2118c385bcca2173cf6918",
+          "bytes": 61950
+        },
+        {
+          "path": "data/raw/병원/전국 병의원 및 약국 현황 2025.3/1.병원정보서비스 2025.3.xlsx",
+          "sha256": "0b81057e5b96c8665041ff949ace7bca90c98c460ade2667ad36a490a6fcd20a",
+          "bytes": 16774000
+        },
+        {
+          "path": "data/raw/병원/전국 병의원 및 약국 현황 2025.3/5.의료기관별상세정보서비스_03_진료과목정보 2025.3.xlsx",
+          "sha256": "1bbcbb30eff45bb67519c0effbdf69d20ffbea1bf147b6daf6cd20a3658abb2e",
+          "bytes": 13965472
+        }
+      ]
+    },
+    {
+      "dataset_id": "medical_institutions",
+      "kind": "processed",
+      "schema_version": "1.0",
+      "provider": "건강보험심사평가원",
+      "source_url": "https://opendata.hira.or.kr/op/opc/selectOpenData.do?sno=11925",
+      "reference_date": "2025-03",
+      "license_and_redistribution": "HIRA 및 좌표보완 Kakao 응답의 각각의 이용·재배포 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/processed/medical_institutions.csv",
+          "sha256": "a33e9f266b1297353e9a65f6916b09be852ba777ea2ca133248b3511ede117dd",
+          "bytes": 347481,
+          "fields": [
+            "hospital_id",
+            "name",
+            "hospital_type_code",
+            "hospital_type",
+            "sido_name",
+            "hira_sigungu_code",
+            "sigungu_name",
+            "is_goyang",
+            "address",
+            "telephone",
+            "internal_medicine_specialists",
+            "orthopedic_specialists",
+            "longitude",
+            "latitude",
+            "x_5179",
+            "y_5179",
+            "reference_month"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset_id": "osm_walk_network_raw",
+      "kind": "raw",
+      "provider": "OpenStreetMap contributors / Geofabrik",
+      "source_url": "https://download.geofabrik.de/asia/south-korea.html",
+      "reference_date": "2025-01",
+      "license_and_redistribution": "OpenStreetMap ODbL 1.0; 제공 출처 표시 및 파생 DB 배포 조건 적용",
+      "files": [
+        {
+          "path": "data/raw/OSM/south-korea-250101.osm.pbf",
+          "sha256": "9b67fc951d535639b2a12e96a0ff069943d6da4d75883e42d377e6f76c7483ab",
+          "bytes": 233753476
+        }
+      ]
+    },
+    {
+      "dataset_id": "osm_walk_network",
+      "kind": "processed",
+      "schema_version": "1.0",
+      "provider": "OpenStreetMap contributors / Geofabrik",
+      "source_url": "https://download.geofabrik.de/asia/south-korea.html",
+      "reference_date": "2025-01",
+      "license_and_redistribution": "OpenStreetMap ODbL 1.0; 제공 출처 표시 및 파생 DB 배포 조건 적용",
+      "files": [
+        {
+          "path": "data/processed/osm_walk_network.gpkg",
+          "sha256": "0668a03b494e93b1bcfbae2a89ce578adce5e657247504c8eb8d0ac1a5fe4e29",
+          "bytes": 318943232,
+          "crs": "EPSG:5179",
+          "tables": {
+            "access_points": {
+              "rows": 49982,
+              "fields": [
+                "fid",
+                "geom",
+                "osm_node_id",
+                "name",
+                "barrier",
+                "entrance",
+                "highway",
+                "railway",
+                "passage_status",
+                "passage_reason",
+                "in_network",
+                "tags_json"
+              ]
+            },
+            "barriers": {
+              "rows": 2019,
+              "fields": [
+                "fid",
+                "geom",
+                "osm_way_id",
+                "barrier",
+                "tags_json"
+              ]
+            },
+            "deferred_ways": {
+              "rows": 1059,
+              "fields": [
+                "fid",
+                "geom",
+                "osm_way_id",
+                "highway",
+                "name",
+                "decision",
+                "reason",
+                "tags_json"
+              ]
+            },
+            "edges": {
+              "rows": 785544,
+              "fields": [
+                "fid",
+                "geom",
+                "edge_id",
+                "segment_id",
+                "osm_way_id",
+                "u",
+                "v",
+                "direction",
+                "name",
+                "highway",
+                "length_m",
+                "cost_kind",
+                "is_steps",
+                "foot",
+                "access",
+                "bridge",
+                "tunnel",
+                "layer",
+                "level",
+                "component_id"
+              ]
+            },
+            "extraction_area": {
+              "rows": 2,
+              "fields": [
+                "fid",
+                "geom",
+                "area_id",
+                "buffer_m",
+                "area_km2"
+              ]
+            },
+            "nodes": {
+              "rows": 288867,
+              "fields": [
+                "fid",
+                "geom",
+                "node_id",
+                "osm_node_id",
+                "x",
+                "y",
+                "is_virtual",
+                "passage_status",
+                "passage_reason",
+                "component_id",
+                "in_institution_region"
+              ]
+            },
+            "review_groups": {
+              "rows": 0,
+              "fields": [
+                "fid",
+                "geom",
+                "review_id",
+                "priority",
+                "region",
+                "review_task",
+                "name",
+                "reason_ko",
+                "question",
+                "way_count",
+                "length_m",
+                "osm_way_ids",
+                "longitude",
+                "latitude"
+              ]
+            },
+            "review_ways": {
+              "rows": 0,
+              "fields": [
+                "fid",
+                "geom",
+                "osm_way_id",
+                "highway",
+                "name",
+                "reason",
+                "priority",
+                "reason_ko",
+                "question",
+                "region",
+                "review_task",
+                "review_id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dataset_id": "gtfs_raw",
+      "kind": "raw",
+      "provider": "한국교통연구원 국가교통DB(KTDB)",
+      "source_url": "https://www.ktdb.go.kr/",
+      "reference_date": "2025-03 weekday sample",
+      "license_and_redistribution": "KTDB 원자료 제공·재배포 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_DataSet/agency.txt",
+          "sha256": "e8115fea3684b8a6b83f8b948a513c5c527711de734e10e4aa613e17c9c693bd",
+          "bytes": 96
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_DataSet/calendar.txt",
+          "sha256": "a351e31086627f9e12c7662a4a8207d4a4de7912489c93a3142474d04607f9a9",
+          "bytes": 125
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_DataSet/routes.txt",
+          "sha256": "5b8300b5520fa84051f84d0b872f1406d582dd2740972b2c1d11729c7fb9f540",
+          "bytes": 1546877
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_DataSet/stop_times.txt",
+          "sha256": "8e0fe7e489c62de1b4fedb43bb13d1663a9192c1ebec4a19a0d1fd3a7a5bed44",
+          "bytes": 1431799517
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_DataSet/stops.txt",
+          "sha256": "2d7748b361a2312af9f047a10587ee4be52cff6b03596a8992b2adc443e77782",
+          "bytes": 13888888
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_DataSet/transfers.txt",
+          "sha256": "f958151f0c8d74365077c6d939609daa8652a24ea10f037dff87fcfa0d59ac38",
+          "bytes": 13972
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_DataSet/trips.txt",
+          "sha256": "1cc33aa5a371b3e8f313026cb5ff71e6d6946b83d9a611480eae6e82d74c41dd",
+          "bytes": 16954088
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_route세부정보.xlsx",
+          "sha256": "57fb9878d024448bb9e66926399d62e7d57af2863e824aed364ca321c1ff668c",
+          "bytes": 1201814
+        },
+        {
+          "path": "data/raw/GTFS/대중교통GTFS(2025년 기준)/202503_GTFS_설명서.pdf",
+          "sha256": "2a4a0860b43ff923f61ae041594a4307a3f6cbcc331d806306d50699a998536e",
+          "bytes": 246918
+        }
+      ]
+    },
+    {
+      "dataset_id": "gtfs",
+      "kind": "processed",
+      "schema_version": "1.0",
+      "provider": "한국교통연구원 국가교통DB(KTDB)",
+      "source_url": "https://www.ktdb.go.kr/",
+      "reference_date": "2025-03 weekday sample",
+      "license_and_redistribution": "KTDB 원자료 제공·재배포 조건 확인 필요",
+      "files": [
+        {
+          "path": "data/processed/gtfs.sqlite",
+          "sha256": "6bc15da84e8b5a7d27d6aac3d35202262c52966f4df8bfc47ade8cbf486a10db",
+          "bytes": 539869184,
+          "crs": "stop_lon/stop_lat: EPSG:4326; x_5179/y_5179: EPSG:5179",
+          "tables": {
+            "routes": {
+              "rows": 3769,
+              "fields": [
+                "route_id",
+                "agency_id",
+                "route_short_name",
+                "route_long_name",
+                "route_type_raw",
+                "route_type",
+                "mode",
+                "region_name",
+                "route_cate",
+                "category_name",
+                "min_boarding_round"
+              ]
+            },
+            "stops": {
+              "rows": 56911,
+              "fields": [
+                "stop_key",
+                "stop_id",
+                "stop_name",
+                "stop_lat",
+                "stop_lon",
+                "x_5179",
+                "y_5179",
+                "in_goyang",
+                "in_institution_region",
+                "origin_search_candidate"
+              ]
+            },
+            "trips": {
+              "rows": 170324,
+              "fields": [
+                "trip_key",
+                "trip_id",
+                "route_id",
+                "service_id",
+                "pattern_id",
+                "stop_count",
+                "first_departure_s",
+                "last_arrival_s"
+              ]
+            },
+            "stop_times": {
+              "rows": 10711432,
+              "fields": [
+                "trip_key",
+                "stop_sequence",
+                "stop_key",
+                "arrival_s",
+                "departure_s",
+                "pickup_type",
+                "drop_off_type",
+                "timepoint"
+              ]
+            },
+            "transfers": {
+              "rows": 284,
+              "fields": [
+                "from_stop_key",
+                "to_stop_key",
+                "transfer_type",
+                "min_transfer_time"
+              ]
+            },
+            "patterns": {
+              "rows": 5401,
+              "fields": [
+                "pattern_id",
+                "route_id",
+                "stop_count",
+                "first_stop_key",
+                "last_stop_key"
+              ]
+            },
+            "pattern_stops": {
+              "rows": 298231,
+              "fields": [
+                "pattern_id",
+                "pattern_sequence",
+                "stop_key",
+                "pickup_type",
+                "drop_off_type"
+              ]
+            }
+          }
+        },
+        {
+          "path": "data/processed/gtfs_056_branch_parameters.csv",
+          "sha256": "d727a389125f1d582bef77e6881edb6c2e31c60289618a9b0d92ac0b387dc79b",
+          "bytes": 579,
+          "fields": [
+            "branch",
+            "pattern_id",
+            "weekday_departures",
+            "stops_per_trip",
+            "outbound_length_m",
+            "inbound_length_m",
+            "outbound_estimated_s",
+            "inbound_estimated_s",
+            "effective_speed_kmh"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset_id": "transit_056",
+      "kind": "override_input",
+      "provider": "기존 확정 사용자 입력 / BusMaps 및 게시 시간표",
+      "source_url": "overrides/transit_056/route_sources.csv와 weekday_departures.csv의 행별 URL",
+      "reference_date": "도촌 2025-02, 서촌·멱절 2025-04-15; 위치 자료 기준연도 미상",
+      "license_and_redistribution": "원문별 조건 확인 필요; 추정 시간표로 표시",
+      "files": [
+        {
+          "path": "overrides/transit_056/stops.csv",
+          "sha256": "3077c0d9320a73e7dd9e709f410070254fa5d3bb82fdfcac520bae34ecbf8661",
+          "bytes": 11646,
+          "fields": [
+            "review_id",
+            "place_id",
+            "branch",
+            "direction",
+            "travel_direction",
+            "branch_sequence",
+            "place_number",
+            "stop_name",
+            "longitude",
+            "latitude",
+            "source_full_sequence",
+            "source_url",
+            "source_stop_url",
+            "source_date",
+            "retrieved_utc",
+            "adoption_basis"
+          ]
+        },
+        {
+          "path": "overrides/transit_056/route_sources.csv",
+          "sha256": "87d947c2d759baa0f6a6f0651da91cd2d7a36b5427bd395691d70885184e9af5",
+          "bytes": 4950,
+          "fields": [
+            "branch",
+            "branch_code",
+            "unique_places",
+            "source_url",
+            "retrieved_utc",
+            "source_date",
+            "webpage_sha256",
+            "out_anchor_name",
+            "out_anchor_lon",
+            "out_anchor_lat",
+            "in_anchor_name",
+            "in_anchor_lon",
+            "in_anchor_lat",
+            "full_shape_polyline",
+            "polyline_precision",
+            "geometry_note"
+          ]
+        },
+        {
+          "path": "overrides/transit_056/common_section.csv",
+          "sha256": "887ab2121eb81f94a14dca8dedd2b436667c28785bd479248e146c75e308dbdf",
+          "bytes": 5626,
+          "fields": [
+            "stop_sequence",
+            "stop_key",
+            "stop_id",
+            "stop_name",
+            "stop_lon",
+            "stop_lat",
+            "pickup_type",
+            "drop_off_type",
+            "arrival_offset_s",
+            "departure_offset_s"
+          ]
+        },
+        {
+          "path": "overrides/transit_056/weekday_departures.csv",
+          "sha256": "461116a609a270ccecb68e70803aeac49b633e10941c240da5532a85701cbf37",
+          "bytes": 14699,
+          "fields": [
+            "branch",
+            "departure_number",
+            "departure_time",
+            "departure_s",
+            "day_type",
+            "source_date",
+            "source_url",
+            "reference_point",
+            "interpretation"
+          ]
+        }
+      ]
+    }
+  ],
+  "overrides": [
+    {
+      "path": "overrides/building_decisions.csv",
+      "sha256": "d29954d6efa3d15d98252b2294738347580a68d235126b7ff946f9b6eb6586a6",
+      "bytes": 307078,
+      "fields": [
+        "override_id",
+        "dataset_id",
+        "target_id",
+        "action",
+        "field",
+        "new_value",
+        "expected_before",
+        "target_fingerprint",
+        "reason",
+        "evidence_type",
+        "evidence_path",
+        "source_url",
+        "decision_date",
+        "decision_source",
+        "status",
+        "source_version",
+        "supersedes"
+      ]
+    },
+    {
+      "path": "overrides/decision_register.csv",
+      "sha256": "2f7250737069349841008c749601e5b355bf150eb37c8cfa482be5351f166d17",
+      "bytes": 12060,
+      "fields": [
+        "decision_id",
+        "topic",
+        "decision",
+        "v7_disposition",
+        "implementation_location",
+        "evidence_basis",
+        "limits"
+      ]
+    },
+    {
+      "path": "overrides/evidence/attachment_inventory.csv",
+      "sha256": "b58304e2c6d71000b83403d5df7011931341e58ba265dc1f4acb6c975a3b4c6d",
+      "bytes": 1974,
+      "fields": [
+        "evidence_path",
+        "original_filename",
+        "sha256",
+        "availability",
+        "note"
+      ]
+    },
+    {
+      "path": "overrides/evidence/building_target_snapshot.csv",
+      "sha256": "db1fdaaeb7ac670875f334b63076c883e0ca0f44c2b03292efc6f5b7864663bd",
+      "bytes": 38750,
+      "fields": [
+        "source_id",
+        "use_code",
+        "name",
+        "action",
+        "reason",
+        "constants"
+      ]
+    },
+    {
+      "path": "overrides/evidence/decision_sources.md",
+      "sha256": "971143645932a91a7d6df3b55b8b1f5f3c6f3b4e6d0fcf09f53f1e9231beaaba",
+      "bytes": 4006
+    },
+    {
+      "path": "overrides/evidence/geocoded_facilities.csv",
+      "sha256": "af7c6046b08c5fcee1a4056d8317f220ea1b17d0f3f174a4287abca4a83658b9",
+      "bytes": 10292,
+      "fields": [
+        "hospital_id",
+        "name",
+        "address",
+        "reference_month",
+        "matched_address",
+        "longitude",
+        "latitude",
+        "query_method",
+        "query_date"
+      ]
+    },
+    {
+      "path": "overrides/evidence/package_files.csv",
+      "sha256": "74218f0c99b25bb1ab9ee63a7efdb28ef37471a94035df0620c8b8af1d8f6d1c",
+      "bytes": 3575,
+      "fields": [
+        "path",
+        "bytes",
+        "sha256"
+      ]
+    },
+    {
+      "path": "overrides/evidence/preprocessing_decision_excerpts.md",
+      "sha256": "bdedbb959f8b3ec8630dc15e4cc2a2124f4c468129eb989368ddf2f7bf7775ce",
+      "bytes": 49180
+    },
+    {
+      "path": "overrides/evidence/source_constant_membership.csv",
+      "sha256": "2741aa4798fbd8973265c27855567ba46561f7440af18705fd833e3b33647e4b",
+      "bytes": 33272,
+      "fields": [
+        "constant",
+        "target_id",
+        "value"
+      ]
+    },
+    {
+      "path": "overrides/evidence/source_images/056_dochon_timetable_source.png",
+      "sha256": "d714bbb792b8e074f615d0393e52de486879551d4957621bbad421df0734db0b",
+      "bytes": 63523
+    },
+    {
+      "path": "overrides/evidence/source_images/056_myeokjeol_initial_capture_source.png",
+      "sha256": "ba0f24c6ca07be3fb378756130cc4c63e9d517c528516367469ccccc394da868",
+      "bytes": 62028
+    },
+    {
+      "path": "overrides/evidence/source_images/056_seochon_timetable_source.png",
+      "sha256": "4d684b9beb8730e926fcd160caec09149d98fd1daa7ade85e5f7b762bdac9ac0",
+      "bytes": 62986
+    },
+    {
+      "path": "overrides/evidence/source_images/unjeong_entrances_map_source.png",
+      "sha256": "6a65e2aef5df27f8a7874e5698311b805c0a06b221c9842cc127e580479af298",
+      "bytes": 103936
+    },
+    {
+      "path": "overrides/evidence/source_images/unjeong_exit1_coordinate.png",
+      "sha256": "c4cc9525971dc424defa8f09b857f52c32be2b0a2bfdddea0b3fd86195009726",
+      "bytes": 8316
+    },
+    {
+      "path": "overrides/evidence/source_images/unjeong_exit2_coordinate.png",
+      "sha256": "f31bc9b77fb2641c738795821111f30842fd046127d2ec1aad59107429c925d0",
+      "bytes": 6879
+    },
+    {
+      "path": "overrides/evidence/source_images/unjeong_sidewalk_source.png",
+      "sha256": "fff51c2d7b329633fb55b97718cfd57440249b366916c4178366ffd2a8101788",
+      "bytes": 3901930
+    },
+    {
+      "path": "overrides/evidence/source_manifest.csv",
+      "sha256": "9558db526451213d9a9e1911a9aa05a845e8c71a1085a6145d71b99f84069678",
+      "bytes": 3108,
+      "fields": [
+        "source_label",
+        "bytes",
+        "sha256",
+        "role",
+        "extracted_on"
+      ]
+    },
+    {
+      "path": "overrides/evidence/target_nodes.csv",
+      "sha256": "a90a21dc7705236f597aa68ebd9b55bb033c3e73e9bb41427cc9df0f4b503967",
+      "bytes": 5137,
+      "fields": [
+        "ref",
+        "expected_attributes",
+        "target_fingerprint"
+      ]
+    },
+    {
+      "path": "overrides/evidence/target_segments.csv",
+      "sha256": "ecc416b25fa8a1fc6ae52f0cfb079925f002437c6e609af46cab1ffc5acbb862",
+      "bytes": 190155,
+      "fields": [
+        "ref",
+        "osm_way_id",
+        "segment_id",
+        "expected_attributes",
+        "target_fingerprint"
+      ]
+    },
+    {
+      "path": "overrides/evidence/target_stops.csv",
+      "sha256": "62a89c8b3d1275c73a36401b5e409493535b44abf7e2514913b7c94bb0b9919f",
+      "bytes": 17829,
+      "fields": [
+        "ref",
+        "stop_id",
+        "stop_name",
+        "stop_lon",
+        "stop_lat",
+        "x_5179",
+        "y_5179",
+        "target_fingerprint"
+      ]
+    },
+    {
+      "path": "overrides/facility_decisions.csv",
+      "sha256": "0d87aae472a965e2ca8a16b87627346e2ce3be77d0e22af124d09ab485067d5e",
+      "bytes": 72546,
+      "fields": [
+        "override_id",
+        "dataset_id",
+        "target_id",
+        "action",
+        "field",
+        "new_value",
+        "expected_before",
+        "target_fingerprint",
+        "reason",
+        "evidence_type",
+        "evidence_path",
+        "source_url",
+        "decision_date",
+        "decision_source",
+        "status",
+        "source_version",
+        "supersedes"
+      ]
+    },
+    {
+      "path": "overrides/geometry_overrides.csv",
+      "sha256": "a1c19851205d10b06196439d98c7e0ecd4cd0ca8a96402a6b8e02453669d72c9",
+      "bytes": 458131,
+      "fields": [
+        "override_id",
+        "dataset_id",
+        "target_id",
+        "action",
+        "field",
+        "new_value",
+        "expected_before",
+        "target_fingerprint",
+        "reason",
+        "evidence_type",
+        "evidence_path",
+        "source_url",
+        "decision_date",
+        "decision_source",
+        "status",
+        "source_version",
+        "supersedes",
+        "geometry_id",
+        "geometry_role",
+        "geometry_type",
+        "x",
+        "y",
+        "wkt",
+        "crs",
+        "from_ref",
+        "to_ref",
+        "direction",
+        "usage",
+        "assumption",
+        "source",
+        "geometry_sha256",
+        "metadata",
+        "related_override_ids",
+        "cost_kind",
+        "from_position_m",
+        "to_position_m"
+      ]
+    },
+    {
+      "path": "overrides/implementation_notes.md",
+      "sha256": "9e18b363c8c15f0d1d15e3f16fddefce34a21e192cdfc43df9991b9ce0586452",
+      "bytes": 8114
+    },
+    {
+      "path": "overrides/migration_report.md",
+      "sha256": "175f45a31b010c43c1816d7cadf0c2c9131874ead44e72667ee70bc24f3270aa",
+      "bytes": 5477
+    },
+    {
+      "path": "overrides/network_decisions.csv",
+      "sha256": "759b8cafa0845cf6fe618f886087b21b1f512b4465a9bed964f1a2fd8d804ba5",
+      "bytes": 81326,
+      "fields": [
+        "override_id",
+        "dataset_id",
+        "target_id",
+        "action",
+        "field",
+        "new_value",
+        "expected_before",
+        "target_fingerprint",
+        "reason",
+        "evidence_type",
+        "evidence_path",
+        "source_url",
+        "decision_date",
+        "decision_source",
+        "status",
+        "source_version",
+        "supersedes"
+      ]
+    },
+    {
+      "path": "overrides/origin_decisions.csv",
+      "sha256": "c2e343e90f44d0fd4af1f60ddeaa181b89ab872e6234cc9fb8434549676bf210",
+      "bytes": 6384,
+      "fields": [
+        "override_id",
+        "dataset_id",
+        "target_id",
+        "action",
+        "field",
+        "new_value",
+        "expected_before",
+        "target_fingerprint",
+        "reason",
+        "evidence_type",
+        "evidence_path",
+        "source_url",
+        "decision_date",
+        "decision_source",
+        "status",
+        "source_version",
+        "supersedes"
+      ]
+    },
+    {
+      "path": "overrides/README.md",
+      "sha256": "9b509d8033890d7f0b66f03cd5d860eaf7742a7dcef8984c6deba0adf0a8a159",
+      "bytes": 7246
+    },
+    {
+      "path": "overrides/transit_056/common_section.csv",
+      "sha256": "887ab2121eb81f94a14dca8dedd2b436667c28785bd479248e146c75e308dbdf",
+      "bytes": 5626,
+      "fields": [
+        "stop_sequence",
+        "stop_key",
+        "stop_id",
+        "stop_name",
+        "stop_lon",
+        "stop_lat",
+        "pickup_type",
+        "drop_off_type",
+        "arrival_offset_s",
+        "departure_offset_s"
+      ]
+    },
+    {
+      "path": "overrides/transit_056/README.md",
+      "sha256": "cad9b381b0ccf54bae935d577652d749c5bfd1e337e3c5cb575f23eea05c1e9a",
+      "bytes": 3231
+    },
+    {
+      "path": "overrides/transit_056/route_sources.csv",
+      "sha256": "87d947c2d759baa0f6a6f0651da91cd2d7a36b5427bd395691d70885184e9af5",
+      "bytes": 4950,
+      "fields": [
+        "branch",
+        "branch_code",
+        "unique_places",
+        "source_url",
+        "retrieved_utc",
+        "source_date",
+        "webpage_sha256",
+        "out_anchor_name",
+        "out_anchor_lon",
+        "out_anchor_lat",
+        "in_anchor_name",
+        "in_anchor_lon",
+        "in_anchor_lat",
+        "full_shape_polyline",
+        "polyline_precision",
+        "geometry_note"
+      ]
+    },
+    {
+      "path": "overrides/transit_056/stops.csv",
+      "sha256": "3077c0d9320a73e7dd9e709f410070254fa5d3bb82fdfcac520bae34ecbf8661",
+      "bytes": 11646,
+      "fields": [
+        "review_id",
+        "place_id",
+        "branch",
+        "direction",
+        "travel_direction",
+        "branch_sequence",
+        "place_number",
+        "stop_name",
+        "longitude",
+        "latitude",
+        "source_full_sequence",
+        "source_url",
+        "source_stop_url",
+        "source_date",
+        "retrieved_utc",
+        "adoption_basis"
+      ]
+    },
+    {
+      "path": "overrides/transit_056/weekday_departures.csv",
+      "sha256": "461116a609a270ccecb68e70803aeac49b633e10941c240da5532a85701cbf37",
+      "bytes": 14699,
+      "fields": [
+        "branch",
+        "departure_number",
+        "departure_time",
+        "departure_s",
+        "day_type",
+        "source_date",
+        "source_url",
+        "reference_point",
+        "interpretation"
+      ]
+    },
+    {
+      "path": "overrides/transit_decisions.csv",
+      "sha256": "5885722b3083ea88280adb870f2a2c49d865953dd7509d120c069bf6c9190d4c",
+      "bytes": 114845,
+      "fields": [
+        "override_id",
+        "dataset_id",
+        "target_id",
+        "action",
+        "field",
+        "new_value",
+        "expected_before",
+        "target_fingerprint",
+        "reason",
+        "evidence_type",
+        "evidence_path",
+        "source_url",
+        "decision_date",
+        "decision_source",
+        "status",
+        "source_version",
+        "supersedes"
+      ]
+    },
+    {
+      "path": "overrides/validate_overrides.py",
+      "sha256": "694fb5af4d82a41a67f19f25d723e07320d2da6f58301b0f22f12072f377400f",
+      "bytes": 9469
+    },
+    {
+      "path": "overrides/walk_access_decisions.csv",
+      "sha256": "7d0bdce5f763f5d13696658883a067ec22a125695273f32ce83a85357aea0ffe",
+      "bytes": 63928,
+      "fields": [
+        "override_id",
+        "dataset_id",
+        "target_id",
+        "action",
+        "field",
+        "new_value",
+        "expected_before",
+        "target_fingerprint",
+        "reason",
+        "evidence_type",
+        "evidence_path",
+        "source_url",
+        "decision_date",
+        "decision_source",
+        "status",
+        "source_version",
+        "supersedes"
+      ]
+    }
+  ],
+  "code": [
+    {
+      "path": "preprocess/01_boundaries.py",
+      "sha256": "5a39dbd6c418dd62de48fb88d91326ae65d07a8d1ded4c0ebe4bd202855c1d1f",
+      "bytes": 13009
+    },
+    {
+      "path": "preprocess/02_elderly_population.py",
+      "sha256": "25b394709267af8c7910dda75495e3b7911051f06c832f4fc8010f6df70b0576",
+      "bytes": 22284
+    },
+    {
+      "path": "preprocess/03_residential_buildings.py",
+      "sha256": "5f76b8837370d250e6d889fad01bc9b7eaf63ddb65dac1d6fb10264ada63d7cc",
+      "bytes": 36498
+    },
+    {
+      "path": "preprocess/04_medical_institutions.py",
+      "sha256": "17a583b8a8ca93ff813dbaf6c7bcbda2db8c9195a15df6864568cd719e844f76",
+      "bytes": 19866
+    },
+    {
+      "path": "preprocess/05_osm_walk_network.py",
+      "sha256": "d9330b21f4cf2ff1544d241af45cda8f21eee7c957c685380f9520c550dd38e4",
+      "bytes": 48045
+    },
+    {
+      "path": "preprocess/06_gtfs.py",
+      "sha256": "a9e6507290491015a1ce4caa01a3e33246fa7e92d5f84c25b7938c0ebf45faf7",
+      "bytes": 36405
+    },
+    {
+      "path": "preprocess/07_gtfs_supplements.py",
+      "sha256": "405ad89b9d3ae018d48402c188901b47cc84474c5d3577a02844e3d49fc248a3",
+      "bytes": 12680
+    },
+    {
+      "path": "preprocess/__init__.py",
+      "sha256": "82f9e3353305c151955ebd7e263c573322d7e7cb6e6a25875e1c78568eca0b7d",
+      "bytes": 100
+    },
+    {
+      "path": "preprocess/__main__.py",
+      "sha256": "948a5ea987d5057639d82b8242c2968c53b1f75b056b40c62a389b8863483849",
+      "bytes": 732
+    },
+    {
+      "path": "src/__init__.py",
+      "sha256": "26484e1d66bc6ccdd90a166ea3e34617840d35573611d72b6af7688dfec78e8c",
+      "bytes": 39
+    },
+    {
+      "path": "src/preprocessing_common.py",
+      "sha256": "2627e38b271ffcd4be1cfc18e97b41b0b9300e7f6fa48ba209a8804f5048cd98",
+      "bytes": 8591
+    },
+    {
+      "path": "src/preprocessing_validation.py",
+      "sha256": "bf93a9ca67ed0ea6b730ff171092c2f07846811692299a0cdde27643e1ea0c43",
+      "bytes": 18563
+    }
+  ],
+  "requirements": {
+    "path": "requirements.txt",
+    "sha256": "ebdfbaac310630b13edd5547d481121b7d5f281f1fa4319200885dc046c1a0d1",
+    "bytes": 474
+  },
+  "preprocessing_reports": [
+    {
+      "path": "data/processed/preprocessing_reports/boundaries.json",
+      "sha256": "bcc182dd6e9178df368f2045b6a47e78af6ca2d09da4ce0a693e5b2c805a73b9",
+      "bytes": 5610
+    },
+    {
+      "path": "data/processed/preprocessing_reports/elderly_population.json",
+      "sha256": "f7ffa5bfdfbe2d573f834530b314ff5a5a1f6f6afbdec943e00778af6be28e8d",
+      "bytes": 4895
+    },
+    {
+      "path": "data/processed/preprocessing_reports/gtfs.json",
+      "sha256": "d1fcf5466e6661c9eaab04637043c68d8aaf33119c52e4611a3356e2a6a4efc6",
+      "bytes": 834488
+    },
+    {
+      "path": "data/processed/preprocessing_reports/gtfs_056.json",
+      "sha256": "39fbef468cf6aa5fa46ae7b272f21b46e19496ac7b4d0f2d14b1bd4900701ec4",
+      "bytes": 3499
+    },
+    {
+      "path": "data/processed/preprocessing_reports/medical_institutions.json",
+      "sha256": "0a9372db0ced94e22b7d5d0f8f4ac52713fc66080951d401418c2476fe9cfe5d",
+      "bytes": 65496
+    },
+    {
+      "path": "data/processed/preprocessing_reports/migration_report.json",
+      "sha256": "42ad0a855d6f607d70ccdbe3c2a25bdb69cb51908333c00af588f11928f3f3cc",
+      "bytes": 9040
+    },
+    {
+      "path": "data/processed/preprocessing_reports/osm_walk_network.json",
+      "sha256": "52586f9aa7e18e78d22f0599e5831ad4885e98e099b0c0ce4a79285b90cf7bf8",
+      "bytes": 68850
+    },
+    {
+      "path": "data/processed/preprocessing_reports/override_handoff.json",
+      "sha256": "c3382fcb8525522114f92b63081fb9cdea294523f2175fa6c2b32f6b20985439",
+      "bytes": 241236
+    },
+    {
+      "path": "data/processed/preprocessing_reports/portability.json",
+      "sha256": "bc199687833664a3af0d217260c3812dfb35c7403af6d0a137f2c6460cf2001e",
+      "bytes": 311
+    },
+    {
+      "path": "data/processed/preprocessing_reports/residential_buildings.json",
+      "sha256": "80ece40b13f9f18f5d3ecaac6f125cae72023e14f7af2634a8a5818cceffd5a2",
+      "bytes": 234862
+    }
+  ],
+  "environment": {
+    "python": "3.11.9",
+    "packages": {
+      "certifi": "2026.7.22",
+      "charset-normalizer": "3.5.2",
+      "colorama": "0.4.6",
+      "et_xmlfile": "2.0.0",
+      "geopandas": "1.0.1",
+      "idna": "3.20",
+      "networkx": "3.3",
+      "numpy": "1.26.4",
+      "openpyxl": "3.1.5",
+      "osmium": "4.3.1",
+      "packaging": "26.3",
+      "pandas": "2.2.2",
+      "pip": "24.0",
+      "pyogrio": "0.9.0",
+      "pyproj": "3.7.0",
+      "python-dateutil": "2.9.0.post0",
+      "python-dotenv": "1.1.1",
+      "pytz": "2026.5",
+      "requests": "2.32.5",
+      "scipy": "1.13.0",
+      "setuptools": "65.5.0",
+      "shapely": "2.0.6",
+      "six": "1.17.0",
+      "tqdm": "4.67.1",
+      "tzdata": "2026.5",
+      "urllib3": "2.8.0"
+    }
+  },
+  "root_policy": "all paths relative to project root; no external research file dependency",
+  "unused_raw_folders": [
+    "경기도 GIS건물통합정보_20250304",
+    "고양시 경계",
+    "고양시_도로명주소_전자지도_202503",
+    "도로 네트워크",
+    "수치지형도",
+    "연속수치지형도",
+    "총인구"
+  ]
+}
