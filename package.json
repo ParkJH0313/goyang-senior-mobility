@@ -1,0 +1,12 @@
+{
+  "name": "goyang-medical-carbon-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "가좌·송포 의료이동 탄소 정책 시나리오",
+  "engines": {"node": ">=22.16.0"},
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.cjs",
+    "test": "node --test test/*.test.cjs",
+    "check": "node --check server.cjs && node --check ai.cjs && node --check dist/chat.js && node --check dist/app.js"
+  }
+}
