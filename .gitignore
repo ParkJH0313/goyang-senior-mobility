@@ -224,3 +224,10 @@ __marimo__/
 
 # Project-local temporary files
 /.tmp/
+
+# Research datasets distributed separately
+/data/raw/
+/data/processed/
+
+# Generated analysis outputs
+/outputs/
