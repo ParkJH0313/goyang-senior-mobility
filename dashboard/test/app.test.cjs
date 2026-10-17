@@ -8,7 +8,8 @@ const model=require('../dist/model.js');
 const data=require('../dist/data.json');
 const scenario={tier:'t36',destination:'clinic',vehicles:2,vehicle:'lpg',conversion:.3,occupancy:2.5};
 const key='test-only-not-a-real-api-key';
-const router={status:()=>({requests:0,ready:[],pending:[]}),get:async id=>({complete:true,queriedAt:'2026-10-16T00:00:00Z',roundtripKm:id==='clinic'?10:14,driveMin:12,access:{baseline:data.access.baselineShare,tiers:{t21:.5,t36:.6,t61:.7}}})};
+const {routeFixture}=require('./fixtures.cjs');
+const router={status:()=>({requests:0,ready:[],pending:[]}),get:async id=>routeFixture(data,id)};
 const complete=(text='설명입니다. [S1]')=>[{type:'response.output_text.delta',delta:text},{type:'response.completed',response:{output:[{type:'message',role:'assistant',content:[{type:'output_text',text}]}]}}];
 function stream(events){return new Response(events.map(e=>'data: '+JSON.stringify(e)+'\n\n').join(''),{headers:{'Content-Type':'text/event-stream'}});}
 async function app(t,config={},fetchImpl=async()=>stream(complete()),testRouter=router){
@@ -41,8 +42,8 @@ test('tool comparison uses authoritative population/distances and the shared cal
     const body=JSON.parse(options.body);payloads.push(body);assert.equal(body.store,false);assert.equal(body.model,'gpt-6-luna');assert.equal(body.reasoning.effort,'none');
     if(payloads.length===1)return stream([{type:'response.completed',response:{output:[{type:'function_call',call_id:'compare1',name:'calculate_scenario',arguments:JSON.stringify({tier:null,destination:null,vehicles:null,vehicle:null,conversion:null,occupancy:3})}]}}]);
     const output=JSON.parse(body.input.find(x=>x.type==='function_call_output').output);
-    assert.equal(output.population,data.totalPopulation);assert.equal(output.access.withDrt,.6);assert.equal(output.budget.annualWon,2*560428*365);assert.equal(output.scenario.occupancy,3);
-    const expected=model.calculate({...scenario,occupancy:3,population:data.totalPopulation,baselineKm:10,drtKm:10});
+    assert.equal(output.population,data.totalPopulation);assert.ok(output.access.withDrt>data.access.baselineShare);assert.equal(output.budget.annualWon,2*560428*365);assert.equal(output.scenario.occupancy,3);
+    const expected=model.evaluate(data,{...scenario,occupancy:3},routeFixture(data)).result;
     assert.ok(Math.abs(output.result.savingKg-expected.savingKg)<1e-9);
     return stream(complete('재차인원 3명 조건을 계산했습니다. [S5]'));
   });
@@ -115,19 +116,4 @@ test('Gemini key is selected explicitly; missing Gemini key never uses an OpenAI
   assert.equal(configFromEnv({AI_PROVIDER:'openai',OPENAI_API_KEY:'openai-test',GEMINI_API_KEY:'gemini-test'}).apiKey,'openai-test');
 });
 
-test('30-minute reach combines bus departures with DRT ride time and station onward transit',()=>{
-  const {createAccess,decodeBits}=require('../access.cjs');
-  const shares=createAccess(data);
-  assert.equal(data.origins.length,118);assert.equal(Math.round(data.totalPopulation),784);assert.equal(data.totalGrids,39);
-  const far=shares('clinic',new Map(data.origins.map(o=>[o.key,99999])));
-  assert.ok(Math.abs(far.baseline-data.access.baselineShare)<1e-4);
-  for(const t of data.tiers)assert.ok(Math.abs(far.tiers[t.id]-far.baseline)<1e-9);
-  const near=shares('clinic',new Map(data.origins.map(o=>[o.key,60])));
-  assert.ok(near.tiers.t21<near.tiers.t36&&near.tiers.t36<near.tiers.t61&&near.tiers.t61<=1);
-  const expected=data.origins.reduce((n,o)=>{const b=decodeBits(o.bus,data.access.departureCount),bus=b.reduce((s,x)=>s+x,0)/b.length;return n+o.population*(o.usable.t36+(1-o.usable.t36)*bus);},0)/data.totalPopulation;
-  assert.ok(Math.abs(near.tiers.t36-expected)<1e-6);
-  const station=shares('kintex',new Map(data.origins.map(o=>[o.key,60])));
-  assert.ok(station.tiers.t36>=far.tiers.t36&&station.tiers.t36<=near.tiers.t36);
-  assert.equal(model.annualCost(2,data.budget),409112440);
-  assert.throws(()=>model.annualCost(0,data.budget));
-});
+// Spatial and temporal regression tests are in policy.test.cjs.

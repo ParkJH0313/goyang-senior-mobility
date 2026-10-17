@@ -13,3 +13,6 @@
 .result:not(.primary).negative .result-number strong{color:#a14d3c}
 .result:not(.primary) .pill{background:#eef3ea;color:#5b7961}
 .primary p b{color:#fff}
+
+.journey-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:17px}.journey-summary span{display:block;font-size:10px;color:#64776b;line-height:1.5}.journey-summary strong{display:block;font-size:13px;margin-top:6px;color:#174b3c}.journey-summary b{font-size:23px;font-weight:650;margin-right:4px}.scenario-caption{font-size:10px;color:#64776b;margin:-5px 3px 0;line-height:1.6}.existing-stop{background:#778479;width:7px;height:7px}.control-note{color:#64776b}.scope-options{gap:7px}.legend{flex-wrap:wrap;white-space:normal}.map-bottom{flex-wrap:wrap}.coverage{flex-wrap:wrap;gap:5px}.label-note{display:block;margin:4px 0 0}.about .callout{padding:13px;background:#f5f0e5;border-left:3px solid #ae8d4b}.result p{color:#64776b}.primary p{color:#c4d9cf}
+@media(max-width:600px){.scope-options{grid-template-columns:repeat(2,1fr)}.journey-summary{grid-template-columns:repeat(2,1fr)}.controls fieldset:nth-last-child(-n+2){grid-column:1/-1}.scenario-caption{font-size:10px}}

@@ -4,11 +4,13 @@
 실행: 저장소 루트에서  .venv\\Scripts\\python.exe dashboard\\analysis\\build_data.py
 
 - 대상: Step7 저접근 2위 군집(C002, 보행 0.8m/s·연속보행 10분·30분·하위 30%·Queen)
-- 가상정류장: 기존 버스정류장을 승하차 지점으로 두고 도보 5분(240m) 밖 고령인구를 가장 많이 덮는 지점부터 추가
-- 30분 도달: 버스(본 분석 출발시각별 결과) 또는 똑버스(호출~탑승 W + 카카오 자동차 소요시간 × 우회) 중 하나로 도달
+- 가상정류장: 기존 정류장을 유지하고 고정 예산별 도보 5분(240m) 피복 고령인구 최대화 MCLP
+- 30분 도달: 기존 버스 또는 집→배정 승하차 지점 보행·대기→직결/거점→의료기관 연결
 """
 from pathlib import Path
-import base64, json, sqlite3
+import base64, json, sqlite3, sys, hashlib
+from datetime import datetime, timezone
+from types import SimpleNamespace
 import numpy as np, pandas as pd, geopandas as gpd
 from scipy.sparse import load_npz, csr_matrix
 from scipy.sparse.csgraph import dijkstra, connected_components
@@ -17,20 +19,22 @@ from pyproj import Transformer
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+sys.path.insert(0, str(ROOT))
+from location import solve_locations
 DIST = HERE.parent / 'dist'
 CLUSTER = 'C002'
 SPEED = 0.8
 R5, R10 = 5 * 60 * SPEED, 10 * 60 * SPEED          # 240m, 480m (연속보행 상한)
 SNAP_MAX = 150.0
-TIERS = [21, 36, 61]                               # 도보 5분 70%·80%·90%를 처음 넘는 추가 정류장 수
-WAIT_S = 870                                       # 호출~탑승 14.5분 (수원 광교 똑버스 평균 대기 14분 30초)
+TIERS = [21, 36, 61]                               # 기존 탐욕식 70%·80%·90% 단계의 예산을 고정해 재최적화
+WAIT_S = 870                                       # 광교 관측 14.5분을 2대 기준으로 전용한 민감도 가정
 DETOUR = 1.25
 FINAL_WALK_S = 60
 DAILY_COST = 560428                                # 수원 똑버스 대당 1일 운송원가(2024)
 DRIVE = {'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link',
          'residential', 'unclassified', 'living_street'}
 CAR = DRIVE | {'trunk', 'trunk_link'}
-STATIONS = {'tanhyeon': ('탄현역', 126.761175, 37.693887), 'kintex': ('킨텍스역', 126.747533, 37.665417)}
+HUBS = {'daehwa': 'BS_TAGO_GGB219000193', 'seogu': 'BS_TAGO_GGB219000451'}
 TO4326 = Transformer.from_crs(5179, 4326, always_xy=True)
 TO5179 = Transformer.from_crs(4326, 5179, always_xy=True)
 
@@ -86,7 +90,7 @@ def walk_network(bounds, buffer=1200):
     mask = np.zeros(n, bool); mask[nodes.node_index.to_numpy()] = True
     U = (G + G.T).tocsr()
     for _ in range(3):
-        mask = mask | (U @ mask.astype(np.int8) > 0)
+        mask = mask | (U @ mask.astype(np.int32) > 0)
     keep = np.flatnonzero(mask)
     sub = G[keep][:, keep].T.tocsr()                       # 역방향: 정류장 기준 거리 = 건물→정류장 보행거리
     pos = pd.Series(np.arange(len(keep)), index=keep)
@@ -120,24 +124,38 @@ def virtual_stops(g500, dem):
     w = dem['pop'].to_numpy()
     zone = g500.union_all().buffer(300)
     cand = nodes[nodes.drivable & gpd.points_from_xy(nodes.x, nodes.y).within(zone)].index.to_numpy()
-    dist = dijkstra(sub, indices=nodes.local.to_numpy()[cand], limit=R10 + 1)[:, snap] + snap_d[None, :]
+    dist = np.concatenate([dijkstra(sub, indices=nodes.local.to_numpy()[chunk], limit=R10 + 1)[:, snap]
+                           for chunk in np.array_split(cand, max(1, int(np.ceil(len(cand) / 64))))]) + snap_d[None, :]
     dist[:, far] = np.inf
     st = existing_stops(pos)
-    sd = (dijkstra(sub, indices=st.local.to_numpy(), limit=R10 + 400)[:, snap] + snap_d[None, :] + st.length_m.to_numpy()[:, None]).min(axis=0)
-    sd[far] = np.inf
-    cov5 = dist <= R5
-    covered = sd <= R5; order = []; curve = [w[covered].sum() / w.sum()]
-    for _ in range(max(TIERS)):
-        gain = (cov5[:, ~covered] * w[~covered]).sum(axis=1)
-        j = int(np.argmax(gain))
-        if gain[j] <= 1e-9: break
-        order.append(j); covered |= cov5[j]; curve.append(w[covered].sum() / w.sum())
-    near = {0: sd}
-    for t in TIERS:
-        near[t] = np.minimum(sd, dist[order[:t]].min(axis=0))
-    stops = [dict(order=i + 1, lng=lonlat(*nodes.loc[cand[j], ['x', 'y']])[0], lat=lonlat(*nodes.loc[cand[j], ['x', 'y']])[1])
-             for i, j in enumerate(order[:max(TIERS)])]
-    return near, stops, w
+    st = st.drop_duplicates('stop_key').reset_index(drop=True)
+    sd_all = dijkstra(sub, indices=st.local.to_numpy(), limit=R10 + 400)[:, snap] + snap_d[None, :] + st.length_m.to_numpy()[:, None]
+    sd_all[:, far] = np.inf
+    sd = sd_all.min(axis=0)
+    selected, audit = solve_locations(dist, sd, w, TIERS, R5)
+    stops = [dict(id='s'+str(r.stop_key), name=r.stop_name, existing=True,
+                  lng=float(r.stop_lon), lat=float(r.stop_lat), tiers=['t0']+['t'+str(t) for t in TIERS])
+             for r in st.itertuples()]
+    selected_union = sorted(set(np.concatenate(list(selected.values()))))
+    virtual_ids = {}
+    for j in selected_union:
+        x, y = nodes.loc[cand[j], ['x', 'y']]
+        lng, lat = lonlat(x, y); sid = 'v'+str(int(nodes.loc[cand[j], 'node_id']))
+        virtual_ids[j] = sid
+        stops.append(dict(id=sid, name='가상 승하차 지점', existing=False, lng=lng, lat=lat,
+                          tiers=['t'+str(t) for t in TIERS if j in selected[t]]))
+    near, assignments = {}, {}
+    for t in [0] + TIERS:
+        indices = selected[t] if t else []
+        matrix = np.vstack([sd_all, dist[indices]]) if t else sd_all
+        ids = ['s'+str(k) for k in st.stop_key] + [virtual_ids[j] for j in indices]
+        idx = matrix.argmin(axis=0); lengths = matrix[idx, np.arange(len(w))]
+        near[t] = lengths
+        assignments[t] = [dict(stop=ids[j], walkS=float(np.ceil(d/SPEED))) if d <= R10 else None for j, d in zip(idx, lengths)]
+    used = {a['stop'] for rows in assignments.values() for a in rows if a}
+    # Keep every selected virtual location on the map; unused existing stops are omitted.
+    stops = [s for s in stops if not s['existing'] or s['id'] in used]
+    return near, stops, w, assignments, audit
 
 
 def car_graph(bounds, buffer=6000):
@@ -156,7 +174,7 @@ def car_graph(bounds, buffer=6000):
 
 
 def nearest_clinics(o, g500):
-    """출발점별 도로거리 기준 가장 가까운 고양시 내과·정형외과 (카카오 조회 목적지 선정용)."""
+    """OSM 무방향 도로망 근사 최근접 기관. 최종 자동차 거리는 카카오에서 별도 조회."""
     G, ok, tree = car_graph(g500.total_bounds)
     f = gpd.read_file(ROOT / 'outputs/step03/facilities.gpkg', layer='facilities')
     f = f[f.is_goyang.astype(bool)].reset_index(drop=True)
@@ -181,30 +199,48 @@ def bus_bits(o):
     return [base64.b64encode(np.packbits(r).tobytes()).decode() for r in reach], reach
 
 
-def station_onward():
-    """역이 속한 250m 분석 출발점의 출발시각별 '가장 빠른 의료기관 도달 시간'(30분 이내, 초)."""
-    oi = pd.read_parquet(ROOT / 'outputs/step04/origin_index.parquet')
-    og = gpd.read_file(ROOT / 'outputs/step02/origins.gpkg', layer='origins_250m')[['gid', 'geometry']]
-    cp = pd.read_parquet(ROOT / 'outputs/step05/routing_checkpoint.parquet')
-    tree = cKDTree(np.c_[og.geometry.x, og.geometry.y])
+def hub_onward():
+    """Exact existing stop -> named hospital profiles; DRT consumes one boarding.
+
+    Extends onward departures through 17:30, so 17:00 home departures are not censored.
+    Every alternative's carbon baseline has the same named hospital destination.
+    """
+    from run import CONFIG
+    from src.timetable import prepare, walk_arrays, csr_links
+    from src.router import profile, timetable_tuple
+    ctx = SimpleNamespace(cache=ROOT/'.cache/analysis', config=CONFIG, step=lambda n: ROOT/f'outputs/step{n:02d}')
+    tt = timetable_tuple(prepare(ctx)); walks = walk_arrays(ctx, SPEED)
+    links = pd.read_parquet(ctx.step(4)/'walk_links.parquet')
+    links['walk_s'] = links.length_m/SPEED + links.fixed_s
+    links = links[links.walk_s <= 600+1e-8]
+    st = pd.read_parquet(ctx.step(4)/'stops.parquet')
+    fac = pd.read_parquet(ctx.step(4)/'facility_index.parquet')
+    fid = int(np.flatnonzero(fac.name.eq('인제대학교일산백병원'))[0]); f = fac.iloc[fid]
+    times = np.arange(30600, 63001, 60, dtype=np.int32)
     out = {}
-    for key, (name, lng, lat) in STATIONS.items():
-        x, y = TO5179.transform(lng, lat)
-        d, k = tree.query([x, y])
-        gid = og.gid.iloc[k]
-        path = cp.loc[cp.gid == gid, 'path'].iloc[0]
-        with np.load(ROOT / path) as z:
-            od = z['od']
-        best = np.where(np.isfinite(od).any(axis=1), np.nanmin(np.where(np.isfinite(od), od, np.nan), axis=1), np.nan)
-        out[key] = dict(name=name, lng=lng, lat=lat, proxyGid=gid, proxyDistanceM=round(float(d), 1),
-                        onwardS=[None if not np.isfinite(v) else int(round(v)) for v in best])
-    return out
+    for key, stop_id in HUBS.items():
+        s = st[st.stop_id.eq(stop_id)].iloc[0]
+        start = links[links.source_type.eq('stop') & links.source_index.eq(s.entity_index)].copy()
+        start['source_index'] = 0
+        os = csr_links(start[start.target_type.eq('stop')], 1)
+        of = csr_links(start[start.target_type.eq('facility')], 1)
+        od, _, _, _, _ = profile(0, times, 1800, len(fac), 2, 60, tt, (os, of, walks[2], walks[3]))
+        best = od[:, fid]
+        if not np.isfinite(best).any():
+            raise ValueError('Hub cannot reach target hospital: '+key)
+        out[key] = dict(id=key, name=str(s.stop_name), stopId=stop_id, stopKey=int(s.stop_key),
+                        lng=float(s.stop_lon), lat=float(s.stop_lat), kind='실제 정류장 연계',
+                        target='baek', targetName=f['name'],
+                        onwardS=[None if not np.isfinite(v) else float(v) for v in best])
+        print('HUB', key, s.stop_name, 'reachable', int(np.isfinite(best).sum()), flush=True)
+    hospital = dict(id='baek', name=f['name'], lng=float(f.longitude), lat=float(f.latitude), address=f.address)
+    return out, hospital
 
 
 def main():
     g500, g250, o = cluster()
     dem = demand(g250)
-    near, stops, w = virtual_stops(g500, dem)
+    near, stops, w, assignments, audit = virtual_stops(g500, dem)
     usable = {}
     for t, d in near.items():
         ok = pd.Series(w * (d <= R10)).groupby(dem.gid.values).sum() / pd.Series(w).groupby(dem.gid.values).sum()
@@ -214,7 +250,7 @@ def main():
     bits, reach = bus_bits(o)
     wpop = o.population.to_numpy()
     baseline = float((reach.mean(axis=1) * wpop).sum() / wpop.sum())
-    onward = station_onward()
+    onward, hospital = hub_onward()
 
     origins = []
     for i, r in o.iterrows():
@@ -225,25 +261,36 @@ def main():
     for r in g500.to_crs(4326).itertuples():
         ring = [[round(x, 6), round(y, 6)] for x, y in r.geometry.exterior.coords]
         grids.append(dict(type='Feature', geometry=dict(type='Polygon', coordinates=[ring]), properties=dict(gid=r.gid, population=float(r.population))))
-    tiers = [dict(id=f't{t}', stops=t, walk5=round(cover[t]['walk5'], 4), walk10=round(cover[t]['walk10'], 4)) for t in TIERS]
+    tiers = [dict(id=f't{t}', stops=t, walk5=round(cover[t]['walk5'], 4), walk10=round(cover[t]['walk10'], 4)) for t in [0]+TIERS]
     places = [dict(id='clinic', name='가까운 내과·정형외과', kind='출발지별 최근접 의원 직결')] + \
-             [dict(id=k, name=v['name'], kind='역 환승', lng=v['lng'], lat=v['lat']) for k, v in onward.items()]
+             [{k:v for k,v in item.items() if k!='onwardS'} for item in onward.values()]
+    origin_keys = {r.gid: str(i) for i, r in o.iterrows()}
+    samples = [dict(origin=origin_keys[r.gid], population=float(r['pop']),
+                    boarding={f't{t}': assignments[t][i] for t in [0]+TIERS}) for i, r in dem.iterrows()]
+    manifest = json.loads((ROOT/'outputs/run_manifest.json').read_text(encoding='utf-8'))
+    assert manifest['settings']['baseline_speed_mps'] == SPEED
     data = dict(
-        source='Step7 C002 (0.8m/s·연속보행 10분·30분·하위 30%·Queen) / Step9 출발시각별 30분 도달 / 가상정류장 최대피복',
+        schemaVersion=3, generatedAt=datetime.now(timezone.utc).isoformat(), runId=manifest['run_id'],
+        source='Step7 C002 (0.8m/s·연속보행 10분·30분·하위 30%·Queen) / Step9 / fixed-budget MCLP',
+        sourceHashes={str(p):hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in [Path('outputs/run_manifest.json'),Path('outputs/step07/tables/baseline_top3_membership.csv'),Path('dashboard/analysis/build_data.py'),Path('dashboard/analysis/location.py')]},
         areaName='구산·법곳·가좌 일대', clusterId=CLUSTER,
         totalPopulation=round(float(wpop.sum()), 1), totalGrids=len(grids), originCount=len(origins),
         existing=dict(walk5=round(cover[0]['walk5'], 4), walk10=round(cover[0]['walk10'], 4)),
-        tiers=tiers, stops=stops, clinics=clinics, places=places,
+        tiers=tiers, stops=stops, clinics=clinics+[hospital], places=places, demand=samples, locationAudit=audit,
         access=dict(baselineShare=round(baseline, 4), waitS=WAIT_S, detour=DETOUR, budgetS=1800, finalWalkS=FINAL_WALK_S,
                     departureStartS=30600, departureIntervalS=60, departureCount=511,
-                    onward={k: dict(proxyGid=v['proxyGid'], proxyDistanceM=v['proxyDistanceM'], onwardS=v['onwardS']) for k, v in onward.items()}),
+                    speedMps=SPEED, maxWalkS=600, hubAlightS=60,
+                    referenceVehicles=2, waitElasticity=.5,
+                    onward={k:dict(onwardS=v['onwardS'], target=v['target'], departureStartS=30600, departureIntervalS=60) for k,v in onward.items()}),
         budget=dict(dailyCostPerVehicle=DAILY_COST, days=365, defaultVehicles=2, maxVehicles=3),
         grids=grids, origins=origins)
-    (DIST / 'data.json').write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    assert abs(sum(x['population'] for x in samples)-data['totalPopulation']) < 1e-6
+    target=DIST/'data.json'; temp=target.with_suffix('.tmp')
+    temp.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':'), allow_nan=False), encoding='utf-8');temp.replace(target)
     print(json.dumps(dict(population=data['totalPopulation'], grids=len(grids), origins=len(origins), baseline=baseline,
                           existing=data['existing'], tiers=tiers, clinics=[c['name'] for c in clinics],
                           clinic_km=float((clinic_m * wpop).sum() / wpop.sum() / 1000),
-                          onward={k: (v['proxyGid'], v['proxyDistanceM'], sum(x is not None for x in v['onwardS'])) for k, v in onward.items()}),
+                          onward={k: (v['stopId'], sum(x is not None for x in v['onwardS'])) for k, v in onward.items()}),
                      ensure_ascii=False, indent=1))
 
 

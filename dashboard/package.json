@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server.cjs",
     "test": "node --test test/*.test.cjs",
-    "check": "node --check server.cjs && node --check ai.cjs && node --check dist/chat.js && node --check dist/app.js"
+    "check": "node --check server.cjs && node --check ai.cjs && node --check routing.cjs && node --check scenario.cjs && node --check dist/model.js && node --check dist/chat.js && node --check dist/app.js",
+    "test:ui": "node test/ui-check.cjs"
   }
 }
