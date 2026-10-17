@@ -13,13 +13,13 @@ function configFromEnv(env=process.env){
 }
 function createApp(config,overrides={}){
   const data=JSON.parse(fs.readFileSync(path.join(root,'data.json'),'utf8'));
-  if(data.schemaVersion!==5)throw new Error('Rebuild dashboard data with analysis/build_data.py (schema 5 required).');
+  if(data.schemaVersion!==6)throw new Error('Rebuild dashboard data with analysis/build_data.py (schema 6 required).');
   const router=overrides.router||createRouter(config.restKey,data);
   const evaluate=createScenarios(data,router);
   const answer=createAI({apiKey:config.apiKey,model:config.model,provider:config.provider,evaluate,fetchImpl:overrides.fetchImpl});
   const sessions=new Map();let active=0,daily=0,day='';
-  const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8'};
-  const files={'/':'index.html','/index.html':'index.html','/about.html':'about.html','/app.js':'app.js','/chat.js':'chat.js','/model.js':'model.js','/style.css':'style.css','/chat.css':'chat.css','/data.json':'data.json'};
+  const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml'};
+  const files={'/':'index.html','/index.html':'index.html','/about.html':'about.html','/app.js':'app.js','/chat.js':'chat.js','/model.js':'model.js','/style.css':'style.css','/chat.css':'chat.css','/data.json':'data.json','/favicon.svg':'favicon.svg'};
   const json=(res,status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(value));};
   const session=(req,res,create=true)=>{
     const now=Date.now();
@@ -90,7 +90,7 @@ function createApp(config,overrides={}){
       }
       if(req.method!=='GET'&&req.method!=='HEAD')return json(res,405,{error:'지원하지 않는 요청입니다.'});
       if(pathname==='/api/distances'){
-        const id=url.searchParams.get('destination')||'baek';
+        const id=url.searchParams.get('destination')||'clinic';
         if(!data.places.some(p=>p.id===id))return json(res,400,{error:'지원하지 않는 목적지입니다.'});
         if(!config.restKey&&!overrides.router)return json(res,503,{error:'자동차 경로 연결 준비 중입니다.'});
         try{return json(res,200,await router.get(id));}catch{return json(res,502,{error:'자동차 경로 조회를 완료하지 못했습니다. 잠시 후 다시 조회해 주세요.'});}

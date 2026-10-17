@@ -11,6 +11,6 @@ function createScenarios(data,router){return async value=>{
  const s=validateScenario(value),tier=data.tiers.find(t=>t.id===s.tier);
  if(s.tier==='none')return model.evaluate(data,s);
  try{return model.evaluate(data,s,await router.get(s.destination));}
- catch{return {available:false,scenario:s,population:data.totalPopulation,stops:{added:tier.stops},destinationTitle:destinations[s.destination],vehicleTitle:model.vehicles[s.vehicle].name,budget:model.budgetEstimate(s.vehicles,data.budget,s.vehicle),access:{current:data.access.baselineShare,withDrt:null},result:null,reason:'승하차 지점과 목적지의 왕복 경로를 모두 확인하지 못했습니다. 탄소·도달 효과는 표시하지 않습니다.'};}
+ catch{return {available:false,scenario:s,population:data.totalPopulation,stops:{added:tier.stops},destinationTitle:destinations[s.destination],vehicleTitle:model.vehicles[s.vehicle].name,budget:model.budgetEstimate(s.vehicles,data.budget,s.vehicle),access:{current:model.baselineShare(data,s.destination),withDrt:null},result:null,reason:'승하차 지점과 목적지의 왕복 경로를 모두 확인하지 못했습니다. 탄소·도달 효과는 표시하지 않습니다.'};}
 };}
 module.exports={validateScenario,createScenarios,keys,destinations};

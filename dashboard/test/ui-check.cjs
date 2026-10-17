@@ -22,16 +22,18 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await page.goto(base);await ready(page);
   assert.equal(await page.evaluate(()=>dashboard.state().vehicle),'electric');
   assert.equal(await page.locator('[data-vehicle]').first().getAttribute('data-vehicle'),'electric');
-  assert.deepEqual(await page.locator('#destination option').evaluateAll(els=>els.map(el=>el.value)),['baek','daehwa']);
-  assert.equal(await page.locator('#access-now').textContent(),'1.4');
+  assert.deepEqual(await page.locator('#destination option').evaluateAll(els=>els.map(el=>el.value)),['clinic','baek','daehwa']);
+  assert.equal(await page.locator('#access-now').textContent(),'14.6');
   const initialRequests=routeRequests,initialSaving=await page.evaluate(()=>dashboard.result().savingKg);
   assert.deepEqual(await page.locator('[data-tier]').evaluateAll(els=>els.map(el=>el.dataset.tier)),['none','t0','t21','t36']);
   await page.locator('[data-tier="none"]').click();
   assert.equal(await page.locator('#budget').textContent(),'0.00');assert.equal(await page.locator('#saving').textContent(),'0.00');
   assert.equal(await page.locator('#access').textContent(),await page.locator('#access-now').textContent());
-  assert.equal(await page.locator('#baseline-total').textContent(),'—');assert.equal(await page.locator('#destination').isDisabled(),true);
+  assert.equal(await page.locator('#baseline-total').textContent(),'—');assert.equal(await page.locator('#destination').isDisabled(),false);
   assert.equal(await page.locator('[data-vehicles="1"]').isDisabled(),true);assert.equal(await page.locator('#journey-summary').isVisible(),false);
-  assert.match(await page.locator('#chat-context').textContent(),/똑버스 미도입/);assert.equal(routeRequests,initialRequests);
+  assert.match(await page.locator('#chat-context').textContent(),/똑버스 미도입/);
+  await page.locator('#destination').selectOption('baek');assert.equal(await page.locator('#access').textContent(),'1.4');assert.match(await page.locator('#chat-context').textContent(),/일산백병원/);
+  await page.locator('#destination').selectOption('clinic');assert.equal(await page.locator('#access').textContent(),'14.6');assert.match(await page.locator('#chat-context').textContent(),/주변 내과·정형외과/);assert.equal(routeRequests,initialRequests);
   await page.locator('[data-tier="t0"]').click();assert.ok(await page.evaluate(()=>dashboard.evaluation().eligiblePopulation)<784);
   assert.notEqual(await page.evaluate(()=>dashboard.result().savingKg),initialSaving);
   await page.locator('[data-tier="t21"]').click();
@@ -52,13 +54,15 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   assert.match(await page.locator('#chat-open').evaluate(el=>getComputedStyle(el).backgroundImage),/linear-gradient/);
   assert.equal(routeRequests,initialRequests);
   report.checks.push('electric default; tailpipe only; scheduled pickup and home-departure metric; vehicle-specific cost; Gemini attribution; controls reuse routes');
-  for(const destination of ['baek','daehwa']){
+  for(const destination of ['clinic','baek','daehwa']){
    await page.locator('#destination').selectOption(destination);
    await page.waitForFunction(id=>window.dashboard?.evaluation()?.scenario.destination===id,destination);
    assert.ok(await page.evaluate(()=>Number.isFinite(dashboard.result().savingKg)));
-   assert.match(await page.locator('#destination-note').textContent(),/일산백병원/);
+   assert.match(await page.locator('#destination-note').textContent(),destination==='clinic'?/원내과의원/:/일산백병원/);
+   assert.equal(await page.locator('#access-now').textContent(),destination==='clinic'?'14.6':'1.4');
+   assert.match(await page.locator('#access-title').textContent(),destination==='clinic'?/주변 의료기관/:/백병원/);
   }
-  report.checks.push('same-hospital direct and Daehwa feeder alternatives finish calculating');
+  report.checks.push('three medical connections calculate with their respective transit baselines');
   // Execute the real map-label rendering with a local SDK stub, without a live map/API key.
   const mapContext=await browser.newContext(),mapPage=await mapContext.newPage();
   mapPage.on('pageerror',error=>report.errors.push(error.message));
@@ -78,6 +82,10 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
    assert.equal(await mapPage.locator('.final-destination .place-role').textContent(),'최종 병원');
   }
   await mapPage.locator('#destination').selectOption('baek');assert.equal(await mapPage.locator('.place-label.chosen').getAttribute('data-place'),'baek');assert.equal(await mapPage.locator('.place-label.final-destination').count(),0);assert.match(await mapPage.locator('.place-label.chosen .place-role').textContent(),/진료 목적지/);
+  await mapPage.locator('#destination').selectOption('clinic');
+  assert.deepEqual(await mapPage.locator('.place-label.chosen').evaluateAll(els=>els.map(e=>e.dataset.place).sort()),data.clinics.filter(c=>c.id!=='baek').map(c=>c.id).sort());
+  assert.equal(await mapPage.locator('.place-label.final-destination').count(),0);
+  assert.match(await mapPage.locator('.place-label.chosen').first().textContent(),/진료 목적지/);
   await mapPage.locator('[data-tier="none"]').click();assert.equal(await mapPage.locator('.place-label.chosen,.place-label.final-destination').count(),0);
   await mapContext.close();report.checks.push('local map SDK stub: selected hub and final hospital have distinct roles; no duplicate selected destination');
 
@@ -125,7 +133,7 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await op.goto(base);await op.locator('#retry').waitFor({state:'visible'});assert.equal(await op.locator('#saving').textContent(),'—');assert.equal(await op.evaluate(()=>dashboard.result()),null);
   await op.locator('[data-tier="none"]').click();await ready(op);assert.equal(await op.locator('#retry').isVisible(),false);
   assert.equal(await op.locator('#access').textContent(),await op.locator('#access-now').textContent());
-  await op.reload();await ready(op);assert.equal(await op.locator('#destination').isDisabled(),true);
+  await op.reload();await ready(op);assert.equal(await op.locator('#destination').isDisabled(),false);
   await op.unroute('**/api/distances?**');await op.locator('[data-tier="t36"]').click();await ready(op);
   assert.equal(await op.locator('#destination').isEnabled(),true);
   report.checks.push('four distinct scenarios; no-DRT baseline works without routes, survives reload, disables DRT controls and restores them on adoption');

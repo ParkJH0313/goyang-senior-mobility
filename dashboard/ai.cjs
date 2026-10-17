@@ -7,7 +7,7 @@ const tool = {
   description:'가상정류장/연결 방식/차량 대수/차종/전환율/재차인원/대기시간를 바꾸어 같은 계산식으로 30분 도달 비율·연간 운영비·탄소 감축량을 계산한다. 바꾸지 않을 필드는 null. 화면은 변경하지 않는다. 수치 비교 질문에는 이 함수를 사용한다.',
   parameters:{type:'object',additionalProperties:false,required:keys,properties:{
     tier:{type:['string','null'],enum:['none','t0','t21','t36',null],description:'none=똑버스 미도입, t0=기존 정류장에 똑버스 도입, t21/t36=똑버스 도입과 가상 정류장 21/36곳 추가'},
-    destination:{type:['string','null'],enum:['baek','daehwa',null],description:'같은 일산백병원으로 baek=똑버스 직행, daehwa=대화역 버스정류장 하차 후 도보/기존 버스 연계'},
+    destination:{type:['string','null'],enum:['clinic','baek','daehwa',null],description:'clinic=출발지별 주변 내과·정형외과 직행, baek=일산백병원 직행, daehwa=대화역 하차 후 일산백병원 연계. 주변 의료기관과 백병원은 목적지 범위와 미도입 기준선이 다름'},
     vehicles:{type:['integer','null'],description:'똑버스 차량 대수 1~3대',minimum:1,maximum:3},
     vehicle:{type:['string','null'],enum:['electric','lpg','hybrid',null]},
     conversion:{type:['number','null'],description:'택시/자가용 통행 전환율 0~1',minimum:0,maximum:1},
@@ -81,7 +81,7 @@ function createAI({apiKey,model='gpt-6-luna',provider='openai',evaluate,fetchImp
           signal.throwIfAborted();emit('calculation',{calculation:result});
         }catch(error){
           if(signal.aborted)throw error;
-          result={available:false,error:'시나리오 none(미도입)/t0(기존 정류장에 도입)/t21/t36, 연결 방식 baek(백병원 직행)/daehwa(대화역 경유), 차종 electric/lpg/hybrid, 전환율0~1, 재차인원1~3.2 안에서만 계산할 수 있습니다.'};
+          result={available:false,error:'시나리오 none(미도입)/t0(기존 정류장에 도입)/t21/t36, 연결 방식 clinic(주변 내과·정형외과 직행)/baek(백병원 직행)/daehwa(대화역 경유), 차종 electric/lpg/hybrid, 전환율0~1, 재차인원1~3.2 안에서만 계산할 수 있습니다.'};
         }
         input.push({type:'function_call_output',call_id:call.call_id,output:JSON.stringify(result)});
       }

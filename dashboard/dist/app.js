@@ -1,12 +1,12 @@
 (async()=>{
 const $=id=>document.getElementById(id),nf=new Intl.NumberFormat('ko-KR'),pct=v=>(v*100).toFixed(1);
 const data=await fetch('/data.json').then(r=>r.json());
-if(data.schemaVersion!==5)throw Error('자료 버전이 다릅니다. 새로고침해 주세요.');
+if(data.schemaVersion!==6)throw Error('자료 버전이 다릅니다. 새로고침해 주세요.');
 const destinations=data.places.map(p=>p.id);
-const initial={tier:'t36',destination:'baek',vehicles:2,vehicle:'electric',conversion:.3,occupancy:2.5,waitBaseMin:14.5};
+const initial={tier:'t36',destination:'clinic',vehicles:2,vehicle:'electric',conversion:.3,occupancy:2.5,waitBaseMin:14.5};
 let state={...initial},map,cells=[],stops=[],labels=[],bounds,current=null,currentResult=null;
 const distances={},pending={};
-try{const s=JSON.parse(sessionStorage.getItem('goyang-scenario-v7'));if(s&&Object.hasOwn(CarbonModel.scenarios,s.tier)&&destinations.includes(s.destination)&&[1,2,3].includes(s.vehicles)&&Object.hasOwn(CarbonModel.vehicles,s.vehicle)&&Number.isFinite(s.conversion)&&s.conversion>=0&&s.conversion<=1&&Number.isFinite(s.occupancy)&&s.occupancy>=1&&s.occupancy<=3.2&&Number.isFinite(s.waitBaseMin)&&s.waitBaseMin>=5&&s.waitBaseMin<=30)state={...s,waitBaseMin:initial.waitBaseMin};}catch{}
+try{const s=JSON.parse(sessionStorage.getItem('goyang-scenario-v8'));if(s&&Object.hasOwn(CarbonModel.scenarios,s.tier)&&destinations.includes(s.destination)&&[1,2,3].includes(s.vehicles)&&Object.hasOwn(CarbonModel.vehicles,s.vehicle)&&Number.isFinite(s.conversion)&&s.conversion>=0&&s.conversion<=1&&Number.isFinite(s.occupancy)&&s.occupancy>=1&&s.occupancy<=3.2&&Number.isFinite(s.waitBaseMin)&&s.waitBaseMin>=5&&s.waitBaseMin<=30)state={...s,waitBaseMin:initial.waitBaseMin};}catch{}
 const style={strokeWeight:1,strokeColor:'#416c4e',strokeOpacity:.85,fillColor:'#cbd5c8',fillOpacity:.55};
 function chart(result,params){
  const values=Array.from({length:60},(_,i)=>{const n=1+2.2*i/59;return {n,y:CarbonModel.calculate({...params,occupancy:n}).savingKg};});
@@ -36,19 +36,22 @@ function render(){
  $('walk5').textContent=pct(tier.walk5)+'%';$('walk5-now').textContent=pct(data.existing.walk5)+'%';$('walk5-bar').style.width=tier.walk5*100+'%';
  document.querySelectorAll('[data-walk5]').forEach(el=>el.textContent=pct(data.tiers.find(t=>t.id===el.dataset.walk5).walk5)+'%');
  const budget=enabled?CarbonModel.budgetEstimate(state.vehicles,data.budget,state.vehicle):{annualWon:0,vehicles:0,dailyCostPerVehicle:0,purchaseWon:0};$('budget').textContent=(budget.annualWon/1e8).toFixed(2);$('budget-vehicles').textContent=budget.vehicles;$('budget-daily').textContent=nf.format(Math.round(budget.dailyCostPerVehicle));$('purchase-cost').textContent=nf.format(Math.round(budget.purchaseWon/10000));$('budget-vehicle').textContent=CarbonModel.vehicles[state.vehicle].name;
- $('access-now').textContent=pct(data.access.baselineShare);
+ $('access-now').textContent=pct(CarbonModel.baselineShare(data,state.destination));
+ $('access-title').textContent='집 출발 후 '+(state.destination==='clinic'?'주변 의료기관':'백병원')+' 30분 도달';
+ $('access-target-note').textContent=state.destination==='clinic'?'대상 내과·정형외과 중 1곳 이상 도달 · 이전 분석과 같은 기준':'일산백병원 한 곳에 도달 · 직행과 대화역 경유에 같은 기준';
+ $('baseline-caption').textContent='똑버스 미도입 · 기존 대중교통·보행으로 '+CarbonModel.medicalTarget(state.destination)+'까지의 30분 도달률입니다. 목적지를 바꾸면 해당 기준선을 보여줍니다.';
  $('map-subtitle').textContent=data.totalGrids+'개 격자 · '+CarbonModel.scenarios[state.tier];
- const descriptions={baek:{description:'주거지 승하차 지점에서 똑버스를 타고 일산백병원 앞까지 갑니다. 중간에 갈아타지 않습니다.',assumption:'하차 후 병원까지 보행 1분을 가정합니다. 미도입과 대화역 경유도 같은 백병원을 기준으로 비교합니다.'},daehwa:{description:'주거지 승하차 지점에서 똑버스로 대화역 버스정류장까지 이동합니다. 그곳에서 내려 도보 또는 기존 버스로 일산백병원에 갑니다.',assumption:'실제 보행망·버스 시간표 중 빠른 후속 경로를 적용합니다. 지하철·GTX는 이용하지 않습니다. 대화역은 서구청과 비교한 현재 조건에서 총 이동시간이 더 짧았습니다.'}};
+ const descriptions={clinic:{description:'주거지 승하차 지점에서 똑버스를 타고 주변 내과·정형외과 진료가 가능한 의료기관까지 바로 갑니다. 출발지별로 원내과의원 또는 일산중심재활병원을 연결합니다.',assumption:'이전 버전과 같은 도로망상 최근접 의료기관 배정과 하차 후 보행 1분을 적용합니다. 30분 도달은 대상 의료기관 중 1곳 이상에 갈 수 있는지 평가하며, 백병원 한 곳을 평가하는 두 안과 목적지 범위가 다릅니다.'},baek:{description:'주거지 승하차 지점에서 똑버스를 타고 일산백병원 앞까지 갑니다. 중간에 갈아타지 않습니다.',assumption:'하차 후 병원까지 보행 1분을 가정합니다. 미도입과 대화역 경유도 같은 백병원을 기준으로 비교합니다.'},daehwa:{description:'주거지 승하차 지점에서 똑버스로 대화역 버스정류장까지 이동합니다. 그곳에서 내려 도보 또는 기존 버스로 일산백병원에 갑니다.',assumption:'실제 보행망·버스 시간표 중 빠른 후속 경로를 적용합니다. 지하철·GTX는 이용하지 않습니다. 대화역은 서구청과 비교한 현재 조건에서 총 이동시간이 더 짧았습니다.'}};
  $('destination-note').textContent=descriptions[state.destination].description;$('destination-assumption').textContent='계산 가정 · '+descriptions[state.destination].assumption;
  document.querySelectorAll('[data-carbon-unit]').forEach(el=>el.textContent='tCO₂ / 년');
  for(const attr of ['tier','vehicle','vehicles'])document.querySelectorAll('[data-'+attr+']').forEach(b=>{const on=String(state[attr])===b.dataset[attr];b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
  for(const s of stops)s.overlay.setMap((enabled?s.tiers.includes(state.tier):s.existing)?map:null);
  for(const l of labels){
-  const dropoff=enabled&&l.id===state.destination,final=enabled&&state.destination!=='baek'&&l.id==='baek';
+  const dropoff=enabled&&(l.id===state.destination||(state.destination==='clinic'&&data.clinics.some(c=>c.id===l.id&&c.id!=='baek'))),final=enabled&&state.destination==='daehwa'&&l.id==='baek';
   l.content.classList.toggle('chosen',dropoff);l.content.classList.toggle('final-destination',final);
-  l.role.hidden=!dropoff&&!final;l.role.textContent=final?'최종 병원':state.destination==='baek'?'똑버스 하차 · 진료 목적지':'똑버스 하차';
+  l.role.hidden=!dropoff&&!final;l.role.textContent=final?'최종 병원':state.destination!=='daehwa'?'똑버스 하차 · 진료 목적지':'똑버스 하차';
  }
- try{sessionStorage.setItem('goyang-scenario-v7',JSON.stringify(state));}catch{}
+ try{sessionStorage.setItem('goyang-scenario-v8',JSON.stringify(state));}catch{}
  window.dispatchEvent(new Event('scenariochange'));
  if(!enabled){
   clearResults();current=CarbonModel.evaluate(data,state);currentResult=current.result;
@@ -56,11 +59,11 @@ function render(){
   $('saving').textContent='0.00';$('saving-title').textContent='똑버스 도입에 따른 탄소 감축';$('saving-percent').textContent='미도입 · 감축 없음';
   $('per-trip-note').textContent='똑버스 전환 통행이 없어 배출량 비교를 적용하지 않습니다. 지역 전체 배출량이 0이라는 뜻은 아닙니다.';
   $('sensitivity-note').textContent='똑버스 도입안을 선택하면 재차인원에 따른 탄소 효과를 비교할 수 있습니다.';
-  $('status').textContent='기존 대중교통·보행으로 일산백병원 도달 기준 · 똑버스 추가 운영비와 도입 효과 없음';$('retry').hidden=true;return;
+  $('status').textContent='기존 대중교통·보행으로 '+CarbonModel.medicalTarget(state.destination)+' 도달 기준 · 똑버스 추가 운영비와 도입 효과 없음';$('retry').hidden=true;return;
  }
  if(!distances[state.destination]){clearResults();return;}
  try{current=CarbonModel.evaluate(data,state,distances[state.destination]);}catch{clearResults('경로 자료 확인 필요');return;}
- const r=current.result;currentResult=r;const a=current.access,gain=(a.withDrt-data.access.baselineShare)*100;
+ const r=current.result;currentResult=r;const a=current.access,gain=(a.withDrt-a.current)*100;
  $('access').textContent=pct(a.withDrt);$('access-gain').textContent=(gain>=0?'+':'')+gain.toFixed(1)+'%p';
  $('home-wait').textContent=a.homeWaitMin.toFixed(1);$('walk-time').textContent=a.walkMin.toFixed(1);$('drive-time').textContent=(a.driveMin*data.access.detour).toFixed(1);$('stationary-wait').textContent=a.stationaryWaitMin.toFixed(1);
  const negative=r.savingKg<-.000001,zero=Math.abs(r.savingKg)<.000001;
@@ -96,7 +99,7 @@ try{
  });
  stops=data.stops.map(s=>{const content=document.createElement('div');content.className='vstop'+(s.existing?' existing-stop':'');content.title=s.existing?'기존 '+s.name:'가상정류장 '+s.id;return {...s,overlay:new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(s.lat,s.lng),content,zIndex:3})};});
  const label=(id,name,lng,lat)=>{const position=new kakao.maps.LatLng(lat,lng);bounds.extend(position);const content=document.createElement('div');content.className='place-label';content.dataset.place=id;const role=document.createElement('small'),title=document.createElement('span');role.className='place-role';role.hidden=true;title.textContent=name;content.append(role,title);new kakao.maps.CustomOverlay({map,position,content,yAnchor:1.2,zIndex:4});labels.push({id,content,role});};
- data.clinics.forEach(c=>label(c.id,c.name,c.lng,c.lat));data.places.filter(p=>p.id!=='baek').forEach(p=>label(p.id,p.name,p.lng,p.lat));
+ data.clinics.forEach(c=>label(c.id,c.name,c.lng,c.lat));data.places.filter(p=>p.id==='daehwa').forEach(p=>label(p.id,p.name,p.lng,p.lat));
  map.addControl(new kakao.maps.ZoomControl(),kakao.maps.ControlPosition.RIGHT);map.setBounds(bounds,40,40,40,40);new ResizeObserver(()=>map.relayout()).observe($('map'));render();window.dashboard.mapReady=true;
 }catch(e){if($('loading'))$('loading').textContent=e.message;document.querySelector('.live').textContent='지도 연결 확인 필요';window.dashboard.mapError=e.message;}
 })().catch(error=>{document.getElementById('status').textContent='화면 준비 중 오류: '+error.message;window.dashboardError=error.message;});

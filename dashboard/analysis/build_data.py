@@ -192,6 +192,17 @@ def nearest_clinics(o, g500):
 
 
 def bus_bits(o):
+    """Restore the original any-eligible-medical-facility baseline for nearby clinics."""
+    t = pd.read_parquet(ROOT / 'outputs/step09/travel_components.parquet', columns=['gid', 'cluster_id', 'departure_s', 'count_30'])
+    t = t[t.cluster_id == CLUSTER]
+    times = np.arange(30600, 61201, 60)
+    piv = t.pivot_table(index='gid', columns='departure_s', values='count_30', aggfunc='first').reindex(index=o.gid, columns=times)
+    assert not piv.isna().any().any(), '군집 출발점의 출발시각별 결과가 비어 있습니다'
+    reach = piv.to_numpy() > 0
+    return [base64.b64encode(np.packbits(r).tobytes()).decode() for r in reach], reach
+
+
+def baek_bus_bits(o):
     """Use the same named hospital for transit-only and both DRT alternatives."""
     fac = pd.read_parquet(ROOT / 'outputs/step04/facility_index.parquet')
     fid = int(np.flatnonzero(fac.name.eq('인제대학교일산백병원'))[0])
@@ -254,22 +265,26 @@ def main():
         ok = pd.Series(w * (d <= R10)).groupby(dem.gid.values).sum() / pd.Series(w).groupby(dem.gid.values).sum()
         usable[t] = ok.reindex(o.gid).fillna(0).to_numpy()
     cover = {t: dict(walk5=float(w[d <= R5].sum() / w.sum()), walk10=float(w[d <= R10].sum() / w.sum())) for t, d in near.items()}
+    clinic_of, clinics, _ = nearest_clinics(o, g500)
     bits, reach = bus_bits(o)
+    baek_bits, baek_reach = baek_bus_bits(o)
     wpop = o.population.to_numpy()
     baseline = float((reach.mean(axis=1) * wpop).sum() / wpop.sum())
+    baek_baseline = float((baek_reach.mean(axis=1) * wpop).sum() / wpop.sum())
     onward, hospital = hub_onward()
 
     origins = []
     for i, r in o.iterrows():
         lng, lat = lonlat(r.geometry.x, r.geometry.y)
         origins.append(dict(key=str(i), gid=r.gid, parent_gid=r.parent_gid, population=float(r.population), x=lng, y=lat,
-                            clinic='baek', usable={f't{t}': round(float(usable[t][i]), 4) for t in [0] + TIERS}, bus=bits[i]))
+                            clinic=clinic_of[i], usable={f't{t}': round(float(usable[t][i]), 4) for t in [0] + TIERS}, bus=bits[i], busBaek=baek_bits[i]))
     grids = []
     for r in g500.to_crs(4326).itertuples():
         ring = [[round(x, 6), round(y, 6)] for x, y in r.geometry.exterior.coords]
         grids.append(dict(type='Feature', geometry=dict(type='Polygon', coordinates=[ring]), properties=dict(gid=r.gid, population=float(r.population))))
     tiers = [dict(id=f't{t}', stops=t, walk5=round(cover[t]['walk5'], 4), walk10=round(cover[t]['walk10'], 4)) for t in [0]+TIERS]
-    places = [dict(id='baek', name=hospital['name'], kind='일산백병원 직행', target='baek',
+    places = [dict(id='clinic', name='주변 내과·정형외과 직행', kind='출발지별 최근접 의료기관 직결'),
+              dict(id='baek', name=hospital['name'], kind='일산백병원 직행', target='baek',
                    lng=hospital['lng'], lat=hospital['lat']),
               {k:v for k,v in onward['daehwa'].items() if k!='onwardS'}]
     origin_keys = {r.gid: str(i) for i, r in o.iterrows()}
@@ -279,14 +294,14 @@ def main():
     manifest = json.loads((ROOT/'outputs/run_manifest.json').read_text(encoding='utf-8'))
     assert manifest['settings']['baseline_speed_mps'] == SPEED
     data = dict(
-        schemaVersion=5, generatedAt=datetime.now(timezone.utc).isoformat(), runId=manifest['run_id'],
+        schemaVersion=6, generatedAt=datetime.now(timezone.utc).isoformat(), runId=manifest['run_id'],
         source='Step7 C002 (0.8m/s·연속보행 10분·30분·하위 30%·Queen) / Step9 / fixed-budget MCLP',
-        sourceHashes={str(p):hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in [Path('outputs/run_manifest.json'),Path('outputs/step07/tables/baseline_top3_membership.csv'),Path('outputs/step05/routing_checkpoint.parquet'),Path('outputs/step04/facility_index.parquet'),Path('dashboard/analysis/build_data.py'),Path('dashboard/analysis/location.py')]},
+        sourceHashes={str(p):hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in [Path('outputs/run_manifest.json'),Path('outputs/step07/tables/baseline_top3_membership.csv'),Path('outputs/step09/travel_components.parquet'),Path('outputs/step05/routing_checkpoint.parquet'),Path('outputs/step04/facility_index.parquet'),Path('dashboard/analysis/build_data.py'),Path('dashboard/analysis/location.py')]},
         areaName='구산·법곳·가좌 일대', clusterId=CLUSTER,
         totalPopulation=round(float(wpop.sum()), 1), totalGrids=len(grids), originCount=len(origins),
         existing=dict(walk5=round(cover[0]['walk5'], 4), walk10=round(cover[0]['walk10'], 4)),
-        tiers=tiers, stops=stops, clinics=[hospital], places=places, demand=samples, locationAudit=audit,
-        access=dict(target='baek', baselineShare=baseline, waitS=WAIT_S, detour=DETOUR, budgetS=1800, finalWalkS=FINAL_WALK_S,
+        tiers=tiers, stops=stops, clinics=clinics+[hospital], places=places, demand=samples, locationAudit=audit,
+        access=dict(baselineShare=baseline, baekBaselineShare=baek_baseline, waitS=WAIT_S, detour=DETOUR, budgetS=1800, finalWalkS=FINAL_WALK_S,
                     departureStartS=30600, departureIntervalS=60, departureCount=511,
                     speedMps=SPEED, maxWalkS=600, hubAlightS=60, pickupBufferS=90,
                     referenceVehicles=2, waitElasticity=.5,
@@ -296,8 +311,8 @@ def main():
     assert abs(sum(x['population'] for x in samples)-data['totalPopulation']) < 1e-6
     target=DIST/'data.json'; temp=target.with_suffix('.tmp')
     temp.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':'), allow_nan=False), encoding='utf-8');temp.replace(target)
-    print(json.dumps(dict(population=data['totalPopulation'], grids=len(grids), origins=len(origins), baseline=baseline,
-                          existing=data['existing'], tiers=tiers, clinics=[hospital['name']],
+    print(json.dumps(dict(population=data['totalPopulation'], grids=len(grids), origins=len(origins), baseline=baseline, baekBaseline=baek_baseline,
+                          existing=data['existing'], tiers=tiers, clinics=[c['name'] for c in clinics]+[hospital['name']],
                           onward={k: (v['stopId'], sum(x is not None for x in v['onwardS'])) for k, v in onward.items()}),
                      ensure_ascii=False, indent=1))
 

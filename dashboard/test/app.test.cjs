@@ -25,8 +25,8 @@ test('no key: honest disabled status; dashboard and health still serve; private 
   let calls=0;const {base,post}=await app(t,{apiKey:''},async()=>{calls++;throw Error();});
   assert.equal((await (await fetch(base+'/api/chat/status')).json()).enabled,false);
   assert.equal((await fetch(base+'/')).status,200);assert.equal((await fetch(base+'/healthz')).status,200);
-  const direct=await fetch(base+'/api/distances');assert.equal(direct.status,200);assert.equal((await direct.json()).destination,'baek');
-  for(const id of ['clinic','seogu'])assert.equal((await fetch(base+'/api/distances?destination='+id)).status,400);
+  const direct=await fetch(base+'/api/distances');assert.equal(direct.status,200);assert.equal((await direct.json()).destination,'clinic');
+  for(const id of ['seogu'])assert.equal((await fetch(base+'/api/distances?destination='+id)).status,400);
   const result=await post();assert.equal(result.status,503);assert.equal((await result.json()).code,'AI_NOT_CONFIGURED');assert.equal(calls,0);
   for(const file of ['/.env','/server.cjs','/knowledge.cjs','/package.json','/../.env'])assert.equal((await fetch(base+file)).status,404);
   const config=await (await fetch(base+'/config.js')).text();assert.ok(!config.includes(key));assert.ok(!config.includes('restKey'));
@@ -44,7 +44,7 @@ test('tool comparison uses authoritative population/distances and the shared cal
     const body=JSON.parse(options.body);payloads.push(body);assert.equal(body.store,false);assert.equal(body.model,'gpt-6-luna');assert.equal(body.reasoning.effort,'none');
     if(payloads.length===1)return stream([{type:'response.completed',response:{output:[{type:'function_call',call_id:'compare1',name:'calculate_scenario',arguments:JSON.stringify({tier:null,destination:null,vehicles:null,vehicle:null,conversion:null,occupancy:3})}]}}]);
     const output=JSON.parse(body.input.find(x=>x.type==='function_call_output').output);
-    assert.equal(output.population,data.totalPopulation);assert.ok(output.access.withDrt>data.access.baselineShare);assert.ok(Math.abs(output.budget.annualWon-2*560428*365)<.00001);assert.equal(output.scenario.occupancy,3);
+    assert.equal(output.population,data.totalPopulation);assert.ok(output.access.withDrt>model.baselineShare(data,output.scenario.destination));assert.ok(Math.abs(output.budget.annualWon-2*560428*365)<.00001);assert.equal(output.scenario.occupancy,3);
     const expected=model.evaluate(data,{...scenario,occupancy:3},routeFixture(data)).result;
     assert.ok(Math.abs(output.result.savingKg-expected.savingKg)<1e-9);
     return stream(complete('재차인원 3명 조건을 계산했습니다. [S5]'));
