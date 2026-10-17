@@ -86,7 +86,7 @@ def remove_retired_products(ctx):
     from src.analysis_io import gpkg
     names={'review_required.csv','review_candidates.csv','override_application_log.csv',
            'decision_continuity.csv','origin_diagnosis.csv','first_walk_eligibility.csv',
-           'cluster_internal_maps.png','06_extended_time_maps.png','extended_arrival_bands.csv','cluster_diagnosis.png'}
+           'cluster_internal_maps.png','06_extended_time_maps.png','extended_arrival_bands.csv','cluster_diagnosis.png','03_walk_speed_top3.png'}
     for p in ctx.output.rglob('*'):
         if p.is_file() and p.name in names:
             assert p.resolve().is_relative_to(ctx.output.resolve());p.unlink()

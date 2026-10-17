@@ -49,7 +49,7 @@ def document_steps(ctx):
         '## 공간 레이어','','| 파일 / 레이어 | 객체 수 | 의미 |','|---|---:|---|']
         for p in sorted(folder.glob('*.gpkg')):
             for layer,_ in pyogrio.list_layers(p):
-                meaning=LAYERS.get(layer,'해당 하위 비율에서 다시 선정한 격자·군집.' if layer.startswith('cutoff_') else '기준 군집의 시간예산·보행속도별 500m 점수. 군집·인구를 고정했다.')
+                meaning=LAYERS.get(layer,'해당 하위 비율에서 다시 선정한 격자·군집.' if layer.startswith('cutoff_') else '기준 군집의 시간예산별 500m 점수. 군집·인구를 고정했다.')
                 lines.append(f'| {p.name} / {layer} | {pyogrio.read_info(p,layer=layer)["features"]:,} | {meaning} |')
         if not list(folder.glob('*.gpkg')):lines+=['','비공간 경로 단계다. 출발점과 기관은 Step2·3의 원본 ID로 연결한다.']
         lines+=['','## 결과 파일','']
@@ -101,9 +101,8 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
     '<section id="baseline"><h2>접근성과 고령인구 집중 지역</h2>',image_block(ctx,'step07/figures/accessibility_clusters.png','기준 접근성과 상위 저접근 군집','공통 분류와 별도 군집 색으로 접근성 수준과 선정 범위를 구분했다.'),
     top[['rank','area_name','population','score','grid_count']].rename(columns={'rank':'인구 순위','area_name':'지역명','population':'고령인구(명)','score':'평균 기관 수(곳)','grid_count':'500m 격자 수'}).to_html(index=False,border=0,float_format=lambda x:f'{x:,.2f}'),
     f'<p class="sub">저접근 경계는 {qa["threshold"]:.4f}곳이다. 군집명은 구성 지역을 설명하는 명칭이며 행정동 전체를 뜻하지 않는다. 유효 점수의 고령인구 비중은 {float(valid.population.sum())/total:.3%}다.</p></section>',
-    '<section id="sensitivity"><h2>민감도 분석</h2><p>시간예산과 보행속도 비교는 기준 군집의 격자·인구를 고정한다. 막대는 같은 군집에서 저접근 격자에 거주하는 고령인구 비율이다.</p>',
+    '<section id="sensitivity"><h2>민감도 분석</h2><p>시간예산 비교는 기준 군집의 격자·인구를 고정한다. 막대는 같은 군집에서 저접근 격자에 거주하는 고령인구 비율이다.</p>',
     image_block(ctx,'step08/figures/01_time_budget_top3.png','시간예산 30·40·50분','저접근 경계를 고정해 평균 기관 수와 남아 있는 저접근 인구를 함께 비교한다.'),
-    image_block(ctx,'step08/figures/03_walk_speed_top3.png','보행속도 '+ '·'.join(map(str,ctx.config['walk_speeds_mps']))+'m/s',f'기준 보행속도는 {ctx.config["baseline_speed_mps"]:g}m/s다. 속도 변화는 연속보행 10분 이내에 이용할 수 있는 정류장·기관 범위에도 영향을 준다.'),
     image_block(ctx,'step08/figures/04_cutoff_cluster_maps.png','저접근 기준 하위 25·30·35%','전체 유효 격자에서 군집과 고령인구 순위를 다시 계산한다.'),
     '<details><summary>출발시각별 변화와 군집 중첩</summary>',image_block(ctx,'step08/figures/02_time_budget_profiles.png','출발시각별 평균 기관 수'),image_block(ctx,'step08/figures/05_cutoff_top3_overlap.png','군집 선정 범위의 중첩'),'</details></section>',
     '<section id="diagnosis"><h2>취약 원인 진단</h2>',

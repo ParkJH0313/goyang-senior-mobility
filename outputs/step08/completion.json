@@ -9,14 +9,13 @@
   },
   "outputs": {
     "step08/extended_checkpoint.parquet": "be7860d0f0e995c1512288797c879d684ef7aa44dfbd93e2c04436c7ab0360f5",
-    "step08/README.md": "6e07a9db6b72df789f5d82962df29b88ce8fe485f0f2539606f94b27e50285a8",
-    "step08/sensitivity.gpkg": "247a72e709a6399d57f097d8834409c89ddb4f1f908dd5628ec0e72c6959c95c",
+    "step08/README.md": "3dd6ebabc325762d69e71a62b07acea8bf8be704ec27cd0dc22d7b63799940b7",
+    "step08/sensitivity.gpkg": "0cc30800bc1b44df8ada60afff41a50827caa04ba489d3127380f3b1dadf0a1a",
     "step08/sensitivity_minute_profiles.parquet": "d629238fbbf739468dd2cd3cace4083a9f3db44cffe4fdbdf54c7d9cd93d2fa6",
     "step08/speed_0.6_checkpoint.parquet": "9b13ba72f266a8c651440654bbba7ffec8c714c3e4791cedb8c92099d9693c8b",
     "step08/speed_0.7_checkpoint.parquet": "0ecdcb4106d70e4f0b816d7610ac5a4e2ca4ded6970430123f4e6308fcccdd52",
     "step08/figures/01_time_budget_top3.png": "14d4e3de2ba2b59274dbb4536b371ff0fe285a2d47a5571a74085a2a94857ec8",
     "step08/figures/02_time_budget_profiles.png": "2d31a3f7eebe7437e915554b7cd75ad3c5b178377acb927985b3df8993c394f0",
-    "step08/figures/03_walk_speed_top3.png": "c73acfce9302332b939b1e9f8f5219885637c62712d99f8f820a0e8626e357ee",
     "step08/figures/04_cutoff_cluster_maps.png": "3b2afaa179c90270ca23d186a9c71592c09134859f65cf71f4a57a15659a17ce",
     "step08/figures/05_cutoff_top3_overlap.png": "e2322a46b8010f18b4d27e1b83b0e91c1ac0308a0360a745612504ac38950a1b",
     "step08/tables/cluster_crosswalk.csv": "7847be7def8d0d236b984c33adaf1eb8a3ae39be4396fd5f5c39e4dce5bc419c",
@@ -28,7 +27,7 @@
     "step08/tables/cutoff_35_summary.csv": "9c4d31127e85a3badaff14a53cbd241c21be752089c3362e202a5222d6e1fa61",
     "step08/tables/scenario_manifest.csv": "a25b6e927385b98e24278b07e5bc6a13dbad2868152a91feb26d6ffb30edbc16",
     "step08/tables/sensitivity_cluster_metrics.csv": "4cd122474cc8cddf8f56898efdbc99c0416c5e2ae44835895fe2a6c219d1206d",
-    "step08/tables/sensitivity_grid_scores.csv": "a2f80c8375f07e288b0195eff6b27ead76ed5e83aed72b7999cb8185421a5201",
+    "step08/tables/sensitivity_grid_scores.csv": "311df3a99c16f35851851aca901d1ba77f3650e9c60840d24fac2dfdcb66180a",
     "step08/tables/top3_overlap.csv": "7e8c09db53d402467a63ff0f5fea326761da3198a98a147d9edfaec58dc3b861"
   },
   "parent_signatures": {

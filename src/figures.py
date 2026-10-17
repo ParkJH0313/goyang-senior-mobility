@@ -87,19 +87,17 @@ def overview(ctx,grid,clusters):
     save(ctx,fig,ctx.step(7)/'figures/accessibility_clusters.png',f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 500m 고령인구 가중평균 · 경계 동점 포함 · Queen 인접 · 윤곽은 군집 범위이며 행정동 전체가 아님')
 
 def grid_scenarios(ctx):
-    """Aggregate saved per-origin OD arrays to original 500m grids; never reroute."""
+    """Aggregate saved baseline-speed OD arrays to time-budget map grids; never reroute."""
     baseline_speed=ctx.config['baseline_speed_mps'];baseline_budget=ctx.config['baseline_budget_min']
-    speeds=ctx.config['walk_speeds_mps']
     budgets=sorted(set(ctx.config['sensitivity_budgets_min']+[baseline_budget]))
     sources=[(ctx.step(8)/'extended_checkpoint.parquet',budgets,'budget')]
-    sources += [(ctx.step(8)/f'speed_{speed}_checkpoint.parquet',[baseline_budget],f'speed_{speed}') for speed in speeds if speed!=baseline_speed]
-    key=digest({'version':3,'baseline_speed':baseline_speed,'baseline_budget':baseline_budget,'speeds':speeds,'budgets':budgets,
+    key=digest({'version':4,'baseline_speed':baseline_speed,'baseline_budget':baseline_budget,'budgets':budgets,
                 'checkpoints':{p.name:sha(p) for p,_,_ in sources},'grid':sha(ctx.step(6)/'accessibility.gpkg'),
                 'membership':sha(ctx.step(7)/'tables/baseline_top3_membership.csv')})
     marker=ctx.cache/'figure_grid_data.json';table=ctx.step(8)/'tables/sensitivity_grid_scores.csv'
     if marker.exists() and read_json(marker).get('signature')==key and table.exists():
         names={name for name,_ in pyogrio.list_layers(ctx.step(8)/'sensitivity.gpkg')}
-        expected={f'budget_{b}_grids' for b in budgets}|{f'speed_{s}_grids'.replace('.','_') for s in speeds}
+        expected={f'budget_{b}_grids' for b in budgets}
         if expected<=names:return pd.read_csv(table)
     small=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_250m').set_index('gid')
     large=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_500m').set_index('gid')
@@ -112,8 +110,7 @@ def grid_scenarios(ctx):
                 od=z['od'];upper=z['upper_counts'];saved_budgets=z['budgets']
                 for b in source_budgets:
                     count=(od<=b*60+1e-8).sum(axis=1);j=int(np.flatnonzero(saved_budgets==b)[0])
-                    value=b if kind=='budget' else float(kind.split('_')[1]);scenario=f'budget_{b}' if kind=='budget' else kind
-                    rows.append({'scenario':scenario,'kind':'budget' if kind=='budget' else 'speed','value':value,'gid':source.parent_gid,'population':source.population,
+                    rows.append({'scenario':f'budget_{b}','kind':'budget','value':b,'gid':source.parent_gid,'population':source.population,
                                  'weighted_score':float(count.mean())*source.population,'valid':not np.any(upper[:,j]>count)})
     raw=pd.DataFrame(rows);result=[]
     for (scenario,kind,value,gid),part in raw.groupby(['scenario','kind','value','gid']):
@@ -121,14 +118,13 @@ def grid_scenarios(ctx):
         result.append(dict(scenario=scenario,kind=kind,value=value,gid=gid,cluster_id=membership.loc[gid,'cluster_id'],population=parent.population,
                            score=part.weighted_score.sum()/parent.population if ok else np.nan))
     f=pd.DataFrame(result);base=f[f.scenario.eq(f'budget_{baseline_budget}')].copy();assert np.allclose(base.score,base.gid.map(large.score),equal_nan=True)
-    base['scenario']=f'speed_{baseline_speed}';base['kind']='speed';base['value']=baseline_speed;f=pd.concat([f,base],ignore_index=True)
     csv(f,table)
     file=ctx.step(8)/'sensitivity.gpkg'
     spatial={name:pyogrio.read_dataframe(file,layer=name) for name,_ in pyogrio.list_layers(file) if name.startswith('cutoff_')}
     for name,part in f.groupby('scenario'):spatial[name.replace('.','_')+'_grids']=large[['geometry']].reset_index().merge(part,on='gid')
     gpkg(file,spatial);atomic_json(marker,{'signature':key});return f
 
-def atlas(ctx,values,kind,data,summary,filename,title,subtitle):
+def budget_atlas(ctx,values,data,summary,filename,title,subtitle):
     setup();top=summary[summary.is_top3].sort_values('rank');large=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_500m')
     membership=pd.read_csv(ctx.step(7)/'tables/baseline_top3_membership.csv');threshold=read_json(ctx.step(7)/'cluster_qa.json')['threshold']
     n=len(values);fig=plt.figure(figsize=(5*n,14));fig.text(.035,.975,title,fontsize=21,fontweight='bold',va='top');fig.text(.035,.944,subtitle,fontsize=10,color=MUTED)
@@ -140,12 +136,12 @@ def atlas(ctx,values,kind,data,summary,filename,title,subtitle):
         for col,value in enumerate(values):
             left=.035+col*.93/n;width=.86/n;bottom=top_y-.205
             ax=fig.add_axes([left,bottom,width,.18]);map_base(ax,bounds)
-            scenario=f'budget_{int(value)}' if kind=='budget' else f'speed_{value}'
+            scenario=f'budget_{int(value)}'
             part=data[data.scenario.eq(scenario)&data.cluster_id.eq(r.cluster_id)]
             f=local[['gid','geometry']].merge(part,on='gid',validate='one_to_one')
             assert len(f)==len(local)
             score_map(ax,f,threshold,gpd.GeoSeries([r.geometry],crs=local.crs));compass_scale(ax)
-            panel_title=f'{value:g}분' if kind=='budget' else f'{value:.1f}m/s'+(' · 기준' if value==ctx.config['baseline_speed_mps'] else '')
+            panel_title=f'{value:g}분'
             ax.set_title(panel_title,fontweight='bold',fontsize=13,pad=8)
             low=f.score.le(threshold+1e-10)&f.score.notna();pop=float(f.loc[low,'population'].sum());ratio=pop/r.population
             mean=float((f.score*f.population).sum()/r.population) if f.score.notna().all() else np.nan
@@ -204,10 +200,9 @@ def render_all(ctx):
     render(ctx)
     large=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_500m');summary=pyogrio.read_dataframe(ctx.step(7)/'clusters.gpkg',layer='cluster_summary')
     overview(ctx,large,summary);data=grid_scenarios(ctx)
-    speed=ctx.config['baseline_speed_mps'];budget=ctx.config['baseline_budget_min'];speeds=ctx.config['walk_speeds_mps']
+    speed=ctx.config['baseline_speed_mps']
     budget_values=ctx.config['sensitivity_budgets_min']
-    atlas(ctx,budget_values,'budget',data,summary,'01_time_budget_top3.png','시간예산에 따른 저접근 지역의 변화',f'시간예산 {"·".join(map(str,budget_values))}분  |  보행속도 {speed:g}m/s  |  같은 군집·인구·저접근 경계 유지')
-    atlas(ctx,speeds,'speed',data,summary,'03_walk_speed_top3.png','보행속도에 따른 저접근 지역의 변화',f'보행속도 {"·".join(map(str,speeds))}m/s · 기준 {speed:g}m/s  |  시간예산 {budget}분  |  연속보행 10분 조건 유지')
+    budget_atlas(ctx,budget_values,data,summary,'01_time_budget_top3.png','시간예산에 따른 저접근 지역의 변화',f'시간예산 {"·".join(map(str,budget_values))}분  |  보행속도 {speed:g}m/s  |  같은 군집·인구·저접근 경계 유지')
     cutoff_maps(ctx,summary);charts(ctx,summary)
     from src.diagnostic_figures import render_diagnostics
     render_diagnostics(ctx,summary)

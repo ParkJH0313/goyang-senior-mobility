@@ -19,19 +19,15 @@
 | sensitivity.gpkg / cutoff_30_clusters | 51 | 해당 하위 비율에서 다시 선정한 격자·군집. |
 | sensitivity.gpkg / cutoff_35_grids | 306 | 해당 하위 비율에서 다시 선정한 격자·군집. |
 | sensitivity.gpkg / cutoff_35_clusters | 41 | 해당 하위 비율에서 다시 선정한 격자·군집. |
-| sensitivity.gpkg / budget_30_grids | 116 | 기준 군집의 시간예산·보행속도별 500m 점수. 군집·인구를 고정했다. |
-| sensitivity.gpkg / budget_40_grids | 116 | 기준 군집의 시간예산·보행속도별 500m 점수. 군집·인구를 고정했다. |
-| sensitivity.gpkg / budget_50_grids | 116 | 기준 군집의 시간예산·보행속도별 500m 점수. 군집·인구를 고정했다. |
-| sensitivity.gpkg / speed_0_6_grids | 116 | 기준 군집의 시간예산·보행속도별 500m 점수. 군집·인구를 고정했다. |
-| sensitivity.gpkg / speed_0_7_grids | 116 | 기준 군집의 시간예산·보행속도별 500m 점수. 군집·인구를 고정했다. |
-| sensitivity.gpkg / speed_0_8_grids | 116 | 기준 군집의 시간예산·보행속도별 500m 점수. 군집·인구를 고정했다. |
+| sensitivity.gpkg / budget_30_grids | 116 | 기준 군집의 시간예산별 500m 점수. 군집·인구를 고정했다. |
+| sensitivity.gpkg / budget_40_grids | 116 | 기준 군집의 시간예산별 500m 점수. 군집·인구를 고정했다. |
+| sensitivity.gpkg / budget_50_grids | 116 | 기준 군집의 시간예산별 500m 점수. 군집·인구를 고정했다. |
 
 ## 결과 파일
 
 - extended_checkpoint.parquet: 완료된 출발점과 상세 경로 배열 위치. 배열은 .cache/analysis에 보관한다.
 - figures/01_time_budget_top3.png: 전체 결과 지도·그래프.
 - figures/02_time_budget_profiles.png: 전체 결과 지도·그래프.
-- figures/03_walk_speed_top3.png: 전체 결과 지도·그래프.
 - figures/04_cutoff_cluster_maps.png: 전체 결과 지도·그래프.
 - figures/05_cutoff_top3_overlap.png: 전체 결과 지도·그래프.
 - sensitivity_minute_profiles.parquet: 정밀도·자료형을 유지한 계산표.
