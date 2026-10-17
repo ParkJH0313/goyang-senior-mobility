@@ -4,6 +4,19 @@ const {createScenarios,validateScenario}=require('../scenario.cjs');
 const {createRouter}=require('../routing.cjs');
 const {routeFixture}=require('./fixtures.cjs');
 const scenario={tier:'t36',destination:'clinic',vehicles:2,vehicle:'electric',conversion:.3,occupancy:2.5,waitBaseMin:14.5};
+test('no DRT uses transit baseline without routes, cost or claimed emissions totals',async()=>{
+ const evaluate=createScenarios(data,{get:async()=>{assert.fail('No DRT must not request driving routes');}});
+ for(const destination of ['clinic','daehwa','seogu'])for(const vehicles of [1,2,3]){
+  const s={...scenario,tier:'none',destination,vehicles},result=await evaluate(s);
+  assert.deepEqual(result,model.evaluate(data,s));assert.equal(result.available,true);assert.equal(result.drtEnabled,false);
+  assert.equal(result.access.withDrt,data.access.baselineShare);assert.equal(result.budget.annualWon,0);assert.equal(result.budget.vehicles,0);
+  assert.equal(result.result.savingKg,0);assert.equal(result.result.trips,0);assert.equal(result.result.baselineKg,null);assert.equal(result.result.drtKg,null);
+  assert.equal(result.access.stationaryWaitMin,null);assert.ok(result.cells.every(c=>c.baseline===c.withDrt));
+ }
+ assert.deepEqual(Object.keys(model.scenarios),['none','t0','t21','t36']);
+ assert.throws(()=>validateScenario({...scenario,tier:'t61'}));
+ const adopted=model.evaluate(data,{...scenario,tier:'t0'},routeFixture(data));assert.ok(adopted.access.withDrt>data.access.baselineShare);assert.ok(adopted.budget.annualWon>0);
+});
 test('carbon is fixed to tailpipe; electric is zero and generation scope is rejected',()=>{
  assert.equal(Object.keys(model.vehicles)[0],'electric');assert.equal(model.factor('electric'),0);
  assert.throws(()=>model.factor('electric','energy'));

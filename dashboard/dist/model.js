@@ -8,6 +8,7 @@
   hybrid:{name:'하이브리드',model:'스타리아 하이브리드 11인승',factor:.128,seats:10,purchaseWon:39990000,efficiency:12.7,energyWon:1750,maintenanceWonKm:70}
  };
  const costAssumptions={dailyKm:200,lifeYears:8,residualRate:0};
+ const scenarios={none:'똑버스 미도입',t0:'기존 정류장에 도입',t21:'가상 정류장 21곳 추가',t36:'가상 정류장 36곳 추가'};
  function factor(vehicle,scope='tailpipe'){
   if(!Object.hasOwn(vehicles,vehicle)||scope!=='tailpipe')throw Error('Tailpipe CO2 only');return vehicles[vehicle].factor;
  }
@@ -46,6 +47,17 @@
   }return decoded.get(data);
  }
  function evaluate(data,s,routes){
+  if(s.tier==='none'){
+   const profiles=busProfiles(data),cells=Object.fromEntries(data.grids.map(g=>[g.properties.gid,{gid:g.properties.gid,population:0,baseline:0}]));
+   const origins=Object.fromEntries(data.origins.map(o=>[o.key,o]));
+   for(const sample of data.demand){const c=cells[origins[sample.origin].parent_gid];c.population+=sample.population;c.baseline+=sample.population*profiles[sample.origin].reduce((x,y)=>x+y,0)/data.access.departureCount;}
+   return {available:true,drtEnabled:false,scenario:s,scenarioTitle:scenarios.none,areaName:data.areaName,population:data.totalPopulation,gridCount:data.totalGrids,eligiblePopulation:0,
+    stops:{added:0,walk5:data.existing.walk5,walk10:data.existing.walk10,existingWalk5:data.existing.walk5,existingWalk10:data.existing.walk10},destinationTitle:'기존 대중교통·보행으로 의료기관 이동',vehicleTitle:'운행 없음',
+    budget:{vehicles:0,annualWon:0,purchaseWon:0,dailyCostPerVehicle:0},distances:null,
+    access:{current:data.access.baselineShare,withDrt:data.access.baselineShare,withDrtFromCall:null,timeBasis:'home-departure',waitMin:null,homeWaitMin:null,walkMin:null,stationaryWaitMin:null,driveMin:null,waitModel:'not-applicable'},
+    cells:Object.values(cells).map(c=>({...c,eligible:0,baseline:c.baseline/c.population,withDrt:c.baseline/c.population,walkMin:null})),queriedAt:null,
+    result:{trips:0,savingKg:0,percent:null,baselineKg:null,drtKg:null,baselinePerTrip:null,drtPerTrip:null,breakEven:null,emissionScope:'tailpipe'}};
+  }
   if(!routes?.complete||routes.destination!==s.destination)throw Error('Route data missing or mismatched');
   const tier=data.tiers.find(t=>t.id===s.tier);if(!tier)throw Error('Unknown layout');
   const origins=Object.fromEntries(data.origins.map(o=>[o.key,o])),bus=busProfiles(data),a=data.access,n=a.departureCount;
@@ -85,12 +97,12 @@
   }
   const mean=x=>eligible?x/eligible:0,distances={baselineKm:mean(baseKm),drtKm:mean(drtKm)};
   const result=calculate({...s,...distances,population:eligible});
-  return {available:true,scenario:s,areaName:data.areaName,population:data.totalPopulation,gridCount:data.totalGrids,eligiblePopulation:eligible,
+  return {available:true,drtEnabled:true,scenario:s,scenarioTitle:scenarios[s.tier]||('가상 정류장 '+tier.stops+'곳 추가'),areaName:data.areaName,population:data.totalPopulation,gridCount:data.totalGrids,eligiblePopulation:eligible,
    stops:{added:tier.stops,walk5:tier.walk5,walk10:tier.walk10,existingWalk5:data.existing.walk5,existingWalk10:data.existing.walk10},destinationTitle:({clinic:'주거지→가까운 의료기관 직행',daehwa:'주거지→대화역 거점→일산백병원',seogu:'주거지→일산서구청 거점→일산백병원'})[s.destination],vehicleTitle:vehicles[s.vehicle].model,
    budget:budgetEstimate(s.vehicles,data.budget,s.vehicle),distances,
    access:{current:data.access.baselineShare,withDrt:reachTotal/data.totalPopulation,withDrtFromCall:callReachTotal/data.totalPopulation,timeBasis:'home-departure',waitMin,homeWaitMin:mean(homeWait)/60,walkMin:mean(walk)/60,stationaryWaitMin:eligible?(a.pickupBufferS??90)/60:0,driveMin:mean(drive)/60,waitModel:'scheduled-pickup-sensitivity'},
    cells:Object.values(cells).map(c=>({...c,baseline:c.baseline/c.population,withDrt:c.withDrt/c.population,walkMin:c.eligible?c.walkS/c.eligible/60:null})),queriedAt:routes.queriedAt,result};
  }
- const model={defaults,vehicles,costAssumptions,factor,calculate,annualCost,budgetEstimate,waitMinutes,pickupTiming,evaluate};
+ const model={defaults,vehicles,costAssumptions,scenarios,factor,calculate,annualCost,budgetEstimate,waitMinutes,pickupTiming,evaluate};
  if(typeof module!=='undefined'&&module.exports)module.exports=model;else root.CarbonModel=model;
 })(typeof window==='undefined'?globalThis:window);

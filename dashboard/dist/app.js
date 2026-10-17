@@ -6,7 +6,7 @@ const destinations=data.places.map(p=>p.id);
 const initial={tier:'t36',destination:'clinic',vehicles:2,vehicle:'electric',conversion:.3,occupancy:2.5,waitBaseMin:14.5};
 let state={...initial},map,cells=[],stops=[],labels=[],bounds,current=null,currentResult=null;
 const distances={},pending={};
-try{const s=JSON.parse(sessionStorage.getItem('goyang-scenario-v4'));if(s&&data.tiers.some(t=>t.id===s.tier)&&destinations.includes(s.destination)&&[1,2,3].includes(s.vehicles)&&Object.hasOwn(CarbonModel.vehicles,s.vehicle)&&Number.isFinite(s.conversion)&&s.conversion>=0&&s.conversion<=1&&Number.isFinite(s.occupancy)&&s.occupancy>=1&&s.occupancy<=3.2&&Number.isFinite(s.waitBaseMin)&&s.waitBaseMin>=5&&s.waitBaseMin<=30)state=s;}catch{}
+try{const s=JSON.parse(sessionStorage.getItem('goyang-scenario-v5'));if(s&&Object.hasOwn(CarbonModel.scenarios,s.tier)&&destinations.includes(s.destination)&&[1,2,3].includes(s.vehicles)&&Object.hasOwn(CarbonModel.vehicles,s.vehicle)&&Number.isFinite(s.conversion)&&s.conversion>=0&&s.conversion<=1&&Number.isFinite(s.occupancy)&&s.occupancy>=1&&s.occupancy<=3.2&&Number.isFinite(s.waitBaseMin)&&s.waitBaseMin>=5&&s.waitBaseMin<=30)state=s;}catch{}
 const style={strokeWeight:1,strokeColor:'#416c4e',strokeOpacity:.85,fillColor:'#cbd5c8',fillOpacity:.55};
 function chart(result,params){
  const values=Array.from({length:60},(_,i)=>{const n=1+2.2*i/59;return {n,y:CarbonModel.calculate({...params,occupancy:n}).savingKg};});
@@ -21,27 +21,39 @@ function clearResults(text='경로 조회 중'){
  for(const c of cells)c.polygon.setOptions(style);
 }
 function render(){
- const tier=data.tiers.find(t=>t.id===state.tier);
+ const enabled=state.tier!=='none',tier=data.tiers.find(t=>t.id===(enabled?state.tier:'t0'));
+ document.querySelectorAll('[data-drt-control]').forEach(el=>el.disabled=!enabled);
+ $('budget-detail').hidden=!enabled;$('budget-none').hidden=enabled;$('journey-summary').hidden=!enabled;
+ $('access-mode').textContent=enabled?'→ 도입 후 · 버스나 똑버스 중 하나로 도달':'· 미도입 기준선';
+ $('scenario-caption').hidden=!enabled;$('baseline-caption').hidden=enabled;
  for(const id of ['conversion','occupancy','destination','waitBaseMin'])$(id).value=id==='conversion'?state[id]*100:state[id];
  $('conversion-value').textContent=Math.round(state.conversion*100)+'%';$('occupancy-value').textContent=state.occupancy.toFixed(1)+'명';
  $('wait-base-value').textContent=state.waitBaseMin.toFixed(1)+'분';
- $('wait-time').textContent=CarbonModel.waitMinutes(state.vehicles,state.waitBaseMin,data.access.waitElasticity).toFixed(1);
- const eligible=data.demand.reduce((s,d)=>s+(d.boarding[state.tier]?d.population:0),0);
+ $('wait-time').textContent=enabled?CarbonModel.waitMinutes(state.vehicles,state.waitBaseMin,data.access.waitElasticity).toFixed(1):'—';
+ const eligible=enabled?data.demand.reduce((s,d)=>s+(d.boarding[state.tier]?d.population:0),0):0;
  $('eligible').textContent=nf.format(Math.round(eligible));
  $('trips').textContent=nf.format(Math.round(eligible*CarbonModel.defaults.visits*(CarbonModel.defaults.taxiShare+CarbonModel.defaults.carShare)*state.conversion));
  $('walk5').textContent=pct(tier.walk5)+'%';$('walk5-now').textContent=pct(data.existing.walk5)+'%';$('walk5-bar').style.width=tier.walk5*100+'%';
  document.querySelectorAll('[data-walk5]').forEach(el=>el.textContent=pct(data.tiers.find(t=>t.id===el.dataset.walk5).walk5)+'%');
- const budget=CarbonModel.budgetEstimate(state.vehicles,data.budget,state.vehicle);$('budget').textContent=(budget.annualWon/1e8).toFixed(2);$('budget-vehicles').textContent=state.vehicles;$('budget-daily').textContent=nf.format(Math.round(budget.dailyCostPerVehicle));$('purchase-cost').textContent=nf.format(Math.round(budget.purchaseWon/10000));$('budget-vehicle').textContent=CarbonModel.vehicles[state.vehicle].name;
+ const budget=enabled?CarbonModel.budgetEstimate(state.vehicles,data.budget,state.vehicle):{annualWon:0,vehicles:0,dailyCostPerVehicle:0,purchaseWon:0};$('budget').textContent=(budget.annualWon/1e8).toFixed(2);$('budget-vehicles').textContent=budget.vehicles;$('budget-daily').textContent=nf.format(Math.round(budget.dailyCostPerVehicle));$('purchase-cost').textContent=nf.format(Math.round(budget.purchaseWon/10000));$('budget-vehicle').textContent=CarbonModel.vehicles[state.vehicle].name;
  $('access-now').textContent=pct(data.access.baselineShare);
- $('map-subtitle').textContent=data.totalGrids+'개 격자 · 추가 지점 '+tier.stops+'곳';
+ $('map-subtitle').textContent=data.totalGrids+'개 격자 · '+CarbonModel.scenarios[state.tier];
  const descriptions={clinic:{description:'주거지 승하차 지점에서 똑버스를 타고 가까운 내과·정형외과 의료기관 앞까지 갑니다. 중간에 다른 버스로 갈아타지 않습니다.',assumption:'출발지별 원내과의원 또는 일산중심재활병원. 하차 후 보행 1분을 가정합니다.'},daehwa:{description:'주거지 승하차 지점에서 대화역 버스정류장까지 똑버스를 탑니다. 그곳에서 내려 도보 또는 기존 버스로 일산백병원에 갑니다.',assumption:'거점→병원은 직선 약 345m. 실제 보행망·버스 시간표 중 빠른 경로를 적용합니다. GTX는 이용하지 않습니다.'},seogu:{description:'주거지 승하차 지점에서 일산서구청 버스정류장까지 똑버스를 탑니다. 그곳에서 내려 도보 또는 기존 버스로 일산백병원에 갑니다.',assumption:'거점→병원은 직선 약 689m. 실제 보행망·버스 시간표 중 빠른 경로를 적용합니다. GTX는 이용하지 않습니다.'}};
  $('destination-note').textContent=descriptions[state.destination].description;$('destination-assumption').textContent='계산 가정 · '+descriptions[state.destination].assumption;
  document.querySelectorAll('[data-carbon-unit]').forEach(el=>el.textContent='tCO₂ / 년');
  for(const attr of ['tier','vehicle','vehicles'])document.querySelectorAll('[data-'+attr+']').forEach(b=>{const on=String(state[attr])===b.dataset[attr];b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
- for(const s of stops)s.overlay.setMap(s.tiers.includes(state.tier)?map:null);
- for(const l of labels)l.content.classList.toggle('chosen',l.id===state.destination||(state.destination!=='clinic'&&l.id==='baek'));
- try{sessionStorage.setItem('goyang-scenario-v4',JSON.stringify(state));}catch{}
+ for(const s of stops)s.overlay.setMap((enabled?s.tiers.includes(state.tier):s.existing)?map:null);
+ for(const l of labels)l.content.classList.toggle('chosen',enabled&&(l.id===state.destination||(state.destination!=='clinic'&&l.id==='baek')));
+ try{sessionStorage.setItem('goyang-scenario-v5',JSON.stringify(state));}catch{}
  window.dispatchEvent(new Event('scenariochange'));
+ if(!enabled){
+  clearResults();current=CarbonModel.evaluate(data,state);currentResult=current.result;
+  $('access').textContent=pct(current.access.withDrt);$('access-gain').textContent='미도입 기준';
+  $('saving').textContent='0.00';$('saving-title').textContent='똑버스 도입에 따른 탄소 감축';$('saving-percent').textContent='미도입 · 감축 없음';
+  $('per-trip-note').textContent='똑버스 전환 통행이 없어 배출량 비교를 적용하지 않습니다. 지역 전체 배출량이 0이라는 뜻은 아닙니다.';
+  $('sensitivity-note').textContent='똑버스 도입안을 선택하면 재차인원에 따른 탄소 효과를 비교할 수 있습니다.';
+  $('status').textContent='기존 대중교통·보행 기준 · 똑버스 추가 운영비와 도입 효과 없음';$('retry').hidden=true;return;
+ }
  if(!distances[state.destination]){clearResults();return;}
  try{current=CarbonModel.evaluate(data,state,distances[state.destination]);}catch{clearResults('경로 자료 확인 필요');return;}
  const r=current.result;currentResult=r;const a=current.access,gain=(a.withDrt-data.access.baselineShare)*100;
@@ -62,8 +74,8 @@ function render(){
  $('status').textContent='이용 가능 인구 가중 왕복거리 · 기존 '+current.distances.baselineKm.toFixed(2)+' km / 승하차 지점 연결 '+current.distances.drtKm.toFixed(2)+' km · '+time+' 조회';
 }
 async function getDistance(id){if(distances[id])return distances[id];if(!pending[id])pending[id]=fetch('/api/distances?destination='+id).then(async r=>{const v=await r.json();if(!r.ok)throw Error(v.error||'경로 조회 실패');distances[id]=v;return v;}).finally(()=>delete pending[id]);return pending[id];}
-async function loadDistances(){const id=state.destination;$('retry').hidden=true;if(!distances[id])$('status').textContent='주거 대표점과 실제 승하차 지점의 왕복 경로를 조회합니다…';try{await getDistance(id);render();}catch(e){if(id===state.destination){clearResults('경로 확인 필요');$('status').textContent=e.message;$('retry').hidden=false;}}}
-for(const attr of ['tier','vehicle','vehicles'])document.querySelectorAll('[data-'+attr+']').forEach(b=>b.addEventListener('click',()=>{state[attr]=attr==='vehicles'?+b.dataset[attr]:b.dataset[attr];render();}));
+async function loadDistances(){if(state.tier==='none')return;const id=state.destination;$('retry').hidden=true;if(!distances[id])$('status').textContent='주거 대표점과 실제 승하차 지점의 왕복 경로를 조회합니다…';try{await getDistance(id);render();}catch(e){if(id===state.destination&&state.tier!=='none'){clearResults('경로 확인 필요');$('status').textContent=e.message;$('retry').hidden=false;}}}
+for(const attr of ['tier','vehicle','vehicles'])document.querySelectorAll('[data-'+attr+']').forEach(b=>b.addEventListener('click',()=>{state[attr]=attr==='vehicles'?+b.dataset[attr]:b.dataset[attr];render();if(attr==='tier')loadDistances();}));
 for(const id of ['conversion','occupancy','waitBaseMin'])$(id).addEventListener('input',e=>{state[id]=+e.target.value/(id==='conversion'?100:1);render();});
 $('destination').addEventListener('change',e=>{state.destination=e.target.value;render();loadDistances();});
 $('reset').addEventListener('click',()=>{state={...initial};render();loadDistances();if(map)map.setBounds(bounds,40,40,40,40);});$('retry').addEventListener('click',loadDistances);$('fit').addEventListener('click',()=>{if(map)map.setBounds(bounds,40,40,40,40);});

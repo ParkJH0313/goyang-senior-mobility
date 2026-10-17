@@ -1,4 +1,5 @@
 // Route only actual boarding locations; baseline and alternative end at the same medical facility.
+const {scenarios}=require('./dist/model.js');
 function createRouter(restKey,data,{fetchImpl=fetch}={}){
  const cache=new Map(),pending=new Map(),failedUntil=new Map(),odCache=new Map();let requests=0;
  const clinics=Object.fromEntries(data.clinics.map(c=>[c.id,c])),stops=Object.fromEntries(data.stops.map(s=>[s.id,s]));
@@ -33,7 +34,7 @@ function createRouter(restKey,data,{fetchImpl=fetch}={}){
   for(const o of data.origins){const target=id==='clinic'?o.clinic:places[id].target;
    if(!groups.has(target))groups.set(target,{origin:[],stops:new Set()});groups.get(target).origin.push(o);}
   for(const sample of data.demand){const o=origins[sample.origin],target=id==='clinic'?o.clinic:places[id].target;
-   for(const options of Object.values(sample.pickups))for(const assignment of options)groups.get(target).stops.add(assignment.stop);}
+   for(const [tier,options] of Object.entries(sample.pickups))if(Object.hasOwn(scenarios,tier))for(const assignment of options)groups.get(target).stops.add(assignment.stop);}
   for(const [target,g]of groups){
    Object.assign(baseline,await batch(g.origin,clinics[target]));
    const start=[...g.stops].map(sid=>({...stops[sid],key:sid+'|'+target}));
