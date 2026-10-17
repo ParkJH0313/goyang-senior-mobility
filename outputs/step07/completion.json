@@ -1,7 +1,7 @@
 {
-  "signature": "dec117f50ee0ba02148f0e7673f16e9ae2157b572e125c4c76ccff005b998dea",
+  "signature": "88a5fadd518abc51ce428a4e9a91e92d2acbaead6cdf2db8a5dcd2ff488b0287",
   "status": "complete",
-  "completed_at": "2026-10-17T10:39:04.405649+00:00",
+  "completed_at": "2026-10-17T14:26:54.638363+00:00",
   "summary": {
     "clusters": 51,
     "top_clusters": 3,
@@ -15,20 +15,20 @@
     "queen_tolerance_m": 1e-05
   },
   "outputs": {
-    "step07/clusters.gpkg": "71957c9eec13fd142235ba9ac0fe23668ccab8fcaf88eeea6b6b14a38833fc49",
+    "step07/clusters.gpkg": "9fe1d51e5b02991a0177eb3a5e4b6fa48f515610f04505ed0ecf0cbed949201f",
     "step07/cluster_qa.json": "7302bfbe66859680013d0a9f1181de1855a5c62c0cfe22de21ca36e0606815d7",
     "step07/README.md": "04b822725c03f968bde73fb8ab577f4402b726d86e52a53a709579e74a2a137f",
     "step07/figures/accessibility_clusters.png": "3cab5fba871af7d3b4f584f6bc5e7d7f32d7f87b14a4fe9f262f04d6f0d62602",
-    "step07/tables/baseline_top3_membership.csv": "924f3da05c5bf97b311838705ba757049aedb686f83a317149c7e87113967d04",
-    "step07/tables/cluster_membership.csv": "0ff341884550e20d7988254e026b742116dba6192aea3df0b3d590ba813aac40",
-    "step07/tables/cluster_summary.csv": "96df047fe98fa8467f3a3062f5beea22f0cbeb1573708dce2d9059dff317aa65"
+    "step07/tables/baseline_top3_membership.csv": "7bbd4cc6b67e63405c0187efe0de4aa039244cd8d86125f57ea27710afc773b3",
+    "step07/tables/cluster_membership.csv": "cf609989fd2aa3da97464417d5b85ffecf891728f70b6469f9d83e9368a3c973",
+    "step07/tables/cluster_summary.csv": "61f91b0a9cbc4fba0a26a7222977023ec18944788ed79943178e6b48793117ee"
   },
   "parent_signatures": {
     "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
     "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
     "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
-    "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
-    "5": "79858bba9dcc92188161e0cbec7a95cf03e7ba38be8bf58c179553ffc2b24ae0",
-    "6": "7ce224fc87deb5d4069b46894e416e43a1e77b3cc1a700a816dc8e91ea8dbb4d"
+    "4": "b558ffea41baad48ccf14e8dff4ad6ec73ba22c32767764dd371b7547fe74d86",
+    "5": "99e1228e6c7a713124f8b2c8cedd5d2f9acf8698e537dc1573846d84e2f2982a",
+    "6": "adf6fffc2954910d1a6367a9a0c9a01c258d456b8638fbb7f0054bccbb355df1"
   }
 }

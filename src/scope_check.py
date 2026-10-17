@@ -9,7 +9,7 @@ from scipy.spatial import cKDTree
 from src.analysis_io import digest,sha,parquet,ro,log
 
 def potential_links(ctx):
-    key=digest({'stops':sha(ctx.step(4)/'stops.parquet'),'code':sha('src/scope_check.py'),'radius':ctx.config['rail_entrance_search_m'],'speeds':ctx.config['walk_speeds_mps'],'cap':ctx.config['max_continuous_walk_s']})[:16]
+    key=digest({'stops':sha(ctx.step(4)/'stops.parquet'),'code':sha('src/scope_check.py'),'radius':ctx.config['rail_entrance_search_m'],'baseline_speed':ctx.config['baseline_speed_mps'],'cap':ctx.config['max_continuous_walk_s']})[:16]
     target=ctx.cache/('scope_'+key+'.parquet')
     if target.exists():return pd.read_parquet(target)
     s=pd.read_parquet(ctx.step(4)/'stops.parquet');o=pd.read_parquet(ctx.step(4)/'origin_index.parquet');f=pd.read_parquet(ctx.step(4)/'facility_index.parquet')
@@ -17,7 +17,7 @@ def potential_links(ctx):
     import pyogrio
     points=pyogrio.read_dataframe(ctx.step(2)/'origins.gpkg',layer='origins_250m').set_index('gid').loc[o.gid].geometry
     oxy=np.column_stack([points.x,points.y]);fxy=f[['x_5179','y_5179']].to_numpy();sxy=s[['x_5179','y_5179']].to_numpy()
-    st=cKDTree(sxy);ot=cKDTree(oxy);ft=cKDTree(fxy);radius=ctx.config['rail_entrance_search_m'];maximum=max(ctx.config['walk_speeds_mps'])*ctx.config['max_continuous_walk_s'];rows=[]
+    st=cKDTree(sxy);ot=cKDTree(oxy);ft=cKDTree(fxy);radius=ctx.config['rail_entrance_search_m'];maximum=ctx.config['baseline_speed_mps']*ctx.config['max_continuous_walk_s'];rows=[]
     unknown=s.connection_status.ne('connected').to_numpy();rail=s.is_rail.to_numpy()
     with ro('data/processed/gtfs.sqlite') as c:trans=pd.read_sql_query('SELECT * FROM transfers',c)
     keys=dict(zip(s.stop_key,s.entity_index));policies={(keys.get(r.from_stop_key),keys.get(r.to_stop_key)):(r.transfer_type,float(r.min_transfer_time) if pd.notna(r.min_transfer_time) else 0.) for r in trans.itertuples()}

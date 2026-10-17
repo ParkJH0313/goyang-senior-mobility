@@ -1,14 +1,14 @@
 {
-  "signature": "7ce224fc87deb5d4069b46894e416e43a1e77b3cc1a700a816dc8e91ea8dbb4d",
+  "signature": "adf6fffc2954910d1a6367a9a0c9a01c258d456b8638fbb7f0054bccbb355df1",
   "status": "complete",
-  "completed_at": "2026-10-17T09:25:03.538044+00:00",
+  "completed_at": "2026-10-17T14:26:53.995675+00:00",
   "summary": {
     "valid_250m": 2586,
     "valid_500m": 874,
     "excluded_or_unresolved_500m": 1
   },
   "outputs": {
-    "step06/accessibility.gpkg": "056148816fef548417c86b996b56bb74a40b52d56e251df5363070b46d8f5cfa",
+    "step06/accessibility.gpkg": "b14577cb60dee948c45d92778ba9c051ed78af74df2eddae6438daf86a14c556",
     "step06/minute_profiles.npz": "712f2b654d8659b4a3b79e6a77312fd040adfb2c755b7d8ec2ef9ec66406f274",
     "step06/README.md": "b41f8562b5b66dd6abfc3ec9f58a1a21efaa2a24c8c4f0f1e3fb688fcd0f649d",
     "step06/tables/accessibility_250m.csv": "ba6fd3f8ff9b2d40a3316ee9c158a1fb8ceaaf65201f692910e9af895a35f498",
@@ -20,7 +20,7 @@
     "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
     "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
     "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
-    "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
-    "5": "79858bba9dcc92188161e0cbec7a95cf03e7ba38be8bf58c179553ffc2b24ae0"
+    "4": "b558ffea41baad48ccf14e8dff4ad6ec73ba22c32767764dd371b7547fe74d86",
+    "5": "99e1228e6c7a713124f8b2c8cedd5d2f9acf8698e537dc1573846d84e2f2982a"
   }
 }

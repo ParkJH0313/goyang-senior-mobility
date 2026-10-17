@@ -7,7 +7,7 @@ from src.spatial_network import GroundNetwork,geometry_overrides,frame,build_gra
 from src.walking import closure
 from src.stop_access import Crossings,StopAccess,StationEntrances,central_stop
 DEPENDENCIES=['steps/step04_network.py','src/spatial_network.py','src/stop_access.py','src/walking.py','src/analysis_io.py']
-SETTINGS=['connector_search_m','rail_entrance_search_m','median_crossing_search_m','station_group_radius_m','station_second_gap_m','station_second_ratio','stop_ground_fallback_m','stop_poi_search_m','stop_road_evidence_m','rail_entrance_s','rail_transfer_s','same_platform_s','transfer_preparation_s','max_continuous_walk_s','walk_speeds_mps','excluded_modes','service_profile_id']
+SETTINGS=['connector_search_m','rail_entrance_search_m','median_crossing_search_m','station_group_radius_m','station_second_gap_m','station_second_ratio','stop_ground_fallback_m','stop_poi_search_m','stop_road_evidence_m','rail_entrance_s','rail_transfer_s','same_platform_s','transfer_preparation_s','max_continuous_walk_s','baseline_speed_mps','excluded_modes','service_profile_id']
 
 def station_name(s):return re.sub(r'\([^)]*\)|\[[^]]*\]|\s','',str(s)).removesuffix('역')
 

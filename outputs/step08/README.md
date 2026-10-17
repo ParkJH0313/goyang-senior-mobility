@@ -1,6 +1,6 @@
 # Step 8 민감도 비교
 
-기준 상위 3개 군집의 격자·인구를 고정해 시간예산과 보행속도를 비교한다. 하위 비율 변경은 전체 유효 격자에서 다시 군집화한다.
+기준 보행속도와 상위 3개 군집의 격자·인구를 고정해 시간예산을 비교한다. 하위 비율 변경은 전체 유효 격자에서 다시 군집화한다.
 
 ## 코드 구성
 
@@ -31,8 +31,6 @@
 - figures/04_cutoff_cluster_maps.png: 전체 결과 지도·그래프.
 - figures/05_cutoff_top3_overlap.png: 전체 결과 지도·그래프.
 - sensitivity_minute_profiles.parquet: 정밀도·자료형을 유지한 계산표.
-- speed_0.6_checkpoint.parquet: 완료된 출발점과 상세 경로 배열 위치. 배열은 .cache/analysis에 보관한다.
-- speed_0.7_checkpoint.parquet: 완료된 출발점과 상세 경로 배열 위치. 배열은 .cache/analysis에 보관한다.
 - tables/cluster_crosswalk.csv: 수치 표. UTF-8 BOM.
 - tables/cutoff_25_membership.csv: 수치 표. UTF-8 BOM.
 - tables/cutoff_25_summary.csv: 수치 표. UTF-8 BOM.
@@ -48,8 +46,8 @@
 ## 결과 요약
 
 - top3_origins: 317
-- scenarios: 9
-- speed_monotonic: True
+- scenarios: 6
+- time_budget_monotonic: True
 
 ## 해석
 

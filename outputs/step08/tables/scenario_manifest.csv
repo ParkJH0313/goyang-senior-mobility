@@ -2,6 +2,3 @@
 budget_30,0.8,30,317,baseline_top3_membership
 budget_40,0.8,40,317,baseline_top3_membership
 budget_50,0.8,50,317,baseline_top3_membership
-speed_0.6,0.6,30,317,baseline_top3_membership
-speed_0.7,0.7,30,317,baseline_top3_membership
-speed_0.8,0.8,30,317,baseline_top3_membership

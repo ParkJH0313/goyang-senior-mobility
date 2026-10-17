@@ -1,21 +1,21 @@
 {
-  "signature": "79858bba9dcc92188161e0cbec7a95cf03e7ba38be8bf58c179553ffc2b24ae0",
+  "signature": "99e1228e6c7a713124f8b2c8cedd5d2f9acf8698e537dc1573846d84e2f2982a",
   "status": "complete",
-  "completed_at": "2026-10-17T09:24:44.329448+00:00",
+  "completed_at": "2026-10-17T14:26:15.679958+00:00",
   "summary": {
     "origins_complete": 2586,
     "departures_each": 511
   },
   "outputs": {
     "step05/README.md": "f10f3a59e5d45ff03f1952ed4ea107dc02a8fec59a96a8b702057326a98494ce",
-    "step05/routing_checkpoint.parquet": "6e6e17ca6a41c8edb000127add0e7cbbefda5aaae12d2947298b46e87a177245",
+    "step05/routing_checkpoint.parquet": "873a72ae8c217dab495b1746782b645c9caa44a1d4cb75eb5389d5bc02a65aeb",
     "step05/tables/departure_index.csv": "ab87404fa1f3eaec1fdbefeea2f4421ff053bd5e8d8052833ee4daf1ea786784",
-    "step05/tables/routing_checkpoint.csv": "c21fbea902f0ec641867a037f5864c317e7662f7df4a749dc9dd2dbf022ef22d"
+    "step05/tables/routing_checkpoint.csv": "407e15b51cec7a4323f92a606fa8e754f63ff3af7a996e7cdc9356530685ae38"
   },
   "parent_signatures": {
     "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
     "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
     "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
-    "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d"
+    "4": "b558ffea41baad48ccf14e8dff4ad6ec73ba22c32767764dd371b7547fe74d86"
   }
 }

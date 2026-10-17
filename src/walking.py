@@ -22,7 +22,7 @@ def closure(ctx,indptr,indices,length,conns):
     targets=defaultdict(list)
     for r in conns[conns.entity_type.isin(['stop','facility'])].itertuples():targets[r.graph_node].append(r)
     dist=np.empty(len(indptr)-1);stamp=np.zeros(len(dist),np.int64);epoch=0;rows=[]
-    speed=max(ctx.config['walk_speeds_mps']);cap=ctx.config['max_continuous_walk_s']
+    speed=ctx.config['baseline_speed_mps'];cap=ctx.config['max_continuous_walk_s']
     sources=conns[conns.entity_type.isin(['origin','stop'])]
     for i,r in enumerate(sources.itertuples()):
         budget=(cap-r.fixed_s)*speed-r.length_m

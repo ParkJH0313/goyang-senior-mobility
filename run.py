@@ -6,7 +6,7 @@ initialize()
 
 CONFIG={
  'methodology':'v7','crs':'EPSG:5179','departure_start_s':30600,'departure_end_s':61200,'departure_interval_s':60,
- 'baseline_speed_mps':0.8,'walk_speeds_mps':[0.6,0.7,0.8],'max_continuous_walk_s':600,
+ 'baseline_speed_mps':0.8,'max_continuous_walk_s':600,
  'max_boardings':3,'transfer_preparation_s':60,'rail_entrance_s':180,'rail_transfer_s':240,'same_platform_s':120,
  'baseline_budget_min':30,'sensitivity_budgets_min':[30,40,50],'diagnostic_budgets_min':[45,60,80],
  'baseline_cutoff':0.30,'cutoffs':[0.25,0.30,0.35],'top_clusters':3,

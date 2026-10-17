@@ -84,12 +84,11 @@ def run(ctx):
     links=links[links.source_type.eq('origin')];access=[]
     for r in cp.itertuples():
         local=links[links.source_index.eq(r.origin_index)];item={'gid':r.gid,'cluster_id':cluster_map[small.loc[r.gid,'parent_gid']],'population':small.loc[r.gid,'population']}
-        for speed in ctx.config['walk_speeds_mps']:
-            eligible=local[local.length_m/speed+local.fixed_s<=ctx.config['max_continuous_walk_s']+1e-8]
-            item[f'first_stop_count_{speed}']=eligible.loc[eligible.target_type.eq('stop'),'target_index'].nunique()
-            item[f'direct_facility_count_{speed}']=eligible.loc[eligible.target_type.eq('facility'),'target_index'].nunique()
-        base_speed=ctx.config['baseline_speed_mps']
-        item['first_walk_blocked']=item[f'first_stop_count_{base_speed}']==0 and item[f'direct_facility_count_{base_speed}']==0
+        speed=ctx.config['baseline_speed_mps']
+        eligible=local[local.length_m/speed+local.fixed_s<=ctx.config['max_continuous_walk_s']+1e-8]
+        item['first_stop_count']=eligible.loc[eligible.target_type.eq('stop'),'target_index'].nunique()
+        item['direct_facility_count']=eligible.loc[eligible.target_type.eq('facility'),'target_index'].nunique()
+        item['first_walk_blocked']=item['first_stop_count']==0 and item['direct_facility_count']==0
         item['interpretation']='연속보행 한도 안에 첫 승차 지점·직접 도달 기관 없음' if item['first_walk_blocked'] else '첫 보행 가능; 운행·환승·도착 조건 함께 해석'
         access.append(item)
     access=pd.DataFrame(access)
@@ -112,7 +111,7 @@ def run(ctx):
     atomic_json(ctx.cache/'validation_report.json',{
         'status':'passed', 'all_511_departures_complete':True,
         'route_component_sums_checked':True, 'continuous_walk_and_boarding_limits_checked':True,
-        'time_budget_and_speed_monotonicity_checked':True,
+        'time_budget_monotonicity_checked':True,
         'unresolved_path_rows':int(comp.status.eq('unresolved').sum()),
         'field_verification_performed':False})
     describe(ctx,9,'# Step 9 취약 원인 진단\n\n기준 상위 군집의 모든 출발점과 511개 출발시각을 고령인구로 가중한다. travel_components.parquet는 실제 경로의 보행·대기·차내·추가 탑승 준비시간이다. 군집 진단표는 80분 이내 도달한 경로의 조건부 평균과 전체 인구·시각에 대한 미도달 비율을 함께 제시한다. arrival_status는 30분 이내 도달·첫 보행 불가·30분 초과 도달·80분 내 미도달을 구분한다. nearest_bus_walk는 방향성 보행망에서 평일 승차가 가능한 버스정류장까지의 상한 없는 최단 보행시간이다. diagnostic_routes는 승하차 정류장을 잇는 설명선이며 차량 궤적이나 운행거리 자료가 아니다. 도달 경로가 없으면 시간 평균은 0분이 아닌 NaN이다.\n')
