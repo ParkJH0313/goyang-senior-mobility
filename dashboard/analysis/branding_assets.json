@@ -1,0 +1,13 @@
+{
+  "favicon": {
+    "file": "dashboard/dist/favicon.png",
+    "source": "codex-clipboard-5b7e1862-ad67-4f36-9b4a-8afc7de6ad73.png",
+    "method": "Built-in image_gen; black exterior background extracted to actual PNG alpha",
+    "prompt": "Use case: background-extraction. Asset type: website favicon from the supplied illustration. Input image 1 is the exact edit target. Remove only the solid black outside background and make it truly transparent with an alpha channel. Preserve the exact illustrated blue-and-white cat-eared bus, orange cat, smiling elderly woman, colors, facial expressions, dark brown outlines, window reflections, wheels, and green ground immediately under the bus. Do not redesign, repaint, add text, add objects, or replace any characters. Keep the whole bus visible with just a small transparent margin; clean transparent edges, no black outer rectangle, no white or checkerboard background. This is faithful background removal, not a new illustration."
+  },
+  "headerLogo": {
+    "file": "dashboard/dist/brand-logo.png",
+    "source": "스크린샷 2026-10-18 003154.png",
+    "method": "Original image copied without edits; displayed with rounded corners in CSS"
+  }
+}
