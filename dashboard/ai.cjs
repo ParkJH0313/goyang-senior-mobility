@@ -4,10 +4,11 @@ const {ChatError}=require('./errors.cjs');
 const {geminiStream}=require('./gemini.cjs');
 const tool = {
   type:'function',name:'calculate_scenario',strict:true,
-  description:'지원 범위/거점/차종/전환율/재차인원 조건을 바꾸어 같은 탄소식을 계산한다. 바꾸지 않을 필드는 null. 화면은 변경하지 않는다. 수치 비교 질문에는 이 함수를 사용한다.',
+  description:'가상정류장 단계/연결 방식/차량 대수/차종/전환율/재차인원 조건을 바꾸어 같은 계산식으로 30분 도달 비율·연간 운영비·탄소 감축량을 계산한다. 바꾸지 않을 필드는 null. 화면은 변경하지 않는다. 수치 비교 질문에는 이 함수를 사용한다.',
   parameters:{type:'object',additionalProperties:false,required:keys,properties:{
-    scope:{type:['string','null'],enum:['core','extended','all',null]},
-    destination:{type:['string','null'],enum:['hospital','tanhyeon','kintex',null]},
+    tier:{type:['string','null'],enum:['t21','t36','t61',null],description:'추가 가상정류장 21·36·61곳'},
+    destination:{type:['string','null'],enum:['clinic','tanhyeon','kintex',null]},
+    vehicles:{type:['integer','null'],description:'똑버스 차량 대수 1~3대',minimum:1,maximum:3},
     vehicle:{type:['string','null'],enum:['lpg','hybrid',null]},
     conversion:{type:['number','null'],description:'택시/자가용 통행 전환율 0~1',minimum:0,maximum:1},
     occupancy:{type:['number','null'],description:'평균 재차인원 1~3.2명',minimum:1,maximum:3.2}
@@ -74,7 +75,7 @@ function createAI({apiKey,model='gpt-6-luna',provider='openai',evaluate,fetchImp
           const args=JSON.parse(call.arguments);
           if(!args||typeof args!=='object'||Array.isArray(args)||Object.keys(args).some(k=>!keys.includes(k)))throw new Error('Invalid tool inputs');
           const next=validateScenario({...scenario,...Object.fromEntries(Object.entries(args).filter(([,v])=>v!==null))});
-          emit('status',{text:'비교 조건으로 탄소 계산식을 다시 계산하고 있습니다…'});
+          emit('status',{text:'비교 조건으로 다시 계산하고 있습니다…'});
           result=await evaluate(next);
           signal.throwIfAborted();emit('calculation',{calculation:result});
         }catch(error){

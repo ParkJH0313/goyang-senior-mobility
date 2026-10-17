@@ -1,7 +1,7 @@
 (()=>{
   const $=id=>document.getElementById(id);let enabled=false,busy=false,controller=null,settingsReady=false;
-  const names={hospital:'일산백병원 직결',tanhyeon:'탄현역 환승',kintex:'킨텍스역 환승'},vehicles={lpg:'LPG',hybrid:'하이브리드'};
-  const summary=s=>`${{core:'핵심 집중 472명',extended:'추가 포함 496명',all:'전체 포함 902명'}[s.scope]} · ${names[s.destination]}\n${vehicles[s.vehicle]} · 전환 ${Math.round(s.conversion*100)}% · 재차 ${s.occupancy.toFixed(1)}명`;
+  const names={clinic:'가까운 의원 직결',tanhyeon:'탄현역 환승',kintex:'킨텍스역 환승'},vehicles={lpg:'LPG',hybrid:'하이브리드'};
+  const summary=s=>`가상정류장 ${s.tier.slice(1)}곳 · ${names[s.destination]} · ${s.vehicles}대\n${vehicles[s.vehicle]} · 전환 ${Math.round(s.conversion*100)}% · 재차 ${s.occupancy.toFixed(1)}명`;
   const scroll=()=>{$('chat-scroll').scrollTop=$('chat-scroll').scrollHeight;};
   function controls(){
     $('chat-input').disabled=!enabled;
@@ -37,7 +37,7 @@
   const create=(tag,cls,text)=>{const el=document.createElement(tag);el.className=cls;if(text!==undefined)el.textContent=text;return el;};
   function renderCitations(el,text,sources){
     const known=new Map(sources.map(s=>[s.id,s]));el.replaceChildren();let last=0;
-    for(const match of text.matchAll(/\[(S[1-6])\]/g)){
+    for(const match of text.matchAll(/\[(S[1-8])\]/g)){
       el.append(document.createTextNode(text.slice(last,match.index)));
       const source=known.get(match[1]);
       if(source){const a=create('a','',match[0]);a.href=source.url;a.target='_blank';a.rel='noopener';a.title=source.title;el.append(a);}else el.append(document.createTextNode(match[0]));
@@ -47,10 +47,10 @@
   }
   function resultCard(value){
     const card=create('div','chat-result-card');
-    card.append(create('p','',`${value.scopeTitle} · ${value.destinationTitle}`),create('p','',`${value.vehicleTitle} · 전환 ${Math.round(value.scenario.conversion*100)}% · 재차 ${value.scenario.occupancy.toFixed(1)}명`));
-    if(!value.available){card.append(create('p','',value.reason||'거리 확인 후 계산할 수 있습니다.'));return card;}
+    card.append(create('p','',`가상정류장 ${value.stops.added}곳 · ${value.destinationTitle} · ${value.budget.vehicles}대 · 운영비 ${(value.budget.annualWon/1e8).toFixed(2)}억 원`),create('p','',`${value.vehicleTitle} · 전환 ${Math.round(value.scenario.conversion*100)}% · 재차 ${value.scenario.occupancy.toFixed(1)}명`));
+    if(!value.available){card.append(create('p','',value.reason||'경로 확인 후 계산할 수 있습니다.'));return card;}
     const negative=value.result.savingKg<-.000001;card.classList.toggle('negative',negative);
-    card.append(create('strong','',`${(Math.abs(value.result.savingKg)/1000).toFixed(2)} tCO₂ / 년 ${negative?'증가':'감축'}`),create('small','','같은 계산식으로 산출 · 비교 조건은 화면에 자동 적용되지 않습니다.'));
+    card.append(create('strong','',`30분 도달 ${(value.access.withDrt*100).toFixed(1)}% · ${(Math.abs(value.result.savingKg)/1000).toFixed(2)} tCO₂ / 년 ${negative?'증가':'감축'}`),create('small','','같은 계산식으로 산출 · 비교 조건은 화면에 자동 적용되지 않습니다.'));
     return card;
   }
   async function send(message){

@@ -1,44 +1,45 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#153f35"><title>가좌·송포 | 의료이동 탄소 시나리오</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/chat.css"><script src="/config.js"></script><script defer src="/model.js"></script><script defer src="/app.js"></script><script defer src="/chat.js"></script></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#153f35"><title>구산·법곳·가좌 | 똑버스 의료이동 시나리오</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/chat.css"><script src="/config.js"></script><script defer src="/model.js"></script><script defer src="/app.js"></script><script defer src="/chat.js"></script></head>
 <body>
 <header class="topbar"><a class="brand" href="/"><span class="brand-symbol">↗</span><span>고양, 가까운 돌봄<small>의료이동 정책 시나리오</small></span></a><nav><a class="current" href="/">대시보드</a><a href="/about.html">자료와 계산 기준 ↗</a></nav><span class="live"><i></i>카카오맵 연결</span></header>
 <div class="workspace">
-<section class="intro"><div><p class="eyebrow">가좌동 · 송포동 / 똑버스 도입 검토</p><h1>병원 가는 길의 탄소를 줄이는 조건</h1><p class="subtitle">지원 범위와 운영 조건을 바꾸며, 의료이동 전환의 효과를 비교하세요.</p></div><button id="chat-open" class="chat-launch" aria-expanded="false" aria-controls="chat-panel"><span aria-hidden="true">✦</span> AI에게 물어보기 <span aria-hidden="true">↗</span></button></section>
-<section class="results" aria-label="탄소 계산 결과">
-<article class="result primary" id="saving-card"><div class="result-label"><span id="saving-title">예상 연간 탄소 감축량</span><span class="pill" id="saving-percent">거리 조회 중</span></div><div class="result-number"><strong id="saving">—</strong><span>tCO₂ / 년</span></div><p>택시·자가용에서 전환한 고령자 병원 통행 기준</p></article>
-<article class="result"><div class="result-label">예상 전환 병원 통행 <span class="mini-icon">↔</span></div><div class="result-number"><strong id="trips">—</strong><span>왕복 / 년</span></div><p>선택 인구 <b id="selected-pop">472</b>명 · 전환율 <b id="conversion-summary">30</b>%</p></article>
-<article class="result"><div class="result-label">탄소가 같아지는 재차인원 <span class="mini-icon">⌁</span></div><div class="result-number"><strong id="break-even">—</strong><span>명</span></div><p id="break-even-note">기존 이동과 똑버스 배출량을 비교합니다.</p></article>
+<section class="intro"><div><p class="eyebrow">구산·법곳·가좌 일대 / 고양똑버스 도입 검토</p><h1>30분 안에 병원에 닿는 고령자를 늘리는 조건</h1><p class="subtitle">가상정류장과 운영 조건을 바꾸며 의료 접근, 운영비, 탄소 효과를 함께 비교하세요.</p></div><button id="chat-open" class="chat-launch" aria-expanded="false" aria-controls="chat-panel"><span aria-hidden="true">✦</span> AI에게 물어보기 <span aria-hidden="true">↗</span></button></section>
+<section class="results" aria-label="정책 효과 요약">
+<article class="result primary" id="access-card"><div class="result-label"><span>30분 안에 병원 도달 <small class="label-note">고령인구 기준</small></span><span class="pill" id="access-gain">경로 조회 중</span></div><div class="result-number"><strong id="access">—</strong><span>%</span></div><p>지금 대중교통 <b id="access-now">14.6</b>% → 똑버스 도입 후 · 버스나 똑버스 중 하나로 도달</p></article>
+<article class="result" id="budget-card"><div class="result-label">연간 운영비 추정 <span class="mini-icon">₩</span></div><div class="result-number"><strong id="budget">—</strong><span>억 원 / 년</span></div><p>똑버스 <b id="budget-vehicles">2</b>대 · 대당 1일 운송원가 <b id="budget-daily">560,428</b>원 × 365일</p></article>
+<article class="result" id="saving-card"><div class="result-label"><span id="saving-title">연간 탄소 감축량</span><span class="pill" id="saving-percent">경로 조회 중</span></div><div class="result-number"><strong id="saving">—</strong><span>tCO₂ / 년</span></div><p>택시·자가용에서 전환한 병원 통행 · 왕복 <b id="trips">—</b>회 / 년</p></article>
 </section>
 <main class="dashboard">
 <aside class="controls">
 <div class="panel-heading"><h2>정책 조건</h2><button id="reset" class="text-button">초기화 ↺</button></div>
-<fieldset><legend><span>01</span> 지원 범위</legend><div class="scope-options">
-<button data-scope="core" class="scope active" aria-pressed="true"><span><b>핵심 집중</b><small>80분에도 남는 저접근 지역</small></span><strong>472<small>명</small></strong></button>
-<button data-scope="extended" class="scope" aria-pressed="false"><span><b>추가 포함</b><small>45분에도 남는 저접근 지역</small></span><strong>496<small>명</small></strong></button>
-<button data-scope="all" class="scope" aria-pressed="false"><span><b>전체 포함</b><small>처음 선정한 군집 전체</small></span><strong>902<small>명</small></strong></button>
-</div><div class="coverage"><span>군집 고령인구 중 <b id="share">52.3%</b></span><span><b id="count">24</b> / 41격자</span></div><div class="track"><i id="share-bar" style="width:52.3%"></i></div></fieldset>
-<fieldset><legend><span>02</span> 똑버스 연결 방식</legend><select id="destination" aria-label="똑버스 연결 방식"><option value="hospital">일산백병원 직결</option><option value="tanhyeon">탄현역까지 이동 후 환승</option><option value="kintex">킨텍스역까지 이동 후 환승</option></select><p class="control-note" id="destination-note">기존 이동과 똑버스 모두 병원까지 비교</p></fieldset>
-<fieldset><legend><span>03</span> 똑버스 차종</legend><div class="segmented" role="group" aria-label="똑버스 차종"><button data-vehicle="lpg" aria-pressed="true" class="active">LPG</button><button data-vehicle="hybrid" aria-pressed="false">하이브리드</button></div></fieldset>
-<fieldset><legend><span>04</span> 똑버스로 바꾸는 비율</legend><div class="slider-value"><span>택시·자가용 이용 통행 중</span><output for="conversion" id="conversion-value">30<small>%</small></output></div><input type="range" id="conversion" aria-label="택시 자가용에서 똑버스로 바꾸는 비율" min="0" max="100" step="5" value="30"><div class="range-ends"><span>0%</span><span>100%</span></div></fieldset>
-<fieldset><legend><span>05</span> 평균 재차인원</legend><div class="slider-value"><span>승객이 탑승한 구간 기준</span><output for="occupancy" id="occupancy-value">2.5<small>명</small></output></div><input type="range" id="occupancy" aria-label="평균 재차인원" min="1" max="3.2" step=".1" value="2.5"><div class="range-ends"><span>1명</span><span>3.2명</span></div></fieldset>
+<fieldset><legend><span>01</span> 가상정류장 배치</legend><div class="scope-options">
+<button data-tier="t21" class="scope" aria-pressed="false"><span><b>21곳 추가</b><small>도보 5분 안 탑승 <i data-walk5="t21"></i></small></span><strong>21<small>곳</small></strong></button>
+<button data-tier="t36" class="scope active" aria-pressed="true"><span><b>36곳 추가</b><small>도보 5분 안 탑승 <i data-walk5="t36"></i></small></span><strong>36<small>곳</small></strong></button>
+<button data-tier="t61" class="scope" aria-pressed="false"><span><b>61곳 추가</b><small>도보 5분 안 탑승 <i data-walk5="t61"></i></small></span><strong>61<small>곳</small></strong></button>
+</div><div class="coverage"><span>도보 5분 안에 탈 수 있는 고령인구 <b id="walk5">—</b></span><span>기존 정류장만 <b id="walk5-now">—</b></span></div><div class="track"><i id="walk5-bar"></i></div></fieldset>
+<fieldset><legend><span>02</span> 똑버스 연결 방식</legend><select id="destination" aria-label="똑버스 연결 방식"><option value="clinic">가까운 내과·정형외과 직결</option><option value="tanhyeon">탄현역까지 이동 후 환승</option><option value="kintex">킨텍스역까지 이동 후 환승</option></select><p class="control-note" id="destination-note"></p></fieldset>
+<fieldset><legend><span>03</span> 차량 대수</legend><div class="segmented three" role="group" aria-label="똑버스 차량 대수"><button data-vehicles="1" aria-pressed="false">1대</button><button data-vehicles="2" aria-pressed="true" class="active">2대</button><button data-vehicles="3" aria-pressed="false">3대</button></div><p class="control-note">운영비에 반영 · 호출 대기 14.5분은 운영 사례값으로 고정</p></fieldset>
+<fieldset><legend><span>04</span> 똑버스 차종</legend><div class="segmented" role="group" aria-label="똑버스 차종"><button data-vehicle="lpg" aria-pressed="true" class="active">LPG</button><button data-vehicle="hybrid" aria-pressed="false">하이브리드</button></div></fieldset>
+<fieldset><legend><span>05</span> 똑버스로 바꾸는 비율</legend><div class="slider-value"><span>택시·자가용 이용 통행 중</span><output for="conversion" id="conversion-value">30<small>%</small></output></div><input type="range" id="conversion" aria-label="택시 자가용에서 똑버스로 바꾸는 비율" min="0" max="100" step="5" value="30"><div class="range-ends"><span>0%</span><span>100%</span></div></fieldset>
+<fieldset><legend><span>06</span> 평균 재차인원</legend><div class="slider-value"><span>승객이 탑승한 구간 기준</span><output for="occupancy" id="occupancy-value">2.5<small>명</small></output></div><input type="range" id="occupancy" aria-label="평균 재차인원" min="1" max="3.2" step=".1" value="2.5"><div class="range-ends"><span>1명</span><span>3.2명</span></div></fieldset>
 </aside>
 <div class="visual-column">
-<section class="map-panel" aria-label="선택 지역 지도"><div class="map-heading"><div><h2 id="map-title">핵심 집중</h2><span id="map-subtitle">24개 격자 · 고령인구 472명</span></div><button id="fit" class="outline-button">전체 보기 ⤢</button></div><div id="map"><div id="loading">카카오 지도를 연결하고 있습니다…</div></div><div class="map-bottom"><div class="legend"><span><i class="selected"></i>선택 지역</span><span><i class="other"></i>나머지 군집</span></div><span id="cell-info">격자를 눌러 인구 확인</span></div></section>
+<section class="map-panel" aria-label="선택 지역 지도"><div class="map-heading"><div><h2 id="map-title">구산·법곳·가좌 일대</h2><span id="map-subtitle">39개 격자 · 고령인구 784명</span></div><button id="fit" class="outline-button">전체 보기 ⤢</button></div><div id="map"><div id="loading">카카오 지도를 연결하고 있습니다…</div></div><div class="map-bottom"><div class="legend"><span><i class="selected"></i>대상 격자</span><span><i class="stop"></i>가상정류장</span><span><i class="dest"></i>연결 목적지</span></div><span id="cell-info">격자를 눌러 인구 확인</span></div></section>
 <div class="insights">
 <section class="insight comparison"><div class="panel-heading"><h2>같은 통행, 다른 배출량</h2><span>tCO₂ / 년</span></div><div class="bar-row"><div><span>기존 택시·자가용</span><b id="baseline-total">—</b></div><div class="bar-track"><i class="baseline" id="baseline-bar"></i></div></div><div class="bar-row"><div><span>똑버스 전환 후</span><b id="drt-total">—</b></div><div class="bar-track"><i class="drt" id="drt-bar"></i></div></div><p id="per-trip-note">왕복 1회당 배출량을 계산하고 있습니다.</p></section>
-<section class="insight sensitivity"><div class="panel-heading"><h2>함께 탈수록 달라지는 효과</h2><span>연간 감축량</span></div><svg id="occupancy-chart" viewBox="0 0 340 118" role="img" aria-label="평균 재차인원에 따른 연간 탄소 감축량"><text x="170" y="60" text-anchor="middle" fill="#78877e" font-size="12">거리 조회 후 표시됩니다.</text></svg><p id="sensitivity-note">재차인원 조건별 감축과 증가를 함께 확인합니다.</p></section>
+<section class="insight sensitivity"><div class="panel-heading"><h2>함께 탈수록 달라지는 탄소 효과</h2><span>연간 감축량</span></div><svg id="occupancy-chart" viewBox="0 0 340 118" role="img" aria-label="평균 재차인원에 따른 연간 탄소 감축량"><text x="170" y="60" text-anchor="middle" fill="#78877e" font-size="12">거리 조회 후 표시됩니다.</text></svg><p id="sensitivity-note">재차인원 조건별 감축과 증가를 함께 확인합니다.</p></section>
 </div></div></main>
-<div class="data-status"><span id="status" role="status">자동차 왕복거리 조회 중…</span><button id="retry" class="text-button" hidden>다시 조회</button><a href="/about.html">이 결과는 어떻게 계산하나요? ↗</a></div>
-<footer>고양시 고령자 의료접근성 연구 <span>가좌·송포 C001 · Step7 / Step8</span></footer></div>
+<div class="data-status"><span id="status" role="status">자동차 경로 조회 중…</span><button id="retry" class="text-button" hidden>다시 조회</button><a href="/about.html">이 결과는 어떻게 계산하나요? ↗</a></div>
+<footer>고양시 고령자 의료접근성 연구 <span>구산·법곳·가좌 C002 · Step7 / Step9</span></footer></div>
 <aside id="chat-panel" class="chat-panel" aria-labelledby="chat-title" hidden>
   <header class="chat-header"><div><p class="chat-eyebrow">POLICY ASSISTANT</p><h2 id="chat-title">숫자에서, 정책으로 <span aria-hidden="true">✦</span></h2></div><button id="chat-close" class="chat-icon" aria-label="AI 문답 닫기">×</button></header>
   <div class="chat-current"><span class="chat-kicker">지금 선택한 조건</span><p id="chat-context">대시보드를 준비하고 있습니다.</p></div>
   <div class="chat-body" id="chat-scroll">
     <div class="chat-welcome" id="chat-welcome"><span class="chat-orbit" aria-hidden="true">✦</span><h3>이 결과, 어떻게 해석할까요?</h3><p>지원 대상부터 운영 조건까지.<br>현재 시나리오의 숫자와 근거를 함께 살펴봅니다.</p></div>
     <div class="chat-suggestions" aria-label="추천 질문">
-      <button data-question="핵심 집중 대상이 왜 472명인가요?">왜 472명부터 지원하나요? <span>↗</span></button>
-      <button data-question="다른 조건은 그대로 두고 평균 재차인원을 3명으로 높이면 탄소 효과가 어떻게 달라지나요?">3명이 함께 타면 얼마나 달라지나요? <span>↗</span></button>
-      <button data-question="지금 보이는 감축량을 똑버스 사업 전체의 감축량으로 봐도 되나요?">이 감축량은 어디까지 포함하나요? <span>↗</span></button>
+      <button data-question="왜 구산·법곳·가좌 일대를 대상으로 했나요?">왜 이 지역인가요? <span>↗</span></button>
+      <button data-question="다른 조건은 그대로 두고 가상정류장을 61곳으로 늘리면 30분 도달 비율과 운영비가 어떻게 달라지나요?">정류장을 더 늘리면? <span>↗</span></button>
+      <button data-question="운영비와 탄소 감축량은 어디까지 포함한 값인가요?">운영비·감축량의 범위는? <span>↗</span></button>
     </div>
     <div id="chat-messages" class="chat-messages" role="log" aria-label="AI와의 문답" aria-live="off"></div>
   </div>

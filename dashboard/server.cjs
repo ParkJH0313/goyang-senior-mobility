@@ -89,10 +89,10 @@ function createApp(config,overrides={}){
       }
       if(req.method!=='GET'&&req.method!=='HEAD')return json(res,405,{error:'지원하지 않는 요청입니다.'});
       if(pathname==='/api/distances'){
-        const id=url.searchParams.get('destination')||'hospital';
-        if(!['hospital','tanhyeon','kintex'].includes(id))return json(res,400,{error:'지원하지 않는 목적지입니다.'});
-        if(!config.restKey&&!overrides.router)return json(res,503,{error:'자동차 거리 연결 준비 중입니다.'});
-        try{return json(res,200,await router.get(id));}catch{return json(res,502,{error:'자동차 왕복거리 조회를 완료하지 못했습니다. 잠시 후 다시 조회해 주세요.'});}
+        const id=url.searchParams.get('destination')||'clinic';
+        if(!['clinic','tanhyeon','kintex'].includes(id))return json(res,400,{error:'지원하지 않는 목적지입니다.'});
+        if(!config.restKey&&!overrides.router)return json(res,503,{error:'자동차 경로 연결 준비 중입니다.'});
+        try{return json(res,200,await router.get(id));}catch{return json(res,502,{error:'자동차 경로 조회를 완료하지 못했습니다. 잠시 후 다시 조회해 주세요.'});}
       }
       if(pathname==='/api/status')return json(res,200,router.status());
       if(pathname==='/config.js'){

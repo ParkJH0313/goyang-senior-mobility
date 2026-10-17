@@ -15,7 +15,7 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
     assert.equal(await page.locator('#chat-input').isDisabled(),true);assert.equal(await page.locator('#chat-send').isDisabled(),true);
     await page.locator('#occupancy').fill('3');await page.locator('#occupancy').dispatchEvent('input');
     assert.match(await page.locator('#chat-context').textContent(),/3.0명/);
-    await page.locator('[data-scope="all"]').click();assert.match(await page.locator('#chat-context').textContent(),/902명/);
+    await page.locator('[data-tier="t61"]').click();assert.match(await page.locator('#chat-context').textContent(),/61곳/);
     const after=await page.evaluate(()=>fetch('/api/status').then(r=>r.json()));assert.equal(before.requests,after.requests);
     report.checks.push('keyless state is honest; sliders update chat context without any AI/routing calls');
     await page.locator('#reset').click();await page.locator('#fit').click();await page.waitForTimeout(1500);
@@ -38,18 +38,18 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
       if(route.request().method()==='DELETE')return route.fulfill({contentType:'application/json',body:'{"ok":true}'});
       sent=route.request().postDataJSON();
       const calculation=await qp.evaluate(()=>{
-        const scenario={...dashboard.state(),occupancy:3};const scope=dashboard.data.scopes.find(s=>s.id===scenario.scope);
-        return {available:true,scenario,scopeTitle:scope.title,destinationTitle:'일산백병원 직결',vehicleTitle:'LPG',result:CarbonModel.calculate({...scenario,population:scope.population,baselineKm:dashboard.distances.hospital.scopes[scenario.scope].roundtripKm,drtKm:dashboard.distances.hospital.scopes[scenario.scope].roundtripKm})};
+        const scenario={...dashboard.state(),occupancy:3},d=dashboard.distances.clinic;
+        return {available:true,scenario,stops:{added:36},budget:{vehicles:scenario.vehicles,annualWon:CarbonModel.annualCost(scenario.vehicles,dashboard.data.budget)},access:{withDrt:d.access.tiers[scenario.tier]},destinationTitle:'가까운 내과·정형외과 직결',vehicleTitle:'LPG',result:CarbonModel.calculate({...scenario,population:dashboard.data.totalPopulation,baselineKm:d.roundtripKm,drtKm:d.roundtripKm})};
       });
       const events=[['context',{sources:[{id:'S5',title:'탄소 계산식과 평가 범위',url:'/about.html#formula'}]}],['calculation',{calculation}],['delta',{text:'[테스트용 응답] 3명 조건을 비교했습니다. [S5]\n<img src=x onerror=alert(1)>'}],['done',{ok:true}]];
       return route.fulfill({contentType:'text/event-stream',body:events.map(([event,data])=>`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join('')});
     });
     await qp.goto(base);await qp.waitForFunction(()=>window.dashboard?.result());await qp.locator('#chat-open').click();
     await qp.locator('[data-question]').nth(1).click();await qp.locator('.chat-sources a').waitFor();
-    assert.equal(sent.scenario.scope,'core');assert.equal(sent.scenario.occupancy,2.5);
+    assert.equal(sent.scenario.tier,'t36');assert.equal(sent.scenario.occupancy,2.5);
     assert.equal(await qp.locator('.chat-text img').count(),0);assert.equal(await qp.locator('.chat-text a').getAttribute('href'),'/about.html#formula');
     assert.equal(await qp.locator('.chat-result-card').count(),1);
-    await qp.locator('[data-scope="all"]').click();assert.match(await qp.locator('.chat-snapshot').textContent(),/472명/);assert.match(await qp.locator('#chat-context').textContent(),/902명/);
+    await qp.locator('[data-tier="t61"]').click();assert.match(await qp.locator('.chat-snapshot').textContent(),/36곳/);assert.match(await qp.locator('#chat-context').textContent(),/61곳/);
     await qp.locator('#chat-clear').click();await qp.waitForFunction(()=>!document.querySelector('#chat-messages').children.length);
     report.checks.push('mock stream, deterministic comparison card, citation link, escaped HTML, frozen question context, clear conversation');
     await qp.unroute('**/api/chat');await qp.route('**/api/chat',route=>route.fulfill({status:429,contentType:'application/json',body:JSON.stringify({code:'RATE_LIMIT',error:'테스트: 잠시 후 다시 시도해 주세요.'})}));

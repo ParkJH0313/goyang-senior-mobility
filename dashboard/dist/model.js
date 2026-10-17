@@ -13,5 +13,10 @@
   const baselineKg=trips*baselinePerTrip,drtKg=trips*drtPerTrip;
   return {trips,baselinePerTrip,drtPerTrip,baselineKg,drtKg,savingKg:baselineKg-drtKg,savingPerTrip:baselinePerTrip-drtPerTrip,percent:baselineKg?100*(baselineKg-drtKg)/baselineKg:null,breakEven:drtNumerator/baselinePerTrip,drtOccupiedVehicleKmPerTrip:drtKm*p.detour/occupancy};
  }
- const model={defaults,vehicles,calculate};if(typeof module!=='undefined'&&module.exports)module.exports=model;else root.CarbonModel=model;
+ // 연간 운영비(원) = 차량 대수 × 대당 1일 운송원가 × 운행일수
+ function annualCost(count,{dailyCostPerVehicle,days}){
+  if(!Number.isInteger(count)||count<1||!Number.isFinite(dailyCostPerVehicle)||!Number.isFinite(days))throw new Error('Invalid budget inputs');
+  return count*dailyCostPerVehicle*days;
+ }
+ const model={defaults,vehicles,calculate,annualCost};if(typeof module!=='undefined'&&module.exports)module.exports=model;else root.CarbonModel=model;
 })(typeof window==='undefined'?globalThis:window);

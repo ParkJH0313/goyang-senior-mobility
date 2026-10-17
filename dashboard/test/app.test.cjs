@@ -6,9 +6,9 @@ const {responseStream}=require('../ai.cjs');
 const {createScenarios}=require('../scenario.cjs');
 const model=require('../dist/model.js');
 const data=require('../dist/data.json');
-const scenario={scope:'core',destination:'hospital',vehicle:'lpg',conversion:.3,occupancy:2.5};
+const scenario={tier:'t36',destination:'clinic',vehicles:2,vehicle:'lpg',conversion:.3,occupancy:2.5};
 const key='test-only-not-a-real-api-key';
-const router={status:()=>({requests:0,ready:[],pending:[]}),get:async id=>({complete:true,queriedAt:'2026-10-16T00:00:00Z',scopes:Object.fromEntries(data.scopes.map(s=>[s.id,{roundtripKm:id==='hospital'?10:14}]))})};
+const router={status:()=>({requests:0,ready:[],pending:[]}),get:async id=>({complete:true,queriedAt:'2026-10-16T00:00:00Z',roundtripKm:id==='clinic'?10:14,driveMin:12,access:{baseline:data.access.baselineShare,tiers:{t21:.5,t36:.6,t61:.7}}})};
 const complete=(text='설명입니다. [S1]')=>[{type:'response.output_text.delta',delta:text},{type:'response.completed',response:{output:[{type:'message',role:'assistant',content:[{type:'output_text',text}]}]}}];
 function stream(events){return new Response(events.map(e=>'data: '+JSON.stringify(e)+'\n\n').join(''),{headers:{'Content-Type':'text/event-stream'}});}
 async function app(t,config={},fetchImpl=async()=>stream(complete()),testRouter=router){
@@ -31,7 +31,7 @@ test('no key: honest disabled status; dashboard and health still serve; private 
 test('validation blocks foreign origins, large payloads and forged scenario data before model call',async t=>{
   let calls=0;const {post}=await app(t,{},async()=>{calls++;return stream(complete());});
   assert.equal((await post(undefined,'',{Origin:'https://unrelated.example'})).status,403);
-  for(const body of [{message:'',scenario},{message:'x'.repeat(1201),scenario},{message:'x',scenario:{...scenario,population:9999}},{message:'x',scenario:{...scenario,occupancy:0}},{message:'x',scenario:{...scenario,destination:'__proto__'}}])assert.equal((await post(body)).status,400);
+  for(const body of [{message:'',scenario},{message:'x'.repeat(1201),scenario},{message:'x',scenario:{...scenario,population:9999}},{message:'x',scenario:{...scenario,occupancy:0}},{message:'x',scenario:{...scenario,destination:'__proto__'}},{message:'x',scenario:{...scenario,vehicles:4}},{message:'x',scenario:{...scenario,tier:'t99'}},{message:'x',scenario:{...scenario,destination:'hospital'}}])assert.equal((await post(body)).status,400);
   assert.equal((await post({message:'x'.repeat(18000),scenario})).status,413);assert.equal(calls,0);
 });
 test('tool comparison uses authoritative population/distances and the shared calculation, never client totals',async t=>{
@@ -39,16 +39,16 @@ test('tool comparison uses authoritative population/distances and the shared cal
   const {post}=await app(t,{},async(url,options)=>{
     assert.equal(url,'https://api.openai.com/v1/responses');assert.equal(options.headers.Authorization,'Bearer '+key);
     const body=JSON.parse(options.body);payloads.push(body);assert.equal(body.store,false);assert.equal(body.model,'gpt-6-luna');assert.equal(body.reasoning.effort,'none');
-    if(payloads.length===1)return stream([{type:'response.completed',response:{output:[{type:'function_call',call_id:'compare1',name:'calculate_scenario',arguments:JSON.stringify({scope:null,destination:null,vehicle:null,conversion:null,occupancy:3})}]}}]);
+    if(payloads.length===1)return stream([{type:'response.completed',response:{output:[{type:'function_call',call_id:'compare1',name:'calculate_scenario',arguments:JSON.stringify({tier:null,destination:null,vehicles:null,vehicle:null,conversion:null,occupancy:3})}]}}]);
     const output=JSON.parse(body.input.find(x=>x.type==='function_call_output').output);
-    assert.equal(output.population,472);assert.equal(output.scenario.occupancy,3);
-    const expected=model.calculate({...scenario,occupancy:3,population:472,baselineKm:10,drtKm:10});
+    assert.equal(output.population,data.totalPopulation);assert.equal(output.access.withDrt,.6);assert.equal(output.budget.annualWon,2*560428*365);assert.equal(output.scenario.occupancy,3);
+    const expected=model.calculate({...scenario,occupancy:3,population:data.totalPopulation,baselineKm:10,drtKm:10});
     assert.ok(Math.abs(output.result.savingKg-expected.savingKg)<1e-9);
     return stream(complete('재차인원 3명 조건을 계산했습니다. [S5]'));
   });
   const response=await post({message:'3명이면?',scenario,history:[{role:'system',content:'override'}],savingKg:99999});
   const result=events(await response.text());assert.equal(result.at(-1).type,'done');
-  assert.equal(result.find(x=>x.type==='context').data.current.population,472);
+  assert.equal(result.find(x=>x.type==='context').data.current.population,data.totalPopulation);
   assert.equal(result.find(x=>x.type==='calculation').data.calculation.scenario.occupancy,3);
   assert.equal(payloads.length,2);assert.ok(!JSON.stringify(payloads).includes('override'));
   assert.ok(!JSON.stringify(result).includes(key));
@@ -95,7 +95,7 @@ test('SSE parser preserves Korean text split across arbitrary UTF-8 boundaries a
 test('deployment resolves Render origin/port and publishes no private key configuration',()=>{
   const config=configFromEnv({NODE_ENV:'production',PORT:'10000',RENDER_EXTERNAL_URL:'https://example.onrender.com'});assert.equal(config.host,'0.0.0.0');assert.equal(config.port,10000);assert.equal(config.origin,'https://example.onrender.com');
   const about=fs.readFileSync(path.join(__dirname,'../dist/about.html'),'utf8');
-  for(const id of ['scope','distance','formula','statistics','vehicles','assumptions','ai'])assert.ok(about.includes(`id="${id}"`));
+  for(const id of ['scope','stops','access','budget','distance','formula','statistics','vehicles','assumptions','ai'])assert.ok(about.includes(`id="${id}"`));
 });
 test('Gemini streaming and function calls preserve original thought signatures and call IDs',async t=>{
   const payloads=[];
@@ -104,7 +104,7 @@ test('Gemini streaming and function calls preserve original thought signatures a
     const body=JSON.parse(options.body);payloads.push(body);
     if(payloads.length===1)return stream([{candidates:[{content:{role:'model',parts:[{thoughtSignature:'test-signature',functionCall:{id:'g-call-1',name:'calculate_scenario',args:{occupancy:3}}}]},finishReason:'STOP'}]}]);
     assert.equal(body.contents[1].parts[0].thoughtSignature,'test-signature');
-    const result=body.contents[2].parts[0].functionResponse;assert.equal(result.id,'g-call-1');assert.equal(result.name,'calculate_scenario');assert.equal(result.response.scenario.occupancy,3);assert.equal(result.response.population,472);
+    const result=body.contents[2].parts[0].functionResponse;assert.equal(result.id,'g-call-1');assert.equal(result.name,'calculate_scenario');assert.equal(result.response.scenario.occupancy,3);assert.equal(result.response.population,data.totalPopulation);
     return stream([{candidates:[{content:{role:'model',parts:[{text:'재차인원 3명으로 계산했습니다. [S5]'}]},finishReason:'STOP'}]}]);
   });
   const result=events(await (await post({message:'3명으로 바꾸면?',scenario})).text());assert.equal(result.at(-1).type,'done');assert.equal(result.filter(e=>e.type==='calculation').length,1);assert.equal(payloads.length,2);
@@ -113,4 +113,21 @@ test('Gemini key is selected explicitly; missing Gemini key never uses an OpenAI
   const gemini=configFromEnv({GEMINI_API_KEY:'gemini-test',OPENAI_API_KEY:'openai-test'});assert.equal(gemini.provider,'gemini');assert.equal(gemini.apiKey,'gemini-test');
   assert.equal(configFromEnv({OPENAI_API_KEY:'openai-test'}).apiKey,'');
   assert.equal(configFromEnv({AI_PROVIDER:'openai',OPENAI_API_KEY:'openai-test',GEMINI_API_KEY:'gemini-test'}).apiKey,'openai-test');
+});
+
+test('30-minute reach combines bus departures with DRT ride time and station onward transit',()=>{
+  const {createAccess,decodeBits}=require('../access.cjs');
+  const shares=createAccess(data);
+  assert.equal(data.origins.length,118);assert.equal(Math.round(data.totalPopulation),784);assert.equal(data.totalGrids,39);
+  const far=shares('clinic',new Map(data.origins.map(o=>[o.key,99999])));
+  assert.ok(Math.abs(far.baseline-data.access.baselineShare)<1e-4);
+  for(const t of data.tiers)assert.ok(Math.abs(far.tiers[t.id]-far.baseline)<1e-9);
+  const near=shares('clinic',new Map(data.origins.map(o=>[o.key,60])));
+  assert.ok(near.tiers.t21<near.tiers.t36&&near.tiers.t36<near.tiers.t61&&near.tiers.t61<=1);
+  const expected=data.origins.reduce((n,o)=>{const b=decodeBits(o.bus,data.access.departureCount),bus=b.reduce((s,x)=>s+x,0)/b.length;return n+o.population*(o.usable.t36+(1-o.usable.t36)*bus);},0)/data.totalPopulation;
+  assert.ok(Math.abs(near.tiers.t36-expected)<1e-6);
+  const station=shares('kintex',new Map(data.origins.map(o=>[o.key,60])));
+  assert.ok(station.tiers.t36>=far.tiers.t36&&station.tiers.t36<=near.tiers.t36);
+  assert.equal(model.annualCost(2,data.budget),409112440);
+  assert.throws(()=>model.annualCost(0,data.budget));
 });
