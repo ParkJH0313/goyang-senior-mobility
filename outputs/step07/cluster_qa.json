@@ -2,7 +2,7 @@
   "valid_grids": 874,
   "cutoff": 0.3,
   "order_statistic": 263,
-  "threshold": 1.0841487279843445,
+  "threshold": 2.0084299262381458,
   "tied_at_boundary": 1,
   "selected_grids": 263,
   "selected_fraction": 0.3009153318077803,

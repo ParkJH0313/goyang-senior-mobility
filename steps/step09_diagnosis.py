@@ -1,4 +1,4 @@
-"""Cluster-level travel-time components and extended arrival bands."""
+"""Cluster-level travel components, arrival states, and bus-stop walking access."""
 import json
 from collections import defaultdict
 import numpy as np,pandas as pd,geopandas as gpd,pyogrio
@@ -6,7 +6,8 @@ from shapely.geometry import LineString
 from src.analysis_io import inside,csv,parquet,gpkg,atomic_json,describe,digest,sha,ro
 from src.timetable import walk_arrays
 from src.path_diagnosis import decompose
-DEPENDENCIES=['steps/step09_diagnosis.py','src/path_diagnosis.py','src/analysis_io.py']
+from src.cluster_diagnostics import build
+DEPENDENCIES=['steps/step09_diagnosis.py','src/path_diagnosis.py','src/cluster_diagnostics.py','src/analysis_io.py']
 SETTINGS=['diagnostic_budgets_min','max_continuous_walk_s','max_boardings','dpi','baseline_budget_min']
 
 def run(ctx):
@@ -27,7 +28,7 @@ def run(ctx):
     trip_modes=trips.route_id.map(route_modes).to_numpy();estimated=trips.trip_id.isin(estimated_trips).to_numpy()
     walks=walk_arrays(ctx,ctx.config['baseline_speed_mps']);local_facility=fac.is_goyang.to_numpy(bool)
     facility_contribution=defaultdict(lambda:np.zeros((len(fac),2)))
-    names=dict(zip(summary.cluster_id,summary.area_name));components=[];bands=[];route_rows=[];sample_ids=set()
+    names=dict(zip(summary.cluster_id,summary.area_name));components=[];route_rows=[];sample_ids=set()
     for cid,m in membership.groupby('cluster_id'):
         sub=small[small.parent_gid.isin(m.gid)&small.population.gt(0)].sort_values(['score','gid'])
         if len(sub):sample_ids.update(sub.gid.iloc[[0,len(sub)//2,len(sub)-1]].tolist())
@@ -37,13 +38,10 @@ def run(ctx):
             od=z['od'];times=z['times'];near=z['nearest'];com=z['components'];legs=z['legs'];upper=z['upper_nearest_s']
             base=(od<=ctx.config['baseline_budget_min']*60+1e-8).sum(axis=1);actual=np.nan_to_num(com[:,7],nan=np.inf)
             uncertain=np.isfinite(upper)&(upper<actual-1e-7)
-            limits=[ctx.config['baseline_budget_min']]+ctx.config['diagnostic_budgets_min']
-            label=np.select([uncertain]+[actual<=b*60+1e-8 for b in limits],['자료 미해결','≤30','(30,45]','(45,60]','(60,80]'],default='80분 내 미도달')
-            reach30=od<=limits[0]*60+1e-8;reach80=od<=limits[-1]*60+1e-8
+            reach30=od<=ctx.config['baseline_budget_min']*60+1e-8
+            reach80=od<=max(ctx.config['diagnostic_budgets_min'])*60+1e-8
             facility_contribution[cid][:,0]+=reach30.sum(axis=0)*row.population/len(times)
             facility_contribution[cid][:,1]+=reach80.sum(axis=0)*row.population/len(times)
-            for b in pd.unique(label):
-                n=int(np.sum(label==b));bands.append(dict(cluster_id=cid,gid=r.gid,band=b,departure_count=n,time_fraction=n/len(times),population_time_weight=row.population*n/len(times),baseline_unmet_count=int(np.sum((label==b)&(base==0)))))
             finite=np.isfinite(actual);good=finite&~uncertain
             if good.any():
                 assert np.max(com[good,5])<=ctx.config['max_continuous_walk_s']+1e-7
@@ -69,7 +67,7 @@ def run(ctx):
                         if tid<0:continue
                         sa,sb=stops.iloc[a],stops.iloc[b];trip=trips.iloc[tid]
                         route_rows.append(dict(gid=r.gid,cluster_id=cid,departure_s=t,trip_id=trip.trip_id,route_id=trip.route_id,from_stop_id=sa.stop_id,to_stop_id=sb.stop_id,boarding_s=depart,alighting_s=arrive,geometry_quality='schematic_stop_chord_not_route_shape',vehicle_distance_m=np.nan,geometry=LineString([(sa.x_5179,sa.y_5179),(sb.x_5179,sb.y_5179)])))
-    comp=pd.DataFrame(components);bdf=pd.DataFrame(bands);diagnoses=[]
+    comp=pd.DataFrame(components);diagnoses=[]
     for cid,g in comp.groupby('cluster_id'):
         total=g.population.sum();valid=g.status.eq('reachable');v=g[valid];weight=v.population.sum()
         d={'cluster_id':cid,'area_name':names[cid],'population':float(g.drop_duplicates('gid').population.sum()),'population_time_samples':float(total),'conditional_reachable_fraction':float(weight/total),'unresolved_fraction':float(g.loc[g.status.eq('unresolved'),'population'].sum()/total),'absolute_unmet_30_fraction':float(g.loc[g.count_30.eq(0),'population'].sum()/total)}
@@ -100,7 +98,6 @@ def run(ctx):
         diagnosis.loc[i,'first_walk_blocked_population']=a.loc[a.first_walk_blocked,'population'].sum()
         diagnosis.loc[i,'first_walk_blocked_fraction']=a.loc[a.first_walk_blocked,'population'].sum()/a.population.sum()
     parquet(comp,out/'travel_components.parquet');csv(diagnosis,out/'tables/cluster_diagnosis.csv')
-    csv(bdf.groupby(['cluster_id','band'],as_index=False)[['departure_count','population_time_weight','baseline_unmet_count']].sum(),out/'tables/extended_arrival_bands.csv')
     layers={'cluster_diagnosis':summary.merge(diagnosis,on=['cluster_id','area_name'],suffixes=('','_diagnosis'))}
     contributions=[]
     for cid,values in facility_contribution.items():
@@ -110,6 +107,7 @@ def run(ctx):
         layers['reached_facilities']=gpd.GeoDataFrame(contributions,geometry='geometry',crs=5179)
         csv(pd.DataFrame(contributions).drop(columns='geometry'),out/'tables/facility_contribution.csv')
     if route_rows:layers['diagnostic_routes']=gpd.GeoDataFrame(route_rows,geometry='geometry',crs=5179)
+    layers.update(build(ctx,small,membership,comp,access,summary))
     gpkg(out/'diagnosis.gpkg',layers)
     atomic_json(ctx.cache/'validation_report.json',{
         'status':'passed', 'all_511_departures_complete':True,
@@ -117,5 +115,5 @@ def run(ctx):
         'time_budget_and_speed_monotonicity_checked':True,
         'unresolved_path_rows':int(comp.status.eq('unresolved').sum()),
         'field_verification_performed':False})
-    describe(ctx,9,'# Step 9 취약 원인 진단\n\n기준 상위 군집의 모든 출발점과 511개 출발시각을 고령인구로 가중한다. travel_components.parquet는 실제 경로의 보행·대기·차내·추가 탑승 준비시간이다. 군집 진단표는 80분 이내 도달한 경로의 조건부 평균과 전체 인구·시각에 대한 미도달 비율을 함께 제시한다. extended_arrival_bands는 30·45·60·80분 최초 도달 구간의 군집별 집계다. diagnostic_routes는 승하차 정류장을 잇는 설명선이며 차량 궤적이나 운행거리 자료가 아니다. 도달 경로가 없으면 시간 평균은 0분이 아닌 NaN이다.\n')
+    describe(ctx,9,'# Step 9 취약 원인 진단\n\n기준 상위 군집의 모든 출발점과 511개 출발시각을 고령인구로 가중한다. travel_components.parquet는 실제 경로의 보행·대기·차내·추가 탑승 준비시간이다. 군집 진단표는 80분 이내 도달한 경로의 조건부 평균과 전체 인구·시각에 대한 미도달 비율을 함께 제시한다. arrival_status는 30분 이내 도달·첫 보행 불가·30분 초과 도달·80분 내 미도달을 구분한다. nearest_bus_walk는 방향성 보행망에서 평일 승차가 가능한 버스정류장까지의 상한 없는 최단 보행시간이다. diagnostic_routes는 승하차 정류장을 잇는 설명선이며 차량 궤적이나 운행거리 자료가 아니다. 도달 경로가 없으면 시간 평균은 0분이 아닌 NaN이다.\n')
     return {'diagnostic_origins':len(cp),'travel_rows':len(comp),'clusters':len(diagnosis)}

@@ -1,27 +1,26 @@
 {
-  "signature": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf",
+  "signature": "7ce224fc87deb5d4069b46894e416e43a1e77b3cc1a700a816dc8e91ea8dbb4d",
   "status": "complete",
-  "completed_at": "2026-10-17T02:30:36.601708+00:00",
+  "completed_at": "2026-10-17T09:25:03.538044+00:00",
   "summary": {
     "valid_250m": 2586,
     "valid_500m": 874,
     "excluded_or_unresolved_500m": 1
   },
   "outputs": {
-    "step06/accessibility.gpkg": "23792433690a980aa8349e37db60c14182e0000642059fc93553f789bbcdaaed",
-    "step06/minute_profiles.npz": "e4f91d51a71389596f006789aac7eb6299e3ca4ccb7c1a21df78c8908722faab",
-    "step06/README.md": "8b00e1d8a4ae0a4eb09743daa8d1fbb340154dc146035c9ec127416205903528",
-    "step06/tables/accessibility_250m.csv": "e59af10ded391459470c72945027929e2ff22e5d13bf348d852463937655864c",
-    "step06/tables/accessibility_500m.csv": "7ff8f423798fe940c3a07d368bbb762ee6ceb66ce3f1598cafaf787c28cafe86",
+    "step06/accessibility.gpkg": "056148816fef548417c86b996b56bb74a40b52d56e251df5363070b46d8f5cfa",
+    "step06/minute_profiles.npz": "712f2b654d8659b4a3b79e6a77312fd040adfb2c755b7d8ec2ef9ec66406f274",
+    "step06/README.md": "b41f8562b5b66dd6abfc3ec9f58a1a21efaa2a24c8c4f0f1e3fb688fcd0f649d",
+    "step06/tables/accessibility_250m.csv": "ba6fd3f8ff9b2d40a3316ee9c158a1fb8ceaaf65201f692910e9af895a35f498",
+    "step06/tables/accessibility_500m.csv": "562d7f010428890f4b048eb3a6e2fdea3564cbc9097b00cd9223a673bf82b341",
     "step06/tables/coverage_summary.csv": "7fc35f25ec6fe76bc331093fb67a1ccaa5ebb274ed8f34a496a6c647ceeee87f",
-    "step06/tables/time_band_summary.csv": "825c9e384fa006519a554e48c446ded8e3d239e17e9acecc40c88f5059a50828"
+    "step06/tables/time_band_summary.csv": "754ec34ebfcd0ff50f2cb48a0509f2a44482aa38f9a61e55a4fb3658ae1980c4"
   },
-  "schema_version": "1.0",
   "parent_signatures": {
     "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
     "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
     "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
     "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
-    "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5"
+    "5": "79858bba9dcc92188161e0cbec7a95cf03e7ba38be8bf58c179553ffc2b24ae0"
   }
 }

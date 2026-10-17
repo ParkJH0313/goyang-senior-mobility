@@ -60,7 +60,7 @@ def check_presentation_inputs(ctx,migration=False):
     state=ctx.state
     assert len(state.get('stages',{}))==9 and all(s.get('status')=='complete' for s in state['stages'].values()), 'Complete the numerical stages first.'
     assert state['inputs']==ctx.inputs, 'Inputs changed; run processed mode.'
-    protected=CORE if migration else CORE+[f'steps/step{i:02d}_{s}.py' for i,s in enumerate(STEPS,1)]+['run.py','src/routing_runner.py']
+    protected=CORE if migration else CORE+[f'steps/step{i:02d}_{s}.py' for i,s in enumerate(STEPS,1)]+['run.py','src/routing_runner.py','src/cluster_diagnostics.py']
     for p in protected:assert sha(p)==state['code_sha256'][p], 'Calculation code changed; run processed mode: '+p
     if not migration:
         for st in state['stages'].values():
@@ -86,7 +86,7 @@ def remove_retired_products(ctx):
     from src.analysis_io import gpkg
     names={'review_required.csv','review_candidates.csv','override_application_log.csv',
            'decision_continuity.csv','origin_diagnosis.csv','first_walk_eligibility.csv',
-           'cluster_internal_maps.png'}
+           'cluster_internal_maps.png','06_extended_time_maps.png','extended_arrival_bands.csv'}
     for p in ctx.output.rglob('*'):
         if p.is_file() and p.name in names:
             assert p.resolve().is_relative_to(ctx.output.resolve());p.unlink()
@@ -94,9 +94,6 @@ def remove_retired_products(ctx):
     layers=[name for name,_ in pyogrio.list_layers(file)]
     if set(layers)&{'origin_diagnosis','review_required'}:
         gpkg(file,{name:pyogrio.read_dataframe(file,layer=name) for name in layers if name not in {'origin_diagnosis','review_required'}})
-    bands=ctx.step(9)/'tables/extended_arrival_bands.csv';frame=pd.read_csv(bands)
-    if 'gid' in frame:
-        csv(frame.groupby(['cluster_id','band'],as_index=False)[['departure_count','population_time_weight','baseline_unmet_count']].sum(),bands)
     # Execution checks remain private; the report is for reading research results.
     report=ctx.output/'validation_report.json'
     if report.exists():

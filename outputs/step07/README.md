@@ -14,7 +14,7 @@
 | 파일 / 레이어 | 객체 수 | 의미 |
 |---|---:|---|
 | clusters.gpkg / low_access_500m | 263 | 하위 30% 격자와 군집 소속. |
-| clusters.gpkg / cluster_summary | 49 | 군집 합집합 도형, 인구·점수·순위. |
+| clusters.gpkg / cluster_summary | 51 | 군집 합집합 도형, 인구·점수·순위. |
 
 ## 결과 파일
 
@@ -26,12 +26,12 @@
 
 ## 결과 요약
 
-- clusters: 49
+- clusters: 51
 - top_clusters: 3
 - valid_grids: 874
 - cutoff: 0.3
 - order_statistic: 263
-- threshold: 1.0841487279843445
+- threshold: 2.0084299262381458
 - tied_at_boundary: 1
 - selected_grids: 263
 - selected_fraction: 0.3009153318077803
@@ -41,3 +41,5 @@
 
 좌표계 EPSG:5179, 거리 m, 계산시간 초, 점수는 기관 수(곳)다. 미도달 0과 자료가 불완전한 NaN은 구분한다.
 도착 위치와 보행 접속에는 자료 기반 대리점·근사가 포함된다. 056번 중간 정차시각은 추정값이며 진료 가능 여부까지 나타내는 지표는 아니다.
+
+기본 보행속도는 0.8m/s이고 시간예산은 30분이다.

@@ -16,7 +16,7 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
 <div><b>지표</b>30분 이내 도달 가능한 의료기관 수의 평균</div>
 <div><b>출발시각</b>08:30–17:00, 매분 511개 시각</div>
 <div><b>공간 집계</b>250m에서 계산 → 고령인구 가중 500m 집계</div>
-<div><b>이동 조건</b>0.7m/s · 연속보행 10분 · 최대 3회 탑승</div>
+<div><b>이동 조건</b>0.8m/s · 연속보행 10분 · 최대 3회 탑승</div>
 <div><b>교통수단</b>시내·마을버스, 도시철도 및 일반철도</div>
 <div><b>군집 선정</b>하위 30%·경계 동점 포함 · Queen 인접 · 고령인구 상위 3개</div>
 </div><p class="sub">고양시와 지정된 주변 지역의 내과 또는 정형외과 전문의가 있는 기관을 대상으로 한다. 기관 수는 진료용량이나 진료시간까지 고려한 공급량은 아니다.</p></section>
@@ -36,30 +36,30 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
     <tr>
       <td>1</td>
       <td>고봉동·주교동·식사동</td>
-      <td>1,712.00</td>
-      <td>0.17</td>
-      <td>57</td>
+      <td>1,863.00</td>
+      <td>0.46</td>
+      <td>61</td>
     </tr>
     <tr>
       <td>2</td>
       <td>가좌동·송포동·덕이동</td>
-      <td>1,260.00</td>
-      <td>0.21</td>
-      <td>43</td>
+      <td>784.00</td>
+      <td>0.64</td>
+      <td>39</td>
     </tr>
     <tr>
       <td>3</td>
-      <td>능곡동·풍산동·주교동</td>
-      <td>835.00</td>
-      <td>0.25</td>
+      <td>관산동·고양동</td>
+      <td>733.00</td>
+      <td>1.28</td>
       <td>16</td>
     </tr>
   </tbody>
 </table>
-<p class="sub">저접근 경계는 1.0841곳이다. 군집명은 구성 지역을 설명하는 명칭이며 행정동 전체를 뜻하지 않는다. 유효 점수의 고령인구 비중은 99.996%다.</p></section>
+<p class="sub">저접근 경계는 2.0084곳이다. 군집명은 구성 지역을 설명하는 명칭이며 행정동 전체를 뜻하지 않는다. 유효 점수의 고령인구 비중은 99.996%다.</p></section>
 <section id="sensitivity"><h2>민감도 분석</h2><p>시간예산과 보행속도 비교는 기준 군집의 격자·인구를 고정한다. 막대는 같은 군집에서 저접근 격자에 거주하는 고령인구 비율이다.</p>
 <figure><figcaption><h3>시간예산 30·40·50분</h3><p>저접근 경계를 고정해 평균 기관 수와 남아 있는 저접근 인구를 함께 비교한다.</p></figcaption><a href="step08/figures/01_time_budget_top3.png"><img src="step08/figures/01_time_budget_top3.png" alt="시간예산 30·40·50분" loading="lazy"></a></figure>
-<figure><figcaption><h3>보행속도 0.6·0.7·0.8m/s</h3><p>속도 변화는 연속보행 10분 이내에 이용할 수 있는 정류장·기관 범위에도 영향을 준다.</p></figcaption><a href="step08/figures/03_walk_speed_top3.png"><img src="step08/figures/03_walk_speed_top3.png" alt="보행속도 0.6·0.7·0.8m/s" loading="lazy"></a></figure>
+<figure><figcaption><h3>보행속도 0.6·0.7·0.8m/s</h3><p>기준 보행속도는 0.8m/s다. 속도 변화는 연속보행 10분 이내에 이용할 수 있는 정류장·기관 범위에도 영향을 준다.</p></figcaption><a href="step08/figures/03_walk_speed_top3.png"><img src="step08/figures/03_walk_speed_top3.png" alt="보행속도 0.6·0.7·0.8m/s" loading="lazy"></a></figure>
 <figure><figcaption><h3>저접근 기준 하위 25·30·35%</h3><p>전체 유효 격자에서 군집과 고령인구 순위를 다시 계산한다.</p></figcaption><a href="step08/figures/04_cutoff_cluster_maps.png"><img src="step08/figures/04_cutoff_cluster_maps.png" alt="저접근 기준 하위 25·30·35%" loading="lazy"></a></figure>
 <details><summary>출발시각별 변화와 군집 중첩</summary>
 <figure><figcaption><h3>출발시각별 평균 기관 수</h3><p></p></figcaption><a href="step08/figures/02_time_budget_profiles.png"><img src="step08/figures/02_time_budget_profiles.png" alt="출발시각별 평균 기관 수" loading="lazy"></a></figure>
@@ -67,8 +67,17 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
 </details></section>
 <section id="diagnosis"><h2>취약 원인 진단</h2>
 <figure><figcaption><h3>시간 성분과 최초 도달 범위</h3><p>소요시간 평균은 80분 내 도달한 경로에 대한 값이다. 오른쪽은 미도달을 포함한 전체 인구·출발시각 비율이다.</p></figcaption><a href="step09/figures/cluster_diagnosis.png"><img src="step09/figures/cluster_diagnosis.png" alt="시간 성분과 최초 도달 범위" loading="lazy"></a></figure>
-<figure><figcaption><h3>30·45·60·80분 보조 비교</h3><p>시간예산 확대를 실제 교통서비스 개선으로 해석하지 않는다. 연속보행 한도와 기준 군집은 동일하다.</p></figcaption><a href="step08/figures/06_extended_time_maps.png"><img src="step08/figures/06_extended_time_maps.png" alt="30·45·60·80분 보조 비교" loading="lazy"></a></figure>
-<p class="finding">긴 시간예산에서도 남는 저접근 지역과 보행속도 변화에 민감한 지역을 구분해 해석할 수 있다. 접속 위치의 근사와 일부 보완 시간표의 추정 시각은 분석의 자료상 한계다.</p></section>
+<p class="sub">전체 비율은 고령인구와 511개 출발시각을 가중한 값이다. 첫 보행 불가와 운행·환승을 거친 미도달을 구분하고, 도달한 경로는 30분 이내와 초과로 나누어 비교한다.</p>
+<h3 id="diagnosis-C001">고봉동·주교동·식사동 군집</h3>
+<figure><figcaption><h3>도달 상태와 시간 구성</h3><p>80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.</p></figcaption><a href="step09/figures/arrival_diagnosis_C001.png"><img src="step09/figures/arrival_diagnosis_C001.png" alt="도달 상태와 시간 구성" loading="lazy"></a></figure>
+<figure><figcaption><h3>정류장 보행시간과 고령인구</h3><p>색은 250m 출발 격자의 최단 보행시간, 숫자는 500m 격자의 고령인구다. 이 지도만 보행시간 상한 없이 계산하며 본 분석의 연속보행 10분 조건은 유지한다. 가까운 정류장이 곧 의료기관 도달에 유리한 정류장을 뜻하지는 않는다.</p></figcaption><a href="step09/figures/bus_walk_population_C001.png"><img src="step09/figures/bus_walk_population_C001.png" alt="정류장 보행시간과 고령인구" loading="lazy"></a></figure>
+<h3 id="diagnosis-C002">가좌동·송포동·덕이동 군집</h3>
+<figure><figcaption><h3>도달 상태와 시간 구성</h3><p>80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.</p></figcaption><a href="step09/figures/arrival_diagnosis_C002.png"><img src="step09/figures/arrival_diagnosis_C002.png" alt="도달 상태와 시간 구성" loading="lazy"></a></figure>
+<figure><figcaption><h3>정류장 보행시간과 고령인구</h3><p>색은 250m 출발 격자의 최단 보행시간, 숫자는 500m 격자의 고령인구다. 이 지도만 보행시간 상한 없이 계산하며 본 분석의 연속보행 10분 조건은 유지한다. 가까운 정류장이 곧 의료기관 도달에 유리한 정류장을 뜻하지는 않는다.</p></figcaption><a href="step09/figures/bus_walk_population_C002.png"><img src="step09/figures/bus_walk_population_C002.png" alt="정류장 보행시간과 고령인구" loading="lazy"></a></figure>
+<h3 id="diagnosis-C003">관산동·고양동 군집</h3>
+<figure><figcaption><h3>도달 상태와 시간 구성</h3><p>80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.</p></figcaption><a href="step09/figures/arrival_diagnosis_C003.png"><img src="step09/figures/arrival_diagnosis_C003.png" alt="도달 상태와 시간 구성" loading="lazy"></a></figure>
+<figure><figcaption><h3>정류장 보행시간과 고령인구</h3><p>색은 250m 출발 격자의 최단 보행시간, 숫자는 500m 격자의 고령인구다. 이 지도만 보행시간 상한 없이 계산하며 본 분석의 연속보행 10분 조건은 유지한다. 가까운 정류장이 곧 의료기관 도달에 유리한 정류장을 뜻하지는 않는다.</p></figcaption><a href="step09/figures/bus_walk_population_C003.png"><img src="step09/figures/bus_walk_population_C003.png" alt="정류장 보행시간과 고령인구" loading="lazy"></a></figure>
+<p class="finding">첫 정류장까지의 보행 부담과 도달 경로의 대기·차내 시간을 함께 살펴본다. 접속 위치의 근사와 일부 보완 시간표의 추정 시각은 자료상 한계다.</p></section>
 <section><details><summary>기초자료와 통합 교통망</summary>
 <figure><figcaption><h3>고령인구 분포</h3><p></p></figcaption><a href="step01/figures/population_500m.png"><img src="step01/figures/population_500m.png" alt="고령인구 분포" loading="lazy"></a></figure>
 <figure><figcaption><h3>주거 대표점</h3><p></p></figcaption><a href="step02/figures/origins_overview.png"><img src="step02/figures/origins_overview.png" alt="주거 대표점" loading="lazy"></a></figure>

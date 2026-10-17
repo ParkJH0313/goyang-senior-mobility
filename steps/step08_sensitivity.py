@@ -75,5 +75,9 @@ def run(ctx):
         csv(cm,out/f'tables/cutoff_{int(q*100)}_membership.csv');csv(cs.drop(columns='geometry'),out/f'tables/cutoff_{int(q*100)}_summary.csv')
     ov=pd.DataFrame(overlaps);cw=pd.DataFrame(cross)
     csv(metrics,out/'tables/sensitivity_cluster_metrics.csv');parquet(profiles,out/'sensitivity_minute_profiles.parquet');csv(ov,out/'tables/top3_overlap.csv');csv(cw,out/'tables/cluster_crosswalk.csv');csv(pd.DataFrame(manifests),out/'tables/scenario_manifest.csv');gpkg(out/'sensitivity.gpkg',spatial)
-    describe(ctx,8,'# Step 8 민감도\n\n`steps/step08_sensitivity.py`는 기준 상위 3개 군집의 모든 양의 인구 출발점을 고정해 시간예산 30/40/50분, 속도 0.6/0.7/0.8m/s를 비교한다. 0.7m/s의 정확한 80분 탐색은 Step 9와 공유하며 이 Step의 시간예산 표·그림에는 30/40/50분만 사용한다. 하위 25/30/35%는 전체 유효 격자에서 Queen 군집과 인구 순위를 다시 구한다. sensitivity.gpkg는 각 비율의 격자·군집, tables는 군집별 점수·0기관 비율·변화량·Jaccard·분리/병합 중첩이다. PNG는 별도 표현 모듈에서 저장된 계산값으로 생성한다. 속도 비감소와 넓은 탐색에서 꺼낸 기준 점수의 일치를 검사했다.\n')
+    active={f'speed_{speed}_checkpoint.parquet' for speed in ctx.config['walk_speeds_mps'] if speed!=baseline_speed}
+    for checkpoint in out.glob('speed_*_checkpoint.parquet'):
+        if checkpoint.name not in active:
+            assert checkpoint.resolve().is_relative_to(out.resolve());checkpoint.unlink()
+    describe(ctx,8,f'# Step 8 민감도\n\n`steps/step08_sensitivity.py`는 기준 상위 3개 군집의 모든 양의 인구 출발점을 고정해 시간예산 30/40/50분, 속도 0.6/0.7/0.8m/s를 비교한다. 기본 {baseline_speed:g}m/s의 정확한 80분 탐색은 Step 9와 공유하며 이 Step의 시간예산 표·그림에는 30/40/50분만 사용한다. 하위 25/30/35%는 전체 유효 격자에서 Queen 군집과 인구 순위를 다시 구한다. sensitivity.gpkg는 각 비율의 격자·군집, tables는 군집별 점수·0기관 비율·변화량·Jaccard·분리/병합 중첩이다. PNG는 별도 표현 모듈에서 저장된 계산값으로 생성한다. 속도 비감소와 넓은 탐색에서 꺼낸 기준 점수의 일치를 검사했다.\n')
     return {'top3_origins':len(indices),'scenarios':len(manifests)+3,'speed_monotonic':True}

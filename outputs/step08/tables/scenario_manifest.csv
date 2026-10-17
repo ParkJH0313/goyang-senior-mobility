@@ -1,7 +1,7 @@
 ﻿scenario,speed,budget_min,origins,membership
-budget_30,0.7,30,328,baseline_top3_membership
-budget_40,0.7,40,328,baseline_top3_membership
-budget_50,0.7,50,328,baseline_top3_membership
-speed_0.6,0.6,30,328,baseline_top3_membership
-speed_0.7,0.7,30,328,baseline_top3_membership
-speed_0.8,0.8,30,328,baseline_top3_membership
+budget_30,0.8,30,317,baseline_top3_membership
+budget_40,0.8,40,317,baseline_top3_membership
+budget_50,0.8,50,317,baseline_top3_membership
+speed_0.6,0.6,30,317,baseline_top3_membership
+speed_0.7,0.7,30,317,baseline_top3_membership
+speed_0.8,0.8,30,317,baseline_top3_membership

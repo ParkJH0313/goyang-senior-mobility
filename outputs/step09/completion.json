@@ -1,29 +1,38 @@
 {
-  "signature": "6e966836818061e25bd0f4020049ba5592d148a005fcfc37a067a472abf0f8f8",
+  "signature": "538132b41264ea1cab66bd64f9f6fdf999ba8e630683a98888dafcf67cb00e4c",
   "status": "complete",
-  "completed_at": "2026-10-17T04:44:41.545464+00:00",
+  "completed_at": "2026-10-17T10:24:59.131561+00:00",
   "summary": {
-    "diagnostic_origins": 328,
-    "travel_rows": 167608,
+    "diagnostic_origins": 317,
+    "travel_rows": 161987,
     "clusters": 3
   },
   "outputs": {
-    "step09/diagnosis.gpkg": "f0b6f0528ca4e038db8e887c81c3befa33756ac2297069a6679c6ccb99fc7c06",
-    "step09/README.md": "748d8bedb3f1a745383e7707335eeb3e0681906e0b4e9c6e7a1958a19fa16e7d",
-    "step09/travel_components.parquet": "7fd2c5711ef02d8b1f4cca1854661600df9f2de12d1284fdbf13e81691b448c5",
-    "step09/figures/cluster_diagnosis.png": "7b53ea1e1f5a1d4b1ee7c898d26625354c5f08ea103d965496a95623a81be994",
-    "step09/tables/cluster_diagnosis.csv": "842d9da7a56beab83ad863418cf9beb4135e539b34e57d14a1643df6817a243a",
-    "step09/tables/extended_arrival_bands.csv": "66e0fb215be973aad87c94395c6afa4490faca2e9a0fee74a62fa5f313a36b42",
-    "step09/tables/facility_contribution.csv": "7ee582cc6b8409623d214ee4745b966a84a8274b8ee7004deb1fbf7d57ceab09"
+    "step09/diagnosis.gpkg": "679b8cf73fdb0ca19242f858ac67ccb8aeae0caf7f2efac77d0569b9140822e0",
+    "step09/README.md": "13b2ceb574d66255e18bd44b744d1485df92100df65afb211efc8cc0f7e6613e",
+    "step09/travel_components.parquet": "9998be35ff791c57962928f10eafcd767c3a81c0186667a9f50bdca5722d4a4a",
+    "step09/figures/arrival_diagnosis_C001.png": "846083b0137ea4984e5a1933de760cb5744cfc814530424f2153b1f6f747dd88",
+    "step09/figures/arrival_diagnosis_C002.png": "f37d3f6316ed1e57297c3c3fa1b5e9da1e50df6f55600773a7f0d5059cae542d",
+    "step09/figures/arrival_diagnosis_C003.png": "3a0d22b9b77db151129feaf851a8800011ef18bb791714a807d75be42d635e2e",
+    "step09/figures/bus_walk_population_C001.png": "5deb4b4f836a901c6aee91e340e7e7531bfab119e56b1be70905b4e80d91c9a1",
+    "step09/figures/bus_walk_population_C002.png": "1b9dbbeb0432cf5afe53e24cae5079a44899a18c109fcab9141543774493432f",
+    "step09/figures/bus_walk_population_C003.png": "eebea78629843f711df4b4a6c6d7de4e26e02e3a5c953631d21d820346dc68ad",
+    "step09/figures/cluster_diagnosis.png": "d3c688c0d906b6f460fa4fdbae006fdd20952eb58ef8a16b5a84e359ada4f76e",
+    "step09/tables/arrival_status.csv": "84e5faf444926de5789f3916dfe124ad1616da61274ec7ffe2177fcb1beb5e8a",
+    "step09/tables/arrival_time_components.csv": "5fd7314702b7651a984e3471400622affaa7fdbb029787118feff09e4114b2b4",
+    "step09/tables/bus_walk_population.csv": "07d426fc2a91b3e626fa7c2a96bf17ea8a189d9590ee491733aec6c372d7b0b0",
+    "step09/tables/cluster_diagnosis.csv": "0aca4ffc3eb85a16ece6ba962a835f92cb506359304480a79dfeb74e1e719442",
+    "step09/tables/facility_contribution.csv": "5461fa7cc581489ff58e24bad75d5f260f21dbacc9fbeecf970086c5077614c2",
+    "step09/tables/nearest_bus_walk.csv": "abf4f09ff1b959390aad07ca3d6e33b1994e99e4d1e77841d3b43d0d2ca4aa19"
   },
   "parent_signatures": {
     "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
     "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
     "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
     "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
-    "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
-    "6": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf",
-    "7": "af2560a26ab5926a472a0375a70b3a085d1949960a2a5f3c50d87ca067e3e5dc",
-    "8": "76149d4f3aea057f39fae40f2f8efb618dfab0e60a3b6879afd47163fe24007c"
+    "5": "79858bba9dcc92188161e0cbec7a95cf03e7ba38be8bf58c179553ffc2b24ae0",
+    "6": "7ce224fc87deb5d4069b46894e416e43a1e77b3cc1a700a816dc8e91ea8dbb4d",
+    "7": "dd35407197eb1c1cf40290e8ad1a648bb342c15c52205eb9a4d94ff530c2874e",
+    "8": "4ce0d36eaa14d944af6ebef604c015248c38376b61606358a7cca3217f8cc8b9"
   }
 }

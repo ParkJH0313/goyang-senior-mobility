@@ -83,26 +83,33 @@ def overview(ctx,grid,clusters):
     axes[1].set_title('하위 30% 중 고령인구 상위 3개 군집',loc='left',fontsize=12,pad=16)
     for ax in axes:compass_scale(ax)
     score_legend(fig,threshold,.045)
-    save(ctx,fig,ctx.step(7)/'figures/accessibility_clusters.png','500m 고령인구 가중평균 · 경계 동점 포함 · Queen 인접 · 윤곽은 군집 범위이며 행정동 전체가 아님')
+    save(ctx,fig,ctx.step(7)/'figures/accessibility_clusters.png',f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 500m 고령인구 가중평균 · 경계 동점 포함 · Queen 인접 · 윤곽은 군집 범위이며 행정동 전체가 아님')
 
 def grid_scenarios(ctx):
     """Aggregate saved per-origin OD arrays to original 500m grids; never reroute."""
-    checks=[ctx.step(8)/x for x in ['extended_checkpoint.parquet','speed_0.6_checkpoint.parquet','speed_0.8_checkpoint.parquet']]
-    key=digest({'version':1,'checkpoints':{x.name:sha(x) for x in checks},'grid':sha(ctx.step(6)/'accessibility.gpkg')})
+    baseline_speed=ctx.config['baseline_speed_mps'];baseline_budget=ctx.config['baseline_budget_min']
+    speeds=ctx.config['walk_speeds_mps']
+    budgets=sorted(set(ctx.config['sensitivity_budgets_min']+[baseline_budget]))
+    sources=[(ctx.step(8)/'extended_checkpoint.parquet',budgets,'budget')]
+    sources += [(ctx.step(8)/f'speed_{speed}_checkpoint.parquet',[baseline_budget],f'speed_{speed}') for speed in speeds if speed!=baseline_speed]
+    key=digest({'version':3,'baseline_speed':baseline_speed,'baseline_budget':baseline_budget,'speeds':speeds,'budgets':budgets,
+                'checkpoints':{p.name:sha(p) for p,_,_ in sources},'grid':sha(ctx.step(6)/'accessibility.gpkg'),
+                'membership':sha(ctx.step(7)/'tables/baseline_top3_membership.csv')})
     marker=ctx.cache/'figure_grid_data.json';table=ctx.step(8)/'tables/sensitivity_grid_scores.csv'
     if marker.exists() and read_json(marker).get('signature')==key and table.exists():
         names={name for name,_ in pyogrio.list_layers(ctx.step(8)/'sensitivity.gpkg')}
-        if {'budget_30_grids','budget_80_grids','speed_0_6_grids','speed_0_8_grids'}<=names:return pd.read_csv(table)
+        expected={f'budget_{b}_grids' for b in budgets}|{f'speed_{s}_grids'.replace('.','_') for s in speeds}
+        if expected<=names:return pd.read_csv(table)
     small=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_250m').set_index('gid')
     large=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_500m').set_index('gid')
     membership=pd.read_csv(ctx.step(7)/'tables/baseline_top3_membership.csv').set_index('gid')
     rows=[]
-    for cp,budgets,kind in [(checks[0],[30,40,45,50,60,80],'budget'),(checks[1],[30],'speed_0.6'),(checks[2],[30],'speed_0.8')]:
+    for cp,source_budgets,kind in sources:
         for r in pd.read_parquet(cp).itertuples():
             source=small.loc[r.gid]
             with np.load(inside(r.path)) as z:
                 od=z['od'];upper=z['upper_counts'];saved_budgets=z['budgets']
-                for b in budgets:
+                for b in source_budgets:
                     count=(od<=b*60+1e-8).sum(axis=1);j=int(np.flatnonzero(saved_budgets==b)[0])
                     value=b if kind=='budget' else float(kind.split('_')[1]);scenario=f'budget_{b}' if kind=='budget' else kind
                     rows.append({'scenario':scenario,'kind':'budget' if kind=='budget' else 'speed','value':value,'gid':source.parent_gid,'population':source.population,
@@ -112,8 +119,8 @@ def grid_scenarios(ctx):
         parent=large.loc[gid];ok=bool(part.valid.all() and abs(part.population.sum()-parent.population)<1e-6)
         result.append(dict(scenario=scenario,kind=kind,value=value,gid=gid,cluster_id=membership.loc[gid,'cluster_id'],population=parent.population,
                            score=part.weighted_score.sum()/parent.population if ok else np.nan))
-    f=pd.DataFrame(result);base=f[f.scenario.eq('budget_30')].copy();assert np.allclose(base.score,base.gid.map(large.score),equal_nan=True)
-    base['scenario']='speed_0.7';base['kind']='speed';base['value']=.7;f=pd.concat([f,base],ignore_index=True)
+    f=pd.DataFrame(result);base=f[f.scenario.eq(f'budget_{baseline_budget}')].copy();assert np.allclose(base.score,base.gid.map(large.score),equal_nan=True)
+    base['scenario']=f'speed_{baseline_speed}';base['kind']='speed';base['value']=baseline_speed;f=pd.concat([f,base],ignore_index=True)
     csv(f,table)
     file=ctx.step(8)/'sensitivity.gpkg'
     spatial={name:pyogrio.read_dataframe(file,layer=name) for name,_ in pyogrio.list_layers(file) if name.startswith('cutoff_')}
@@ -137,7 +144,8 @@ def atlas(ctx,values,kind,data,summary,filename,title,subtitle):
             f=local[['gid','geometry']].merge(part,on='gid',validate='one_to_one')
             assert len(f)==len(local)
             score_map(ax,f,threshold,gpd.GeoSeries([r.geometry],crs=local.crs));compass_scale(ax)
-            ax.set_title(f'{value:g}분' if kind=='budget' else f'{value:.1f}m/s',fontweight='bold',fontsize=13,pad=8)
+            panel_title=f'{value:g}분' if kind=='budget' else f'{value:.1f}m/s'+(' · 기준' if value==ctx.config['baseline_speed_mps'] else '')
+            ax.set_title(panel_title,fontweight='bold',fontsize=13,pad=8)
             low=f.score.le(threshold+1e-10)&f.score.notna();pop=float(f.loc[low,'population'].sum());ratio=pop/r.population
             mean=float((f.score*f.population).sum()/r.population) if f.score.notna().all() else np.nan
             bar=fig.add_axes([left+width*.12,bottom-.029,width*.76,.006]);bar.barh(0,1,color=ABOVE);bar.barh(0,ratio,color=ZERO);bar.set_xlim(0,1);bar.set_axis_off()
@@ -162,7 +170,7 @@ def cutoff_maps(ctx,summary):
         ax.set_title(f'하위 {q:.0%}',fontsize=15,fontweight='bold');compass_scale(ax)
         ax.text(.5,-.06,f'상위 3개 군집 고령인구 {cs.loc[cs.is_top3,"population"].sum():,.0f}명',transform=ax.transAxes,ha='center',fontsize=10,color=MUTED)
     fig.legend(handles=[Patch(facecolor=c,edgecolor=NAVY,label=f'고령인구 {i}순위') for i,c in enumerate(PALETTE,1)]+[Patch(facecolor='#e1e7ec',label='그 외 저접근 격자')],loc='lower center',bbox_to_anchor=(.5,.052),ncol=4)
-    save(ctx,fig,ctx.step(8)/'figures/04_cutoff_cluster_maps.png','전체 유효 500m 격자에서 재군집 · 경계 동점 포함 · 같은 지도 범위 · 색은 순위이며 서로 같은 군집을 뜻하지 않음')
+    save(ctx,fig,ctx.step(8)/'figures/04_cutoff_cluster_maps.png',f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 전체 유효 500m 격자에서 재군집 · 경계 동점 포함 · 같은 지도 범위 · 색은 순위이며 서로 같은 군집을 뜻하지 않음')
 
 def charts(ctx,summary):
     setup();profiles=pd.read_parquet(ctx.step(8)/'sensitivity_minute_profiles.parquet');top=summary[summary.is_top3].sort_values('rank')
@@ -176,7 +184,7 @@ def charts(ctx,summary):
             f=profiles[profiles.cluster_id.eq(r.cluster_id)&profiles.scenario.eq(f'budget_{b}')];ax.plot(f.departure_s/3600,f['count'],color=color,lw=1.2,label=f'{b}분')
         ax.set_title(r.area_name,loc='left',fontweight='bold');ax.grid(axis='y',color='#e5eaf0');ax.set_axisbelow(True);ax.legend(ncol=3);ax.set_ylabel('평균 기관 수 (곳)');ax.set_ylim(0,profile_upper)
     axes[-1].set_xlim(8.5,17);axes[-1].set_xlabel('출발시각 (시)')
-    save(ctx,fig,ctx.step(8)/'figures/02_time_budget_profiles.png','같은 기준 군집의 고령인구로 가중 · 보행속도 0.7m/s · 시간예산만 변경')
+    save(ctx,fig,ctx.step(8)/'figures/02_time_budget_profiles.png',f'같은 기준 군집의 고령인구로 가중 · 보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 시간예산만 변경')
     ov=pd.read_csv(ctx.step(8)/'tables/top3_overlap.csv');cw=pd.read_csv(ctx.step(8)/'tables/cluster_crosswalk.csv');fig,axes=plt.subplots(1,2,figsize=(15,6.5));x=np.arange(len(ov))
     axes[0].bar(x-.17,ov.grid_jaccard,.34,color='#89a8bc',label='격자 중첩');axes[0].bar(x+.17,ov.population_jaccard,.34,color=LOW,label='인구가중 중첩')
     for j,r in enumerate(ov.itertuples()):
@@ -191,7 +199,7 @@ def charts(ctx,summary):
     save(ctx,fig,ctx.step(8)/'figures/05_cutoff_top3_overlap.png','군집 번호가 아닌 실제 구성 격자로 비교 · Jaccard = 교집합 / 합집합')
 
 def diagnosis(ctx):
-    setup();f=pd.read_csv(ctx.step(9)/'tables/cluster_diagnosis.csv');b=pd.read_csv(ctx.step(9)/'tables/extended_arrival_bands.csv')
+    setup();f=pd.read_csv(ctx.step(9)/'tables/cluster_diagnosis.csv');b=pd.read_csv(ctx.step(9)/'tables/arrival_status.csv')
     fig,axes=plt.subplots(1,2,figsize=(15,7));x=np.arange(len(f));bottom=np.zeros(len(f))
     fig.suptitle('저접근 군집의 이동부담과 도달 범위',x=.035,ha='left',fontsize=20,fontweight='bold')
     for col,label,color in zip(['walk_s','wait_s','in_vehicle_s','preparation_s'],['보행·내부 이동','대기','차내','추가 탑승 준비'],['#8eacbe',LOW,'#91b8ac',ZERO]):
@@ -201,23 +209,28 @@ def diagnosis(ctx):
         bottom+=np.nan_to_num(a)
     for j,v in enumerate(bottom):axes[0].text(j,v+.7,f'{v:.1f}분' if np.isfinite(f.conditional_mean_total_s.iloc[j]) else '도달 경로 없음',ha='center',fontweight='bold')
     axes[0].set_ylim(0,max(1,bottom.max()*1.22));axes[0].set_ylabel('도달 경로의 평균 소요시간 (분)');axes[0].set_title('시간 성분',loc='left',fontweight='bold');axes[0].legend(ncol=2,loc='upper left',fontsize=8)
-    bottom=np.zeros(len(f));labels=['≤30','(30,45]','(45,60]','(60,80]','80분 내 미도달','자료 미해결'];colors=['#8baeb5','#c1d4d8','#efd0b5',LOW,ZERO,'#d3d7dd']
+    from src.cluster_diagnostics import STATUS_ORDER
+    from src.diagnostic_figures import STATUS_LABELS,STATUS_COLORS
+    bottom=np.zeros(len(f));labels=STATUS_ORDER;colors=[STATUS_COLORS[x] for x in labels]
     for band,color in zip(labels,colors):
-        vals=np.array([b.loc[b.cluster_id.eq(r.cluster_id)&b.band.eq(band),'population_time_weight'].sum()/r.population for r in f.itertuples()])
-        axes[1].bar(x,vals,bottom=bottom,color=color,label=band)
+        vals=np.array([b.loc[b.cluster_id.eq(r.cluster_id)&b.arrival_status.eq(band),'fraction'].sum() for r in f.itertuples()])
+        axes[1].bar(x,vals,bottom=bottom,color=color,label=STATUS_LABELS[band])
         for j,v in enumerate(vals):
-            if v>=.10:axes[1].text(j,bottom[j]+v/2,f'{v:.0%}',ha='center',va='center',color='white' if band=='80분 내 미도달' else NAVY,fontsize=10)
+            if v>=.10:axes[1].text(j,bottom[j]+v/2,f'{v:.0%}',ha='center',va='center',color='white' if band=='first_walk_blocked' else NAVY,fontsize=10)
         bottom+=vals
     axes[1].set_ylim(0,1.18);axes[1].set_ylabel('고령인구·출발시각 가중 비율');axes[1].set_title('최초 의료기관 도달시간',loc='left',fontweight='bold');axes[1].legend(ncol=3,loc='upper left',fontsize=8)
     for ax in axes:ax.set_xticks(x,[name.replace('·','·\n',1) for name in f.area_name],fontsize=9)
-    save(ctx,fig,ctx.step(9)/'figures/cluster_diagnosis.png','왼쪽: 80분 내 도달한 경로의 조건부 평균 · 오른쪽: 전체 인구·시각의 비율 · 시간예산을 늘려도 연속보행 10분 조건은 유지')
+    save(ctx,fig,ctx.step(9)/'figures/cluster_diagnosis.png',f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 왼쪽: 80분 내 도달한 경로의 조건부 평균 · 오른쪽: 전체 인구·시각의 비율 · 시간예산을 늘려도 연속보행 10분 조건은 유지')
 
 def render_all(ctx):
     from src.input_figures import render
     render(ctx)
     large=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_500m');summary=pyogrio.read_dataframe(ctx.step(7)/'clusters.gpkg',layer='cluster_summary')
     overview(ctx,large,summary);data=grid_scenarios(ctx)
-    atlas(ctx,[30,40,50],'budget',data,summary,'01_time_budget_top3.png','시간예산에 따른 저접근 지역의 변화','시간예산 30·40·50분  |  보행속도 0.7m/s  |  같은 군집·인구·저접근 경계 유지')
-    atlas(ctx,[.6,.7,.8],'speed',data,summary,'03_walk_speed_top3.png','보행속도에 따른 저접근 지역의 변화','보행속도 0.6·0.7·0.8m/s  |  시간예산 30분  |  연속보행 10분 조건 유지')
-    atlas(ctx,[30,45,60,80],'budget',data,summary,'06_extended_time_maps.png','시간을 80분까지 늘렸을 때 남는 저접근 지역','30·45·60·80분 보조 비교  |  보행속도 0.7m/s  |  기본 군집 선정과 주점수는 변경하지 않음')
+    speed=ctx.config['baseline_speed_mps'];budget=ctx.config['baseline_budget_min'];speeds=ctx.config['walk_speeds_mps']
+    budget_values=ctx.config['sensitivity_budgets_min']
+    atlas(ctx,budget_values,'budget',data,summary,'01_time_budget_top3.png','시간예산에 따른 저접근 지역의 변화',f'시간예산 {"·".join(map(str,budget_values))}분  |  보행속도 {speed:g}m/s  |  같은 군집·인구·저접근 경계 유지')
+    atlas(ctx,speeds,'speed',data,summary,'03_walk_speed_top3.png','보행속도에 따른 저접근 지역의 변화',f'보행속도 {"·".join(map(str,speeds))}m/s · 기준 {speed:g}m/s  |  시간예산 {budget}분  |  연속보행 10분 조건 유지')
     cutoff_maps(ctx,summary);charts(ctx,summary);diagnosis(ctx)
+    from src.diagnostic_figures import render_diagnostics
+    render_diagnostics(ctx,summary)

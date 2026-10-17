@@ -235,3 +235,6 @@ __marimo__/
 # Dashboard assets are maintained source files
 !/dashboard/dist/
 !/dashboard/dist/**
+
+# Local review figures
+/outputs/검토/

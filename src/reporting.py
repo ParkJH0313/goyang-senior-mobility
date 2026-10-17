@@ -22,6 +22,9 @@ LAYERS={
 'stops':'시간표 정류장과 접속 상태.','accessibility_250m':'511시각 평균 도달 기관 수와 점수 유효성.',
 'accessibility_500m':'고령인구 가중 500m 접근성 점수.','low_access_500m':'하위 30% 격자와 군집 소속.',
 'cluster_summary':'군집 합집합 도형, 인구·점수·순위.','cluster_diagnosis':'군집별 시간 성분과 미도달 비율.',
+'stop_walk_250m':'기준 상위 군집의 250m 출발 격자. 평일 승차 가능한 버스정류장까지 방향성 보행망 최단시간이며 10분 상한을 적용하지 않은 진단값.',
+'diagnostic_population_500m':'같은 군집의 원래 500m 격자와 고령인구. 250m 보행시간 위에 인구를 표시하는 기준 도형.',
+'nearest_boarding_stops':'각 출발점에서 보행시간이 가장 짧은 평일 버스 승차 정류장. 군집별 중복은 유지한다.',
 'diagnostic_routes':'표본 경로의 승하차 정류장 설명선. 실제 차량 궤적이 아니다.','reached_facilities':'군집의 도달 기회에 기여하는 기관.'}
 COMMON={
 1:'src/analysis_io.py: 입력 검증과 원자적 저장.',2:'src/spatial_network.py: 최근접 접속과 통행 조건.',
@@ -29,7 +32,7 @@ COMMON={
 5:'src/router.py · src/timetable.py · src/routing_runner.py: 시간표 경로 탐색과 중단 재개.',
 6:'src/aggregation.py: 시각 평균과 인구 가중 집계.',7:'src/aggregation.py: 경계 동점·Queen 군집·인구 순위.',
 8:'src/aggregation.py · src/routing_runner.py: 시나리오 계산. src/figures.py: 저장된 OD의 500m 집계와 비교 지도.',
-9:'src/path_diagnosis.py: 경로 시간 성분 재구성. src/figures.py: 군집 단위 진단 그래프.'}
+9:'src/path_diagnosis.py: 경로 성분 재구성. src/cluster_diagnostics.py: 도달 상태·조건부 평균 및 버스정류장 최단보행 계산. src/diagnostic_figures.py: 군집별 막대그래프·보행시간과 고령인구 지도.'}
 
 def progress(ctx):
     rows=['# 분석 실행 상태','',f'상태: {ctx.state["status"]}','','결과: outputs/step01 ~ step09. 계산 재개: python run.py processed. 그림·보고서: python run.py report.','','| 단계 | 상태 |','|---|---|']
@@ -58,7 +61,9 @@ def document_steps(ctx):
         lines += [f'- {k}: {v}' for k,v in ctx.state['stages'][str(n)].get('summary',{}).items() if k not in {'necessary_review_stops','reference_tests','unresolved_stop_candidates'}]
         lines+=['','## 해석','','좌표계 EPSG:5179, 거리 m, 계산시간 초, 점수는 기관 수(곳)다. 미도달 0과 자료가 불완전한 NaN은 구분한다.',
         '도착 위치와 보행 접속에는 자료 기반 대리점·근사가 포함된다. 056번 중간 정차시각은 추정값이며 진료 가능 여부까지 나타내는 지표는 아니다.']
-        if n==8:lines+=['','지도 경계는 기본 30분 점수의 하위 30% 경계로 고정한다. 30·45·60·80분은 보조 비교이며 주점수와 기준 군집을 바꾸지 않는다. 평균 0 / 0 초과~경계 / 경계 초과를 공통 색으로 표현한다.']
+        if n>=5:lines+=['',f'기본 보행속도는 {ctx.config["baseline_speed_mps"]:g}m/s이고 시간예산은 {ctx.config["baseline_budget_min"]}분이다.']
+        if n==8:lines+=['','지도 경계는 기본 30분 점수의 하위 30% 경계로 고정한다. 시간예산은 30·40·50분만 비교하며 기준 군집을 바꾸지 않는다. 평균 0 / 0 초과~경계 / 경계 초과를 공통 색으로 표현한다.']
+        if n==9:lines+=['','arrival_status.csv는 상호 배타적인 도달 상태의 인구·출발시각 가중 비율이다. 첫 보행 불가는 첫 정류장과 의료기관 직접 보행이 모두 10분 이내에 불가능한 경우다. 80분 내 미도달은 첫 보행은 가능하지만 탐색 한도 안에 도달하지 못한 경우다. 자료 미해결은 별도 분류한다.', 'arrival_time_components.csv는 30분 이내 도달 및 30분 초과~80분 도달 그룹별 시간 성분 평균이다. 전체 비율은 고유 인원 비율이 아니며, 두 그룹의 차이는 정책의 인과효과가 아니다.', 'nearest_bus_walk.csv와 bus_walk_population.csv는 보행시간 상한 없이 가장 가까운 평일 버스 승차 정류장을 찾은 결과 및 구간별 인구 집계다. 신호·휴식·배차 대기는 제외한다. 지도는 보행 부담 진단이고 본 접근성 계산의 연속보행 10분 조건을 변경하지 않는다. 500m 인구는 원래 격자값이며 구간별 인구는 250m 배분값으로 합산한다.']
         (folder/'README.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
 
 def image_block(ctx,rel,title,description=''):
@@ -89,7 +94,7 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
     '<div class="cards">'+''.join(f'<div class="card"><span>{a}</span><strong>{b}</strong> {c}</div>' for a,b,c in cards)+'</div>',
     '<section id="method"><h2>분석 조건</h2><div class="method">']
     methods=[('지표','30분 이내 도달 가능한 의료기관 수의 평균'),('출발시각','08:30–17:00, 매분 511개 시각'),('공간 집계','250m에서 계산 → 고령인구 가중 500m 집계'),
-    ('이동 조건','0.7m/s · 연속보행 10분 · 최대 3회 탑승'),('교통수단','시내·마을버스, 도시철도 및 일반철도'),('군집 선정','하위 30%·경계 동점 포함 · Queen 인접 · 고령인구 상위 3개')]
+    ('이동 조건',f'{ctx.config["baseline_speed_mps"]:g}m/s · 연속보행 10분 · 최대 3회 탑승'),('교통수단','시내·마을버스, 도시철도 및 일반철도'),('군집 선정','하위 30%·경계 동점 포함 · Queen 인접 · 고령인구 상위 3개')]
     parts += [f'<div><b>{a}</b>{b}</div>' for a,b in methods]
     parts+=['</div><p class="sub">고양시와 지정된 주변 지역의 내과 또는 정형외과 전문의가 있는 기관을 대상으로 한다. 기관 수는 진료용량이나 진료시간까지 고려한 공급량은 아니다.</p></section>',
     '<section id="baseline"><h2>접근성과 고령인구 집중 지역</h2>',image_block(ctx,'step07/figures/accessibility_clusters.png','기준 접근성과 상위 저접근 군집','공통 분류와 별도 군집 색으로 접근성 수준과 선정 범위를 구분했다.'),
@@ -97,12 +102,16 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
     f'<p class="sub">저접근 경계는 {qa["threshold"]:.4f}곳이다. 군집명은 구성 지역을 설명하는 명칭이며 행정동 전체를 뜻하지 않는다. 유효 점수의 고령인구 비중은 {float(valid.population.sum())/total:.3%}다.</p></section>',
     '<section id="sensitivity"><h2>민감도 분석</h2><p>시간예산과 보행속도 비교는 기준 군집의 격자·인구를 고정한다. 막대는 같은 군집에서 저접근 격자에 거주하는 고령인구 비율이다.</p>',
     image_block(ctx,'step08/figures/01_time_budget_top3.png','시간예산 30·40·50분','저접근 경계를 고정해 평균 기관 수와 남아 있는 저접근 인구를 함께 비교한다.'),
-    image_block(ctx,'step08/figures/03_walk_speed_top3.png','보행속도 0.6·0.7·0.8m/s','속도 변화는 연속보행 10분 이내에 이용할 수 있는 정류장·기관 범위에도 영향을 준다.'),
+    image_block(ctx,'step08/figures/03_walk_speed_top3.png','보행속도 '+ '·'.join(map(str,ctx.config['walk_speeds_mps']))+'m/s',f'기준 보행속도는 {ctx.config["baseline_speed_mps"]:g}m/s다. 속도 변화는 연속보행 10분 이내에 이용할 수 있는 정류장·기관 범위에도 영향을 준다.'),
     image_block(ctx,'step08/figures/04_cutoff_cluster_maps.png','저접근 기준 하위 25·30·35%','전체 유효 격자에서 군집과 고령인구 순위를 다시 계산한다.'),
     '<details><summary>출발시각별 변화와 군집 중첩</summary>',image_block(ctx,'step08/figures/02_time_budget_profiles.png','출발시각별 평균 기관 수'),image_block(ctx,'step08/figures/05_cutoff_top3_overlap.png','군집 선정 범위의 중첩'),'</details></section>',
     '<section id="diagnosis"><h2>취약 원인 진단</h2>',image_block(ctx,'step09/figures/cluster_diagnosis.png','시간 성분과 최초 도달 범위','소요시간 평균은 80분 내 도달한 경로에 대한 값이다. 오른쪽은 미도달을 포함한 전체 인구·출발시각 비율이다.'),
-    image_block(ctx,'step08/figures/06_extended_time_maps.png','30·45·60·80분 보조 비교','시간예산 확대를 실제 교통서비스 개선으로 해석하지 않는다. 연속보행 한도와 기준 군집은 동일하다.'),
-    '<p class="finding">긴 시간예산에서도 남는 저접근 지역과 보행속도 변화에 민감한 지역을 구분해 해석할 수 있다. 접속 위치의 근사와 일부 보완 시간표의 추정 시각은 분석의 자료상 한계다.</p></section>',
+    '<p class="sub">전체 비율은 고령인구와 511개 출발시각을 가중한 값이다. 첫 보행 불가와 운행·환승을 거친 미도달을 구분하고, 도달한 경로는 30분 이내와 초과로 나누어 비교한다.</p>']
+    for r in top.itertuples():
+        parts += [f'<h3 id="diagnosis-{r.cluster_id}">{escape(r.area_name)} 군집</h3>',
+            image_block(ctx,f'step09/figures/arrival_diagnosis_{r.cluster_id}.png','도달 상태와 시간 구성','80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.'),
+            image_block(ctx,f'step09/figures/bus_walk_population_{r.cluster_id}.png','정류장 보행시간과 고령인구','색은 250m 출발 격자의 최단 보행시간, 숫자는 500m 격자의 고령인구다. 이 지도만 보행시간 상한 없이 계산하며 본 분석의 연속보행 10분 조건은 유지한다. 가까운 정류장이 곧 의료기관 도달에 유리한 정류장을 뜻하지는 않는다.')]
+    parts += ['<p class="finding">첫 정류장까지의 보행 부담과 도달 경로의 대기·차내 시간을 함께 살펴본다. 접속 위치의 근사와 일부 보완 시간표의 추정 시각은 자료상 한계다.</p></section>',
     '<section><details><summary>기초자료와 통합 교통망</summary>']
     for n,name,title in [(1,'population_500m','고령인구 분포'),(2,'origins_overview','주거 대표점'),(3,'facilities_overview','분석 의료기관'),(4,'network_overview','보행·정류장 통합망')]:parts.append(image_block(ctx,f'step{n:02d}/figures/{name}.png',title))
     parts+=['</details></section><section id="files"><h2>단계별 결과 자료</h2><p class="sub">공간 결과는 GeoPackage, 수치는 CSV, 지도는 각 단계의 figures 폴더에 저장된다.</p><div class="download">']
@@ -111,7 +120,11 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
         parts.append(f'<div class="file"><b>Step {n} · {title}</b><p>'+'<br>'.join(links)+'</p></div>')
     parts+=['</div></section><footer>평일 시간표 기반 접근성 모형 · 인구가중 집계 · EPSG:5179</footer></main></body></html>']
     (ctx.output/'결과_보기.html').write_text('\n'.join(parts),encoding='utf-8')
-    (ctx.output/'README.md').write_text('# 분석 결과\n\n결과_보기.html에서 지도와 표를 확인한다. step01~step09의 tables는 수치, figures는 전체 결과 그림이며 각 README는 코드·파일·공간 레이어를 설명한다.\n\n계산 재개: python run.py processed\n\n그림·보고서 재생성: python run.py report\n\n상세 경로 배열은 .cache/analysis에 보관한다. 캐시가 없으면 processed 명령으로 재계산할 수 있다. tests는 계산 검증용 소스이며 결과 열람에 필요하지 않다.\n',encoding='utf-8')
+    (ctx.output/'README.md').write_text('# 분석 결과\n\n결과_보기.html에서 지도와 표를 확인한다. step01~step09의 tables는 수치, figures는 전체 결과 그림이며 각 README는 코드·파일·공간 레이어를 설명한다.\n\n계산 재개: python run.py processed\n\n그림·보고서 재생성: python run.py report\n\n상세 경로 배열은 .cache/analysis에 보관한다. 캐시가 없으면 processed 명령으로 재계산할 수 있다.\n',encoding='utf-8')
+    import shutil
+    previews=inside('assets/results');previews.mkdir(parents=True,exist_ok=True)
+    for source,target in [('step07/figures/accessibility_clusters.png','accessibility_clusters.png'),('step08/figures/01_time_budget_top3.png','time_budget_comparison.png')]:
+        shutil.copy2(ctx.output/source,previews/target)
     assert all(sha(p)==h for p,h in ctx.inputs.items())
     atomic_json(ctx.cache/'publication_validation.json',{'inputs_unchanged':True,'valid_500m_population_ratio':float(valid.population.sum())/total,'figures':len(list(ctx.output.glob('step*/figures/*.png')))})
     ctx.state['valid_500m_population_ratio']=float(valid.population.sum())/total;ctx.state.pop('decision_audit',None);ctx.state['interpretation_status']='model_results_complete';ctx.save()
