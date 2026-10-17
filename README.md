@@ -52,7 +52,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-실행 방식은 시작 자료에 따라 두 가지다.
+실행 방식은 다음과 같다.
 
 **1. 원자료부터 실행 (`raw`)**
 
@@ -68,6 +68,14 @@ python -m venv .venv
 
 ```powershell
 .\.venv\Scripts\python.exe run.py processed
+```
+
+**3. 결과 보고서 재생성 (`report`)**
+
+분석 완료 후 저장된 계산 결과를 사용해 그림과 HTML 보고서를 다시 생성한다. 경로 분석은 다시 수행하지 않는다.
+
+```powershell
+.\.venv\Scripts\python.exe run.py report
 ```
 
 ## 주요 결과
