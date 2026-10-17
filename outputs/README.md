@@ -6,4 +6,4 @@
 
 그림·보고서 재생성: python run.py report
 
-상세 경로 배열은 .cache/analysis에 보관한다. 캐시가 없으면 processed 명령으로 재계산할 수 있다. tests는 계산 검증용 소스이며 결과 열람에 필요하지 않다.
+상세 경로 배열은 .cache/analysis에 보관한다. 캐시가 없으면 processed 명령으로 재계산할 수 있다.
