@@ -1,7 +1,7 @@
 {
-  "signature": "4ce0d36eaa14d944af6ebef604c015248c38376b61606358a7cca3217f8cc8b9",
+  "signature": "fef884bc99978d21707cd192c4fb09be0901259b9a74045b2333cff0dcfffdbc",
   "status": "complete",
-  "completed_at": "2026-10-17T09:35:05.383756+00:00",
+  "completed_at": "2026-10-17T10:40:26.664056+00:00",
   "summary": {
     "top3_origins": 317,
     "scenarios": 9,
@@ -10,22 +10,22 @@
   "outputs": {
     "step08/extended_checkpoint.parquet": "be7860d0f0e995c1512288797c879d684ef7aa44dfbd93e2c04436c7ab0360f5",
     "step08/README.md": "6e07a9db6b72df789f5d82962df29b88ce8fe485f0f2539606f94b27e50285a8",
-    "step08/sensitivity.gpkg": "b9cc74635edd66e3a5f65c48c67485e7dfb19f24209ad6ee5d0522b8c222c300",
+    "step08/sensitivity.gpkg": "247a72e709a6399d57f097d8834409c89ddb4f1f908dd5628ec0e72c6959c95c",
     "step08/sensitivity_minute_profiles.parquet": "d629238fbbf739468dd2cd3cace4083a9f3db44cffe4fdbdf54c7d9cd93d2fa6",
     "step08/speed_0.6_checkpoint.parquet": "9b13ba72f266a8c651440654bbba7ffec8c714c3e4791cedb8c92099d9693c8b",
     "step08/speed_0.7_checkpoint.parquet": "0ecdcb4106d70e4f0b816d7610ac5a4e2ca4ded6970430123f4e6308fcccdd52",
-    "step08/figures/01_time_budget_top3.png": "831aaec0a04a14ae7b510ac2d71cd4e66944ad699510933598ed73671556842f",
-    "step08/figures/02_time_budget_profiles.png": "24370cd8c08c294bb8c1b3576c29f999f4981075bda67c323b6f22d74aad29c1",
-    "step08/figures/03_walk_speed_top3.png": "2d4d37b4fb4244a2f8f23667920ca5c32cf6c8d069803fc3a73f88651f90aa7c",
-    "step08/figures/04_cutoff_cluster_maps.png": "b5c7d84d194b2693938d6aadc422e854757d9fcf5fd5b93fa98a1761d94b8c06",
-    "step08/figures/05_cutoff_top3_overlap.png": "ff171a7fc094366dc67387920539d4a151ea4e5af4c5933a2508929b2e4933e9",
-    "step08/tables/cluster_crosswalk.csv": "6e034ffb67ef7caa1b5fc4c1e38697c011a183556856b0d3f3d07cf9b424ebaf",
+    "step08/figures/01_time_budget_top3.png": "14d4e3de2ba2b59274dbb4536b371ff0fe285a2d47a5571a74085a2a94857ec8",
+    "step08/figures/02_time_budget_profiles.png": "2d31a3f7eebe7437e915554b7cd75ad3c5b178377acb927985b3df8993c394f0",
+    "step08/figures/03_walk_speed_top3.png": "c73acfce9302332b939b1e9f8f5219885637c62712d99f8f820a0e8626e357ee",
+    "step08/figures/04_cutoff_cluster_maps.png": "3b2afaa179c90270ca23d186a9c71592c09134859f65cf71f4a57a15659a17ce",
+    "step08/figures/05_cutoff_top3_overlap.png": "e2322a46b8010f18b4d27e1b83b0e91c1ac0308a0360a745612504ac38950a1b",
+    "step08/tables/cluster_crosswalk.csv": "7847be7def8d0d236b984c33adaf1eb8a3ae39be4396fd5f5c39e4dce5bc419c",
     "step08/tables/cutoff_25_membership.csv": "1110f84900719e6928eaf27ae5e5dd2fde2d49b6f98f30345cab436aad47386c",
     "step08/tables/cutoff_25_summary.csv": "d70832f035face3d88427ac82d84ad67703c37f0af7eaf8332f1a7ecc3d8e7c3",
     "step08/tables/cutoff_30_membership.csv": "0ff341884550e20d7988254e026b742116dba6192aea3df0b3d590ba813aac40",
-    "step08/tables/cutoff_30_summary.csv": "148ed81f232188bbcc4370d30e7ae6f16378120f76ba774abe9fbea5fb7daf81",
+    "step08/tables/cutoff_30_summary.csv": "96df047fe98fa8467f3a3062f5beea22f0cbeb1573708dce2d9059dff317aa65",
     "step08/tables/cutoff_35_membership.csv": "ade9c63c74b197b096725ff8148e730bc96a343c94f164861bc75e81ad1c04db",
-    "step08/tables/cutoff_35_summary.csv": "22ba8f36d137eb42c8e2e2fb80d17710551bcb7205937bd84dba312f1720391b",
+    "step08/tables/cutoff_35_summary.csv": "9c4d31127e85a3badaff14a53cbd241c21be752089c3362e202a5222d6e1fa61",
     "step08/tables/scenario_manifest.csv": "a25b6e927385b98e24278b07e5bc6a13dbad2868152a91feb26d6ffb30edbc16",
     "step08/tables/sensitivity_cluster_metrics.csv": "4cd122474cc8cddf8f56898efdbc99c0416c5e2ae44835895fe2a6c219d1206d",
     "step08/tables/sensitivity_grid_scores.csv": "a2f80c8375f07e288b0195eff6b27ead76ed5e83aed72b7999cb8185421a5201",
@@ -38,6 +38,6 @@
     "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
     "5": "79858bba9dcc92188161e0cbec7a95cf03e7ba38be8bf58c179553ffc2b24ae0",
     "6": "7ce224fc87deb5d4069b46894e416e43a1e77b3cc1a700a816dc8e91ea8dbb4d",
-    "7": "dd35407197eb1c1cf40290e8ad1a648bb342c15c52205eb9a4d94ff530c2874e"
+    "7": "dec117f50ee0ba02148f0e7673f16e9ae2157b572e125c4c76ccff005b998dea"
   }
 }

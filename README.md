@@ -86,10 +86,10 @@ python -m venv .venv
 ![고양시 30분 의료접근성과 고령인구 상위 3개 저접근 군집](assets/results/accessibility_clusters.png)
 
 
-![같은 군집과 저접근 기준을 유지한 시간예산별 접근성 비교](assets/results/time_budget_comparison.png)
+![법곳·구산·가좌 지역의 정류장 보행시간과 고령인구](assets/results/beopgot_gusan_gajwa_bus_walk.png)
 
 ## AI 대시보드
 
-가좌·송포 지역의 의료이동·탄소 시나리오를 살펴보고, AI에 질문하며 계산 결과를 확인할 수 있다.
+법곳·구산·가좌 지역의 의료이동·탄소 시나리오를 살펴보고, AI에 질문하며 계산 결과를 확인할 수 있다.
 
 ### [https://goyang-medical-dashboard.onrender.com](https://goyang-medical-dashboard.onrender.com)

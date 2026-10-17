@@ -1,7 +1,8 @@
 import pandas as pd,pyogrio,shapely
 from src.analysis_io import inside,csv,gpkg,atomic_json,describe
 from src.aggregation import clusters
-DEPENDENCIES=['steps/step07_clusters.py','src/aggregation.py','src/analysis_io.py']
+from src.cluster_labels import area_label
+DEPENDENCIES=['steps/step07_clusters.py','src/aggregation.py','src/analysis_io.py','src/cluster_labels.py']
 SETTINGS=['baseline_cutoff','top_clusters']
 
 def label_clusters(summary):
@@ -11,7 +12,7 @@ def label_clusters(summary):
     labels=[]
     for r in summary.itertuples():
         area=dong.geometry.intersection(r.geometry).area;order=area.sort_values(ascending=False);chosen=order[order>0].index[:3]
-        labels.append('·'.join(dong.loc[chosen,name].astype(str)))
+        labels.append(area_label('·'.join(dong.loc[chosen,name].astype(str))))
     summary['area_name']=labels;return summary
 
 def run(ctx):

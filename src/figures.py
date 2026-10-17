@@ -1,5 +1,6 @@
 """Submission figures from saved model results; no route search or manual raster edits."""
 from functools import lru_cache
+from src.cluster_labels import area_title
 import numpy as np,pandas as pd,geopandas as gpd,pyogrio
 from src.analysis_io import inside,csv,gpkg,read_json,sha,digest,atomic_json
 import matplotlib
@@ -132,7 +133,7 @@ def atlas(ctx,values,kind,data,summary,filename,title,subtitle):
     membership=pd.read_csv(ctx.step(7)/'tables/baseline_top3_membership.csv');threshold=read_json(ctx.step(7)/'cluster_qa.json')['threshold']
     n=len(values);fig=plt.figure(figsize=(5*n,14));fig.text(.035,.975,title,fontsize=21,fontweight='bold',va='top');fig.text(.035,.944,subtitle,fontsize=10,color=MUTED)
     for row,r in enumerate(top.itertuples()):
-        top_y=.90-row*.272;fig.text(.035,top_y,r.area_name+' 일대',fontsize=15,fontweight='bold')
+        top_y=.90-row*.272;fig.text(.035,top_y,area_title(r.area_name),fontsize=15,fontweight='bold')
         fig.text(.96,top_y,f'고령인구 {r.population:,.0f}명 · 기준 격자 {r.grid_count}개',ha='right',fontsize=10,color=MUTED)
         local=large[large.gid.isin(membership.loc[membership.cluster_id.eq(r.cluster_id),'gid'])]
         x0,y0,x1,y1=local.total_bounds;pad=max(x1-x0,y1-y0)*.09;bounds=(x0-pad,y0-pad,x1+pad,y1+pad)
@@ -198,30 +199,6 @@ def charts(ctx,summary):
     axes[1].set_ylim(0,1.1);axes[1].set_xticks([25,30,35],['하위 25%','하위 30%','하위 35%']);axes[1].set_ylabel('기준 군집 인구의 상위 3개 포함 비율');axes[1].set_title('기준 군집별 유지 비율',loc='left',fontweight='bold');axes[1].legend(loc='lower right',fontsize=8);axes[1].grid(axis='y',alpha=.15)
     save(ctx,fig,ctx.step(8)/'figures/05_cutoff_top3_overlap.png','군집 번호가 아닌 실제 구성 격자로 비교 · Jaccard = 교집합 / 합집합')
 
-def diagnosis(ctx):
-    setup();f=pd.read_csv(ctx.step(9)/'tables/cluster_diagnosis.csv');b=pd.read_csv(ctx.step(9)/'tables/arrival_status.csv')
-    fig,axes=plt.subplots(1,2,figsize=(15,7));x=np.arange(len(f));bottom=np.zeros(len(f))
-    fig.suptitle('저접근 군집의 이동부담과 도달 범위',x=.035,ha='left',fontsize=20,fontweight='bold')
-    for col,label,color in zip(['walk_s','wait_s','in_vehicle_s','preparation_s'],['보행·내부 이동','대기','차내','추가 탑승 준비'],['#8eacbe',LOW,'#91b8ac',ZERO]):
-        a=f['conditional_mean_'+col].to_numpy()/60;axes[0].bar(x,a,bottom=bottom,color=color,label=label)
-        for j,v in enumerate(a):
-            if np.isfinite(v) and v>=2:axes[0].text(j,bottom[j]+v/2,f'{v:.1f}',ha='center',va='center',fontsize=10,color=NAVY)
-        bottom+=np.nan_to_num(a)
-    for j,v in enumerate(bottom):axes[0].text(j,v+.7,f'{v:.1f}분' if np.isfinite(f.conditional_mean_total_s.iloc[j]) else '도달 경로 없음',ha='center',fontweight='bold')
-    axes[0].set_ylim(0,max(1,bottom.max()*1.22));axes[0].set_ylabel('도달 경로의 평균 소요시간 (분)');axes[0].set_title('시간 성분',loc='left',fontweight='bold');axes[0].legend(ncol=2,loc='upper left',fontsize=8)
-    from src.cluster_diagnostics import STATUS_ORDER
-    from src.diagnostic_figures import STATUS_LABELS,STATUS_COLORS
-    bottom=np.zeros(len(f));labels=STATUS_ORDER;colors=[STATUS_COLORS[x] for x in labels]
-    for band,color in zip(labels,colors):
-        vals=np.array([b.loc[b.cluster_id.eq(r.cluster_id)&b.arrival_status.eq(band),'fraction'].sum() for r in f.itertuples()])
-        axes[1].bar(x,vals,bottom=bottom,color=color,label=STATUS_LABELS[band])
-        for j,v in enumerate(vals):
-            if v>=.10:axes[1].text(j,bottom[j]+v/2,f'{v:.0%}',ha='center',va='center',color='white' if band=='first_walk_blocked' else NAVY,fontsize=10)
-        bottom+=vals
-    axes[1].set_ylim(0,1.18);axes[1].set_ylabel('고령인구·출발시각 가중 비율');axes[1].set_title('최초 의료기관 도달시간',loc='left',fontweight='bold');axes[1].legend(ncol=3,loc='upper left',fontsize=8)
-    for ax in axes:ax.set_xticks(x,[name.replace('·','·\n',1) for name in f.area_name],fontsize=9)
-    save(ctx,fig,ctx.step(9)/'figures/cluster_diagnosis.png',f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 왼쪽: 80분 내 도달한 경로의 조건부 평균 · 오른쪽: 전체 인구·시각의 비율 · 시간예산을 늘려도 연속보행 10분 조건은 유지')
-
 def render_all(ctx):
     from src.input_figures import render
     render(ctx)
@@ -231,6 +208,6 @@ def render_all(ctx):
     budget_values=ctx.config['sensitivity_budgets_min']
     atlas(ctx,budget_values,'budget',data,summary,'01_time_budget_top3.png','시간예산에 따른 저접근 지역의 변화',f'시간예산 {"·".join(map(str,budget_values))}분  |  보행속도 {speed:g}m/s  |  같은 군집·인구·저접근 경계 유지')
     atlas(ctx,speeds,'speed',data,summary,'03_walk_speed_top3.png','보행속도에 따른 저접근 지역의 변화',f'보행속도 {"·".join(map(str,speeds))}m/s · 기준 {speed:g}m/s  |  시간예산 {budget}분  |  연속보행 10분 조건 유지')
-    cutoff_maps(ctx,summary);charts(ctx,summary);diagnosis(ctx)
+    cutoff_maps(ctx,summary);charts(ctx,summary)
     from src.diagnostic_figures import render_diagnostics
     render_diagnostics(ctx,summary)

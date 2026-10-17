@@ -1,7 +1,7 @@
 {
-  "signature": "dd35407197eb1c1cf40290e8ad1a648bb342c15c52205eb9a4d94ff530c2874e",
+  "signature": "dec117f50ee0ba02148f0e7673f16e9ae2157b572e125c4c76ccff005b998dea",
   "status": "complete",
-  "completed_at": "2026-10-17T09:25:03.780337+00:00",
+  "completed_at": "2026-10-17T10:39:04.405649+00:00",
   "summary": {
     "clusters": 51,
     "top_clusters": 3,
@@ -15,13 +15,13 @@
     "queen_tolerance_m": 1e-05
   },
   "outputs": {
-    "step07/clusters.gpkg": "82b3d40145e264ae4a7ac169ea22528622626fca1be3cd93e1ce1fc67547e62b",
+    "step07/clusters.gpkg": "71957c9eec13fd142235ba9ac0fe23668ccab8fcaf88eeea6b6b14a38833fc49",
     "step07/cluster_qa.json": "7302bfbe66859680013d0a9f1181de1855a5c62c0cfe22de21ca36e0606815d7",
-    "step07/README.md": "f171a4d52ab48e3d6f91cd832c0e1c66f84298d24a81f5036e871ce2ad05587c",
-    "step07/figures/accessibility_clusters.png": "db57c96a97eb1d60881dca186ef504bb0944b105c49824ad413212e7801abf24",
+    "step07/README.md": "04b822725c03f968bde73fb8ab577f4402b726d86e52a53a709579e74a2a137f",
+    "step07/figures/accessibility_clusters.png": "3cab5fba871af7d3b4f584f6bc5e7d7f32d7f87b14a4fe9f262f04d6f0d62602",
     "step07/tables/baseline_top3_membership.csv": "924f3da05c5bf97b311838705ba757049aedb686f83a317149c7e87113967d04",
     "step07/tables/cluster_membership.csv": "0ff341884550e20d7988254e026b742116dba6192aea3df0b3d590ba813aac40",
-    "step07/tables/cluster_summary.csv": "148ed81f232188bbcc4370d30e7ae6f16378120f76ba774abe9fbea5fb7daf81"
+    "step07/tables/cluster_summary.csv": "96df047fe98fa8467f3a3062f5beea22f0cbeb1573708dce2d9059dff317aa65"
   },
   "parent_signatures": {
     "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",

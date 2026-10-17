@@ -9,6 +9,7 @@ from matplotlib.patches import Patch, Rectangle
 from matplotlib.lines import Line2D
 from src.figures import setup, save, boundaries, map_base, compass_scale, NAVY, MUTED, ZERO, LIGHT, LINE
 from src.cluster_diagnostics import STATUS_ORDER, WALK_BANDS
+from src.cluster_labels import cluster_title
 
 STATUS_LABELS = {'within_budget':'30분 이내 도달','first_walk_blocked':'첫 보행 불가',
                  'over_budget':'30분 초과~80분 도달','no_route':'80분 내 미도달','unresolved':'자료 미해결'}
@@ -25,8 +26,8 @@ def number(value):
 
 def arrival_figure(ctx, cluster, states, means, origin_count, axis_limit):
     f=states.set_index('arrival_status');m=means.set_index('arrival_status')
-    fig=plt.figure(figsize=(18,11.7));name=cluster.area_name.replace('동','')
-    fig.text(.035,.962,f'{name} 군집의 30분 초과·미도달 진단',fontsize=24,fontweight='bold')
+    fig=plt.figure(figsize=(18,11.7));name=cluster_title(cluster.area_name)
+    fig.text(.035,.962,f'{name}의 30분 초과·미도달 진단',fontsize=24,fontweight='bold')
     departures=int(states.departure_count.iloc[0])
     fig.text(.035,.933,f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 연속보행 10분 유지 · 같은 군집 {cluster.population:,.0f}명 · {origin_count}개 출발점 × {departures}개 출발시각',fontsize=12,color=MUTED)
     fig.text(.035,.875,'전체의 의료시설 도달 상태',fontsize=17,fontweight='bold')
@@ -84,8 +85,8 @@ def arrival_figure(ctx, cluster, states, means, origin_count, axis_limit):
 
 
 def walking_figure(ctx, cluster, walks, parents, stops, bands):
-    fig=plt.figure(figsize=(18,11.7));name=cluster.area_name.replace('동','')
-    fig.text(.035,.962,f'{name} 군집의 정류장 보행시간과 고령인구',fontsize=24,fontweight='bold')
+    fig=plt.figure(figsize=(18,11.7));name=cluster_title(cluster.area_name)
+    fig.text(.035,.962,f'{name}의 정류장 보행시간과 고령인구',fontsize=24,fontweight='bold')
     fig.text(.035,.933,f'색: 250m 출발 격자의 정류장까지 보행시간  |  숫자: 500m 격자의 고령인구  |  보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 보행시간 상한 없음',fontsize=11,color=MUTED)
     x0,y0,x1,y1=parents.total_bounds;pad=max(x1-x0,y1-y0)*.07;bounds=(x0-pad,y0-pad,x1+pad,y1+pad)
     ax=fig.add_axes([.035,.17,.59,.65]);map_base(ax,bounds)

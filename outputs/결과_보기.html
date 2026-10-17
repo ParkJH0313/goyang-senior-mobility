@@ -26,7 +26,7 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
   <thead>
     <tr style="text-align: right;">
       <th>인구 순위</th>
-      <th>해당 행정동</th>
+      <th>지역명</th>
       <th>고령인구(명)</th>
       <th>평균 기관 수(곳)</th>
       <th>500m 격자 수</th>
@@ -42,7 +42,7 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
     </tr>
     <tr>
       <td>2</td>
-      <td>가좌동·송포동·덕이동</td>
+      <td>법곳·구산·가좌 지역</td>
       <td>784.00</td>
       <td>0.64</td>
       <td>39</td>
@@ -66,15 +66,14 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
 <figure><figcaption><h3>군집 선정 범위의 중첩</h3><p></p></figcaption><a href="step08/figures/05_cutoff_top3_overlap.png"><img src="step08/figures/05_cutoff_top3_overlap.png" alt="군집 선정 범위의 중첩" loading="lazy"></a></figure>
 </details></section>
 <section id="diagnosis"><h2>취약 원인 진단</h2>
-<figure><figcaption><h3>시간 성분과 최초 도달 범위</h3><p>소요시간 평균은 80분 내 도달한 경로에 대한 값이다. 오른쪽은 미도달을 포함한 전체 인구·출발시각 비율이다.</p></figcaption><a href="step09/figures/cluster_diagnosis.png"><img src="step09/figures/cluster_diagnosis.png" alt="시간 성분과 최초 도달 범위" loading="lazy"></a></figure>
 <p class="sub">전체 비율은 고령인구와 511개 출발시각을 가중한 값이다. 첫 보행 불가와 운행·환승을 거친 미도달을 구분하고, 도달한 경로는 30분 이내와 초과로 나누어 비교한다.</p>
-<h3 id="diagnosis-C001">고봉동·주교동·식사동 군집</h3>
+<h3 id="diagnosis-C001">고봉·주교·식사 군집</h3>
 <figure><figcaption><h3>도달 상태와 시간 구성</h3><p>80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.</p></figcaption><a href="step09/figures/arrival_diagnosis_C001.png"><img src="step09/figures/arrival_diagnosis_C001.png" alt="도달 상태와 시간 구성" loading="lazy"></a></figure>
 <figure><figcaption><h3>정류장 보행시간과 고령인구</h3><p>색은 250m 출발 격자의 최단 보행시간, 숫자는 500m 격자의 고령인구다. 이 지도만 보행시간 상한 없이 계산하며 본 분석의 연속보행 10분 조건은 유지한다. 가까운 정류장이 곧 의료기관 도달에 유리한 정류장을 뜻하지는 않는다.</p></figcaption><a href="step09/figures/bus_walk_population_C001.png"><img src="step09/figures/bus_walk_population_C001.png" alt="정류장 보행시간과 고령인구" loading="lazy"></a></figure>
-<h3 id="diagnosis-C002">가좌동·송포동·덕이동 군집</h3>
+<h3 id="diagnosis-C002">법곳·구산·가좌 지역</h3>
 <figure><figcaption><h3>도달 상태와 시간 구성</h3><p>80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.</p></figcaption><a href="step09/figures/arrival_diagnosis_C002.png"><img src="step09/figures/arrival_diagnosis_C002.png" alt="도달 상태와 시간 구성" loading="lazy"></a></figure>
 <figure><figcaption><h3>정류장 보행시간과 고령인구</h3><p>색은 250m 출발 격자의 최단 보행시간, 숫자는 500m 격자의 고령인구다. 이 지도만 보행시간 상한 없이 계산하며 본 분석의 연속보행 10분 조건은 유지한다. 가까운 정류장이 곧 의료기관 도달에 유리한 정류장을 뜻하지는 않는다.</p></figcaption><a href="step09/figures/bus_walk_population_C002.png"><img src="step09/figures/bus_walk_population_C002.png" alt="정류장 보행시간과 고령인구" loading="lazy"></a></figure>
-<h3 id="diagnosis-C003">관산동·고양동 군집</h3>
+<h3 id="diagnosis-C003">관산·고양 군집</h3>
 <figure><figcaption><h3>도달 상태와 시간 구성</h3><p>80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.</p></figcaption><a href="step09/figures/arrival_diagnosis_C003.png"><img src="step09/figures/arrival_diagnosis_C003.png" alt="도달 상태와 시간 구성" loading="lazy"></a></figure>
 <figure><figcaption><h3>정류장 보행시간과 고령인구</h3><p>색은 250m 출발 격자의 최단 보행시간, 숫자는 500m 격자의 고령인구다. 이 지도만 보행시간 상한 없이 계산하며 본 분석의 연속보행 10분 조건은 유지한다. 가까운 정류장이 곧 의료기관 도달에 유리한 정류장을 뜻하지는 않는다.</p></figcaption><a href="step09/figures/bus_walk_population_C003.png"><img src="step09/figures/bus_walk_population_C003.png" alt="정류장 보행시간과 고령인구" loading="lazy"></a></figure>
 <p class="finding">첫 정류장까지의 보행 부담과 도달 경로의 대기·차내 시간을 함께 살펴본다. 접속 위치의 근사와 일부 보완 시간표의 추정 시각은 자료상 한계다.</p></section>

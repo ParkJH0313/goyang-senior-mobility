@@ -28,7 +28,6 @@
 - figures/bus_walk_population_C001.png: 전체 결과 지도·그래프.
 - figures/bus_walk_population_C002.png: 전체 결과 지도·그래프.
 - figures/bus_walk_population_C003.png: 전체 결과 지도·그래프.
-- figures/cluster_diagnosis.png: 전체 결과 지도·그래프.
 - tables/arrival_status.csv: 수치 표. UTF-8 BOM.
 - tables/arrival_time_components.csv: 수치 표. UTF-8 BOM.
 - tables/bus_walk_population.csv: 수치 표. UTF-8 BOM.

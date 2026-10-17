@@ -5,7 +5,7 @@
 ## 코드 구성
 
 - steps/step07_clusters.py: 입력 읽기 → 계산 → 표·공간자료 저장.
-- src/aggregation.py: 경계 동점·Queen 군집·인구 순위.
+- src/aggregation.py: 경계 동점·Queen 군집·인구 순위. src/cluster_labels.py: 표·지도·보고서의 지역명 통일.
 - src/reporting.py: 결과 설명과 보고서 구성.
 - src/figures.py 및 src/input_figures.py: 전체 결과 지도·그래프.
 
