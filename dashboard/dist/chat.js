@@ -1,7 +1,8 @@
 (()=>{
-  const $=id=>document.getElementById(id);let enabled=false,busy=false,controller=null,settingsReady=false;
-  const names={clinic:'가까운 의원 직결',daehwa:'대화역 정류장 연계',seogu:'일산서구청 정류장 연계'},vehicles={electric:'전기',lpg:'LPG',hybrid:'하이브리드'};
-  const summary=s=>`가상정류장 ${s.tier.slice(1)}곳 · ${names[s.destination]} · ${s.vehicles}대\n${vehicles[s.vehicle]} · 전환 ${Math.round(s.conversion*100)}% · 재차 ${s.occupancy.toFixed(1)}명 · ${s.emissionScope==='tailpipe'?'배기관':'전력 발전 포함'} · 2대 기준대기 ${s.waitBaseMin}분 · ${s.waitMode==='sequential'?'정류장에서 호출':'집에서 호출'}`;
+  const $=id=>document.getElementById(id);let enabled=false,busy=false,controller=null,settingsReady=false,provider='Gemini';
+  const names={clinic:'병원까지 직행',daehwa:'주거지→대화역 거점',seogu:'주거지→일산서구청 거점'},vehicles={electric:'전기',lpg:'LPG',hybrid:'하이브리드'};
+  const summary=s=>`가상정류장 ${s.tier.slice(1)}곳 · ${names[s.destination]} · ${s.vehicles}대\n스타리아 11인승 ${vehicles[s.vehicle]} · 전환 ${Math.round(s.conversion*100)}% · 재차 ${s.occupancy.toFixed(1)}명 · 집 출발 기준 · 정류장 대기 1.5분 · 배기관 CO₂`;
+
   const scroll=()=>{$('chat-scroll').scrollTop=$('chat-scroll').scrollHeight;};
   function controls(){
     $('chat-input').disabled=!enabled;
@@ -49,18 +50,21 @@
     const card=create('div','chat-result-card');
     card.append(create('p','',`가상정류장 ${value.stops.added}곳 · ${value.destinationTitle} · ${value.budget.vehicles}대 · 운영비 ${(value.budget.annualWon/1e8).toFixed(2)}억 원`),create('p','',`${value.vehicleTitle} · 전환 ${Math.round(value.scenario.conversion*100)}% · 재차 ${value.scenario.occupancy.toFixed(1)}명`));
     if(!value.available){card.append(create('p','',value.reason||'경로 확인 후 계산할 수 있습니다.'));return card;}
-    card.append(create('p','',`가정 대기 ${value.access.waitMin.toFixed(1)}분 · ${value.scenario.waitMode==='sequential'?'보행 후 호출':'보행·대기 동시진행'} · ${value.scenario.emissionScope==='tailpipe'?'배기관 기준':'전력 발전 포함 근사'}`));
+    card.append(create('p','',`집 안 대기 ${value.access.homeWaitMin.toFixed(1)}분 별도 · 정류장 대기 1.5분 · 배기관 CO₂`));
     const negative=value.result.savingKg<-.000001;card.classList.toggle('negative',negative);
-    card.append(create('strong','',`30분 도달 ${(value.access.withDrt*100).toFixed(1)}% · ${(Math.abs(value.result.savingKg)/1000).toFixed(2)} ${value.scenario.emissionScope==='tailpipe'?'tCO₂':'tCO₂e(근사)'} / 년 ${negative?'증가':'감축'}`),create('small','','같은 계산식으로 산출 · 비교 조건은 화면에 자동 적용되지 않습니다.'));
+    card.append(create('strong','',`집 출발 후 30분 ${(value.access.withDrt*100).toFixed(1)}% · ${(Math.abs(value.result.savingKg)/1000).toFixed(2)} tCO₂ / 년 ${negative?'증가':'감축'}`),create('small','','같은 계산식으로 산출 · 비교 조건은 화면에 자동 적용되지 않습니다.'));
     return card;
   }
   async function send(message){
     if(!enabled||busy||!settingsReady||!message.trim())return;
     busy=true;controller=new AbortController();const scenario=dashboard.state();
     const turn=create('article','chat-turn'),question=create('p','chat-user',message),label=create('div','chat-answer-label'),snapshot=create('div','chat-snapshot','질문 당시 · '+summary(scenario).replace('\n',' · ')),text=create('div','chat-text'),cards=create('div','chat-calculations'),sourceList=create('div','chat-sources');
-    label.append(create('span','','✦'),create('span','','정책 도우미'));turn.append(question,label,snapshot,text,cards,sourceList);$('chat-messages').append(turn);$('chat-welcome').hidden=true;
+    label.append(create('span','gemini-spark','✦'),create('span','',provider+' 정책 도우미'));turn.append(question,label,snapshot,text,cards,sourceList);$('chat-messages').append(turn);$('chat-welcome').hidden=true;
     $('chat-input').value='';$('chat-count').textContent='0 / 1,200';controls();scroll();
     let answer='',sources=[],done=false;
+    const progress=create('div','chat-thinking'),spinner=create('span','thinking-spinner','✦'),stage=create('span','thinking-stage',provider+' 생각 중…'),elapsed=create('span','thinking-elapsed','0초');
+    progress.setAttribute('role','status');spinner.setAttribute('aria-hidden','true');elapsed.setAttribute('aria-hidden','true');progress.append(spinner,stage,elapsed);turn.append(progress);turn.setAttribute('aria-busy','true');
+    const started=Date.now(),ticker=setInterval(()=>{elapsed.textContent=Math.floor((Date.now()-started)/1000)+'초';},1000);scroll();
     const errorMessage=message=>{turn.append(create('div','chat-error',message));scroll();};
     try{
       const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,scenario}),signal:controller.signal});
@@ -70,10 +74,10 @@
         const type=block.split('\n').find(x=>x.startsWith('event:'))?.slice(6).trim();
         const raw=block.split('\n').filter(x=>x.startsWith('data:')).map(x=>x.slice(5).trim()).join('\n');if(!raw)return;
         const data=JSON.parse(raw);
-        if(type==='status')$('chat-connection').textContent=data.text;
+        if(type==='status'){stage.textContent=provider+' 생각 중… '+data.text;$('chat-connection').textContent=provider+' 응답 준비 중…';}
         if(type==='context')sources=data.sources;
-        if(type==='delta'){answer+=data.text;text.textContent=answer;scroll();}
-        if(type==='calculation'){cards.append(resultCard(data.calculation));scroll();}
+        if(type==='delta'){stage.textContent=provider+' 답변 작성 중…';answer+=data.text;text.textContent=answer;scroll();}
+        if(type==='calculation'){stage.textContent='계산 결과를 설명하고 있습니다…';cards.append(resultCard(data.calculation));scroll();}
         if(type==='done'){done=true;}
         if(type==='error')throw new Error(data.message);
       };
@@ -83,7 +87,7 @@
       renderCitations(text,answer,sources);
       for(const source of sources.filter(s=>answer.includes(`[${s.id}]`))){const a=create('a','',source.title+' ↗');a.href=source.url;a.target='_blank';a.rel='noopener';sourceList.append(a);}
     }catch(error){controller?.abort();errorMessage(error.name==='AbortError'?'답변 생성을 중지했습니다.':error.message);}
-    finally{busy=false;controller=null;$('chat-connection').textContent=enabled?'현재 조건과 연구 자료를 바탕으로 답합니다.':'AI 연결 준비 중 · 키 등록 후 이용할 수 있습니다.';controls();scroll();}
+    finally{clearInterval(ticker);progress.remove();turn.setAttribute('aria-busy','false');busy=false;controller=null;$('chat-connection').textContent=enabled?'현재 조건과 연구 자료를 바탕으로 답합니다.':'AI 연결 준비 중 · 키 등록 후 이용할 수 있습니다.';controls();scroll();}
   }
   $('chat-form').addEventListener('submit',e=>{e.preventDefault();send($('chat-input').value.trim());});
   document.querySelectorAll('[data-question]').forEach(button=>button.addEventListener('click',()=>send(button.dataset.question)));
@@ -92,6 +96,6 @@
   });
   addEventListener('scenariochange',refresh);refresh();
   fetch('/api/chat/status').then(r=>{if(!r.ok)throw new Error();return r.json();}).then(value=>{
-    enabled=value.enabled;$('chat-connection').classList.toggle('waiting',!enabled);$('chat-connection').textContent=enabled?'현재 조건과 연구 자료를 바탕으로 답합니다.':'AI 연결 준비 중 · 키 등록 후 이용할 수 있습니다.';if(!enabled)$('chat-input').placeholder='AI 연결 후 질문을 입력할 수 있습니다';controls();
+    provider=value.provider==='openai'?'OpenAI':'Gemini';document.body.dataset.aiProvider=value.provider||'gemini';document.querySelectorAll('[data-provider-name]').forEach(el=>el.textContent=provider);enabled=value.enabled;$('chat-connection').classList.toggle('waiting',!enabled);$('chat-connection').textContent=enabled?'현재 조건과 연구 자료를 바탕으로 답합니다.':'AI 연결 준비 중 · 키 등록 후 이용할 수 있습니다.';if(!enabled)$('chat-input').placeholder='AI 연결 후 질문을 입력할 수 있습니다';controls();
   }).catch(()=>{$('chat-connection').textContent='AI 연결 상태를 확인하지 못했습니다. 페이지를 새로고침해 주세요.';controls();});
 })();

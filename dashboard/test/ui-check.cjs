@@ -28,13 +28,19 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await page.locator('[data-tier="t61"]').click();
   await page.locator('[data-vehicles="1"]').click();const one=await page.evaluate(()=>dashboard.evaluation());
   await page.locator('[data-vehicles="3"]').click();const three=await page.evaluate(()=>dashboard.evaluation());
-  assert.ok(three.access.waitMin<one.access.waitMin);assert.ok(three.access.withDrt>one.access.withDrt);
+  assert.ok(three.access.waitMin<one.access.waitMin);assert.equal(three.access.withDrt,one.access.withDrt);assert.ok(three.access.homeWaitMin<one.access.homeWaitMin);assert.equal(three.access.stationaryWaitMin,1.5);
   assert.equal(three.result.savingKg,one.result.savingKg);
-  await page.locator('#waitMode').selectOption('sequential');assert.ok(await page.evaluate(()=>dashboard.evaluation().access.withDrt)<=three.access.withDrt);
-  await page.locator('#emissionScope').selectOption('tailpipe');assert.equal(await page.evaluate(()=>dashboard.result().drtKg),0);
-  await page.locator('#emissionScope').selectOption('energy');assert.ok(await page.evaluate(()=>dashboard.result().drtKg)>0);
+  assert.equal(await page.locator('#waitMode').count(),0);assert.equal(await page.locator('#emissionScope').count(),0);
+  assert.equal(await page.evaluate(()=>dashboard.result().drtKg),0);
+  const electricBudget=await page.evaluate(()=>dashboard.evaluation().budget.annualWon);
+  await page.locator('[data-vehicle="lpg"]').click();assert.ok(await page.evaluate(()=>dashboard.evaluation().budget.annualWon)>electricBudget);
+  assert.ok(await page.evaluate(()=>dashboard.result().drtKg)>0);await page.locator('[data-vehicle="electric"]').click();
+  assert.match(await page.locator('.vehicle-family').textContent(),/스타리아 11인승/);
+  assert.match(await page.locator('#access-card').textContent(),/집 출발/);
+  assert.match(await page.locator('#chat-open').textContent(),/Gemini/);
+  assert.match(await page.locator('#chat-open').evaluate(el=>getComputedStyle(el).backgroundImage),/linear-gradient/);
   assert.equal(routeRequests,initialRequests);
-  report.checks.push('electric first/default; layout population and carbon change; fleet wait and access change; walking timing and emissions scope; no extra route calls on controls');
+  report.checks.push('electric default; tailpipe only; scheduled pickup and home-departure metric; vehicle-specific cost; Gemini attribution; controls reuse routes');
   for(const destination of ['daehwa','seogu']){
    await page.locator('#destination').selectOption(destination);
    await page.waitForFunction(id=>window.dashboard?.evaluation()?.scenario.destination===id,destination);
@@ -63,12 +69,12 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   let sent=null;
   await qp.route('**/api/chat',async route=>{
    if(route.request().method()==='DELETE')return route.fulfill({contentType:'application/json',body:'{"ok":true}'});
-   sent=route.request().postDataJSON();
+   sent=route.request().postDataJSON();await new Promise(r=>setTimeout(r,1300));
    const calculation=await qp.evaluate(()=>CarbonModel.evaluate(dashboard.data,{...dashboard.state(),occupancy:3},dashboard.distances[dashboard.state().destination]));
    const events=[['context',{sources:[{id:'S5',title:'탄소 계산식과 평가 범위',url:'/about.html#formula'}]}],['calculation',{calculation}],['delta',{text:'[테스트용 응답] 3명 조건을 비교했습니다. [S5]\n<img src=x onerror=alert(1)>'}],['done',{ok:true}]];
    return route.fulfill({contentType:'text/event-stream',body:events.map(([event,data])=>`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join('')});
   });
-  await qp.goto(base);await ready(qp);await qp.locator('#chat-open').click();await qp.locator('[data-question]').nth(1).click();await qp.locator('.chat-sources a').waitFor();
+  await qp.goto(base);await ready(qp);await qp.locator('#chat-open').click();await qp.locator('[data-question]').nth(1).click();await qp.locator('.chat-thinking').waitFor();assert.match(await qp.locator('.thinking-stage').textContent(),/Gemini 생각 중/);assert.equal(await qp.locator('.chat-turn').getAttribute('aria-busy'),'true');await mark(qp);await qp.screenshot({path:path.join(artifact,'gemini-thinking-desktop.png')});await qp.locator('.chat-sources a').waitFor();assert.equal(await qp.locator('.chat-thinking').count(),0);
   assert.equal(sent.scenario.tier,'t36');assert.equal(sent.scenario.vehicle,'electric');assert.equal(sent.scenario.occupancy,2.5);
   assert.equal(await qp.locator('.chat-text img').count(),0);assert.equal(await qp.locator('.chat-text a').getAttribute('href'),'/about.html#formula');assert.equal(await qp.locator('.chat-result-card').count(),1);
   await qp.locator('[data-tier="t61"]').click();assert.match(await qp.locator('.chat-snapshot').textContent(),/36곳/);assert.match(await qp.locator('#chat-context').textContent(),/61곳/);
@@ -77,12 +83,15 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await qp.unroute('**/api/chat');await qp.route('**/api/chat',route=>route.fulfill({status:429,contentType:'application/json',body:JSON.stringify({code:'RATE_LIMIT',error:'테스트: 잠시 후 다시 시도해 주세요.'})}));
   await qp.locator('[data-question]').first().click();await qp.locator('.chat-error').waitFor();assert.match(await qp.locator('.chat-error').textContent(),/잠시 후/);
   await qp.locator('#chat-input').fill('다시 질문');assert.equal(await qp.locator('#chat-send').isEnabled(),true);
+  await qp.unroute('**/api/chat');await qp.route('**/api/chat',async route=>{await new Promise(r=>setTimeout(r,1500));await route.fulfill({contentType:'text/event-stream',body:'event: done\ndata: {"ok":true}\n\n'}).catch(()=>{});});
+  await qp.locator('#chat-send').click();await qp.locator('.chat-thinking').waitFor();await qp.locator('#chat-stop').click();await qp.waitForFunction(()=>!document.querySelector('.chat-thinking'));assert.match(await qp.locator('.chat-error').last().textContent(),/중지/);
+  report.checks.push('Gemini thinking indicator appears before first token, shows busy state, and clears on completion or cancellation');
   const offline=await browser.newContext(),op=await offline.newPage();
   await op.route('**/api/distances?**',route=>route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({error:'검증용 경로 실패'})}));
   await op.goto(base);await op.locator('#retry').waitFor({state:'visible'});assert.equal(await op.locator('#saving').textContent(),'—');assert.equal(await op.evaluate(()=>dashboard.result()),null);
   await op.unroute('**/api/distances?**');await op.locator('#retry').click();await ready(op);
   report.checks.push('AI rate-limit recovery and missing-route failure/retry without fabricated results');
-  await page.goto(base+'/about.html');await noOverflow(page);assert.match(await page.locator('#waiting').textContent(),/대기/);
+  await page.goto(base+'/about.html');await noOverflow(page);assert.match(await page.locator('#waiting').textContent(),/1\.5분/);
   await mp.goto(base+'/about.html');await noOverflow(mp);
   assert.equal(report.errors.length,0);
   fs.writeFileSync(path.join(artifact,'ui-validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

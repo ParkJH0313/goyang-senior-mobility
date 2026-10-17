@@ -15,7 +15,7 @@ class LocationTest(unittest.TestCase):
                              [999, 999, 999, 999, 10]])
         existing = np.array([999, 999, 999, 999, 0])
         weights = np.array([6, 6, 5, 5, 100])
-        selected, audit = solve_locations(distance, existing, weights, [1, 2])
+        selected, audit = solve_locations(distance, existing, weights, [1, 2], nested=False)
         for k in [1, 2]:
             def objective(indices):
                 covered = (distance[list(indices)] <= 240).any(axis=0) & (existing > 240)
@@ -26,6 +26,10 @@ class LocationTest(unittest.TestCase):
         self.assertEqual(selected[1].tolist(), [0])
         self.assertEqual(set(selected[2]), {1, 2})
         self.assertGreater(audit[1]['selectedAddedPopulation'], audit[1]['greedyAddedPopulation'])
+        nested, audit = solve_locations(distance, existing, weights, [1, 2])
+        self.assertTrue(set(nested[1]).issubset(nested[2]))
+        self.assertEqual(audit[1]['selectedAddedPopulation'], 17)
+        self.assertEqual(audit[1]['fixedStops'], 1)
 
 
 if __name__ == '__main__':

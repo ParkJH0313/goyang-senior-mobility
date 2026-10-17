@@ -13,7 +13,7 @@ function configFromEnv(env=process.env){
 }
 function createApp(config,overrides={}){
   const data=JSON.parse(fs.readFileSync(path.join(root,'data.json'),'utf8'));
-  if(data.schemaVersion!==3)throw new Error('Rebuild dashboard data with analysis/build_data.py (schema 3 required).');
+  if(data.schemaVersion!==4)throw new Error('Rebuild dashboard data with analysis/build_data.py (schema 4 required).');
   const router=overrides.router||createRouter(config.restKey,data);
   const evaluate=createScenarios(data,router);
   const answer=createAI({apiKey:config.apiKey,model:config.model,provider:config.provider,evaluate,fetchImpl:overrides.fetchImpl});

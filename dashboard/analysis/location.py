@@ -4,7 +4,7 @@ from scipy.optimize import milp, Bounds, LinearConstraint
 from scipy.sparse import csr_matrix, hstack, vstack, eye
 
 
-def solve_locations(distances, existing, weights, budgets, radius=240):
+def solve_locations(distances, existing, weights, budgets, radius=240, nested=True):
     uncovered = existing > radius
     cover = distances[:, uncovered] <= radius
     w = weights[uncovered]
@@ -22,30 +22,34 @@ def solve_locations(distances, existing, weights, budgets, radius=240):
     C = cover[candidates]
     if len(C) < max(budgets):
         raise ValueError('Not enough distinct feasible candidates')
-    greedy, covered = [], np.zeros(len(w), dtype=bool)
-    for _ in range(max(budgets)):
-        gain = C[:, ~covered] @ w[~covered]
-        gain[greedy] = -1
-        j = int(np.argmax(gain)); greedy.append(j); covered |= C[j]
     nc, nd = C.shape
     matrix = vstack([hstack([-csr_matrix(C.T, dtype=float), eye(nd)]),
                      csr_matrix(np.r_[np.ones(nc), np.zeros(nd)][None, :])]).tocsr()
-    result, audit = {}, []
-    for k in budgets:
-        incumbent = np.array(greedy[:k])
+    result, audit, fixed = {}, [], []
+    for k in sorted(budgets):
+        greedy = list(fixed)
+        covered = C[greedy].any(axis=0) if greedy else np.zeros(len(w), dtype=bool)
+        while len(greedy) < k:
+            gain = C[:, ~covered] @ w[~covered]
+            gain[greedy] = -1
+            j = int(np.argmax(gain)); greedy.append(j); covered |= C[j]
+        incumbent = np.array(greedy)
+        lower = np.zeros(nc + nd); lower[fixed] = 1
         value = lambda selected: float(w[C[selected].any(axis=0)].sum())
         solved = milp(c=np.r_[np.zeros(nc), -w], integrality=np.ones(nc + nd),
-                      bounds=Bounds(0, 1),
+                      bounds=Bounds(lower, 1),
                       constraints=LinearConstraint(matrix, np.r_[np.full(nd, -np.inf), k], np.r_[np.zeros(nd), k]),
                       options={'time_limit': 45, 'mip_rel_gap': 0.0001})
         chosen = np.flatnonzero(solved.x[:nc] > .5) if solved.x is not None else incumbent
-        if len(chosen) != k or value(chosen) < value(incumbent) - 1e-7:
+        if len(chosen) != k or not set(fixed).issubset(chosen) or value(chosen) < value(incumbent) - 1e-7:
             chosen = incumbent
         result[k] = candidates[chosen]
         gap = getattr(solved, 'mip_gap', None)
-        audit.append(dict(stops=k, method='MCLP MILP', solverStatus=int(solved.status),
+        audit.append(dict(stops=k, method='nested MCLP MILP' if nested else 'MCLP MILP', fixedStops=len(fixed), solverStatus=int(solved.status),
                           optimal=bool(solved.status == 0), gap=None if gap is None else float(gap),
                           candidateCount=nc, rawCandidateCount=len(distances),
                           greedyAddedPopulation=value(incumbent), selectedAddedPopulation=value(chosen)))
         print('MCLP', audit[-1], flush=True)
+        if nested:
+            fixed = chosen.tolist()
     return result, audit

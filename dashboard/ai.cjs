@@ -4,7 +4,7 @@ const {ChatError}=require('./errors.cjs');
 const {geminiStream}=require('./gemini.cjs');
 const tool = {
   type:'function',name:'calculate_scenario',strict:true,
-  description:'가상정류장/연결 방식/차량 대수/차종/전환율/재차인원/대기시간/호출시점/탄소범위를 바꾸어 같은 계산식으로 30분 도달 비율·연간 운영비·탄소 감축량을 계산한다. 바꾸지 않을 필드는 null. 화면은 변경하지 않는다. 수치 비교 질문에는 이 함수를 사용한다.',
+  description:'가상정류장/연결 방식/차량 대수/차종/전환율/재차인원/대기시간를 바꾸어 같은 계산식으로 30분 도달 비율·연간 운영비·탄소 감축량을 계산한다. 바꾸지 않을 필드는 null. 화면은 변경하지 않는다. 수치 비교 질문에는 이 함수를 사용한다.',
   parameters:{type:'object',additionalProperties:false,required:keys,properties:{
     tier:{type:['string','null'],enum:['t0','t21','t36','t61',null],description:'기존 정류장만 또는 추가 가상정류장 21·36·61곳'},
     destination:{type:['string','null'],enum:['clinic','daehwa','seogu',null]},
@@ -12,9 +12,7 @@ const tool = {
     vehicle:{type:['string','null'],enum:['electric','lpg','hybrid',null]},
     conversion:{type:['number','null'],description:'택시/자가용 통행 전환율 0~1',minimum:0,maximum:1},
     occupancy:{type:['number','null'],description:'평균 재차인원 1~3.2명',minimum:1,maximum:3.2},
-    emissionScope:{type:['string','null'],enum:['energy','tailpipe',null],description:'운행 에너지 배출 근사(전력 발전 포함) 또는 배기관 CO2'},
     waitBaseMin:{type:['number','null'],minimum:5,maximum:30,description:'2대 기준 가정 대기시간. 지역 실측값이 아님'},
-    waitMode:{type:['string','null'],enum:['overlap','sequential',null],description:'집에서 호출하여 보행과 대기 동시진행 또는 정류장 도착 후 호출'}
   }}
 };
 // Production always uses the official endpoint. Tests inject fetch, never a runtime URL.
@@ -83,7 +81,7 @@ function createAI({apiKey,model='gpt-6-luna',provider='openai',evaluate,fetchImp
           signal.throwIfAborted();emit('calculation',{calculation:result});
         }catch(error){
           if(signal.aborted)throw error;
-          result={available:false,error:'지원 범위 core/extended/all, 목적지 hospital/tanhyeon/kintex, 차종 lpg/hybrid, 전환율0~1, 재차인원1~3.2 안에서만 계산할 수 있습니다.'};
+          result={available:false,error:'정류장 t0/t21/t36/t61, 목적지 clinic/daehwa/seogu, 차종 electric/lpg/hybrid, 전환율0~1, 재차인원1~3.2 안에서만 계산할 수 있습니다.'};
         }
         input.push({type:'function_call_output',call_id:call.call_id,output:JSON.stringify(result)});
       }

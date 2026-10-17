@@ -42,7 +42,7 @@ test('tool comparison uses authoritative population/distances and the shared cal
     const body=JSON.parse(options.body);payloads.push(body);assert.equal(body.store,false);assert.equal(body.model,'gpt-6-luna');assert.equal(body.reasoning.effort,'none');
     if(payloads.length===1)return stream([{type:'response.completed',response:{output:[{type:'function_call',call_id:'compare1',name:'calculate_scenario',arguments:JSON.stringify({tier:null,destination:null,vehicles:null,vehicle:null,conversion:null,occupancy:3})}]}}]);
     const output=JSON.parse(body.input.find(x=>x.type==='function_call_output').output);
-    assert.equal(output.population,data.totalPopulation);assert.ok(output.access.withDrt>data.access.baselineShare);assert.equal(output.budget.annualWon,2*560428*365);assert.equal(output.scenario.occupancy,3);
+    assert.equal(output.population,data.totalPopulation);assert.ok(output.access.withDrt>data.access.baselineShare);assert.ok(Math.abs(output.budget.annualWon-2*560428*365)<.00001);assert.equal(output.scenario.occupancy,3);
     const expected=model.evaluate(data,{...scenario,occupancy:3},routeFixture(data)).result;
     assert.ok(Math.abs(output.result.savingKg-expected.savingKg)<1e-9);
     return stream(complete('재차인원 3명 조건을 계산했습니다. [S5]'));

@@ -144,7 +144,7 @@ def virtual_stops(g500, dem):
         virtual_ids[j] = sid
         stops.append(dict(id=sid, name='가상 승하차 지점', existing=False, lng=lng, lat=lat,
                           tiers=['t'+str(t) for t in TIERS if j in selected[t]]))
-    near, assignments = {}, {}
+    near, assignments, pickups = {}, {}, {}
     for t in [0] + TIERS:
         indices = selected[t] if t else []
         matrix = np.vstack([sd_all, dist[indices]]) if t else sd_all
@@ -152,10 +152,12 @@ def virtual_stops(g500, dem):
         idx = matrix.argmin(axis=0); lengths = matrix[idx, np.arange(len(w))]
         near[t] = lengths
         assignments[t] = [dict(stop=ids[j], walkS=float(np.ceil(d/SPEED))) if d <= R10 else None for j, d in zip(idx, lengths)]
-    used = {a['stop'] for rows in assignments.values() for a in rows if a}
+        pickups[t] = [[dict(stop=ids[j], walkS=float(np.ceil(matrix[j,i]/SPEED)))
+                       for j in np.flatnonzero(matrix[:,i] <= R10)] for i in range(len(w))]
+    used = {a['stop'] for rows in pickups.values() for row in rows for a in row}
     # Keep every selected virtual location on the map; unused existing stops are omitted.
     stops = [s for s in stops if not s['existing'] or s['id'] in used]
-    return near, stops, w, assignments, audit
+    return near, stops, w, assignments, pickups, audit
 
 
 def car_graph(bounds, buffer=6000):
@@ -240,7 +242,7 @@ def hub_onward():
 def main():
     g500, g250, o = cluster()
     dem = demand(g250)
-    near, stops, w, assignments, audit = virtual_stops(g500, dem)
+    near, stops, w, assignments, pickups, audit = virtual_stops(g500, dem)
     usable = {}
     for t, d in near.items():
         ok = pd.Series(w * (d <= R10)).groupby(dem.gid.values).sum() / pd.Series(w).groupby(dem.gid.values).sum()
@@ -266,11 +268,12 @@ def main():
              [{k:v for k,v in item.items() if k!='onwardS'} for item in onward.values()]
     origin_keys = {r.gid: str(i) for i, r in o.iterrows()}
     samples = [dict(origin=origin_keys[r.gid], population=float(r['pop']),
-                    boarding={f't{t}': assignments[t][i] for t in [0]+TIERS}) for i, r in dem.iterrows()]
+                    boarding={f't{t}': assignments[t][i] for t in [0]+TIERS},
+                    pickups={f't{t}': pickups[t][i] for t in [0]+TIERS}) for i, r in dem.iterrows()]
     manifest = json.loads((ROOT/'outputs/run_manifest.json').read_text(encoding='utf-8'))
     assert manifest['settings']['baseline_speed_mps'] == SPEED
     data = dict(
-        schemaVersion=3, generatedAt=datetime.now(timezone.utc).isoformat(), runId=manifest['run_id'],
+        schemaVersion=4, generatedAt=datetime.now(timezone.utc).isoformat(), runId=manifest['run_id'],
         source='Step7 C002 (0.8m/s·연속보행 10분·30분·하위 30%·Queen) / Step9 / fixed-budget MCLP',
         sourceHashes={str(p):hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in [Path('outputs/run_manifest.json'),Path('outputs/step07/tables/baseline_top3_membership.csv'),Path('dashboard/analysis/build_data.py'),Path('dashboard/analysis/location.py')]},
         areaName='구산·법곳·가좌 일대', clusterId=CLUSTER,
@@ -279,7 +282,7 @@ def main():
         tiers=tiers, stops=stops, clinics=clinics+[hospital], places=places, demand=samples, locationAudit=audit,
         access=dict(baselineShare=round(baseline, 4), waitS=WAIT_S, detour=DETOUR, budgetS=1800, finalWalkS=FINAL_WALK_S,
                     departureStartS=30600, departureIntervalS=60, departureCount=511,
-                    speedMps=SPEED, maxWalkS=600, hubAlightS=60,
+                    speedMps=SPEED, maxWalkS=600, hubAlightS=60, pickupBufferS=90,
                     referenceVehicles=2, waitElasticity=.5,
                     onward={k:dict(onwardS=v['onwardS'], target=v['target'], departureStartS=30600, departureIntervalS=60) for k,v in onward.items()}),
         budget=dict(dailyCostPerVehicle=DAILY_COST, days=365, defaultVehicles=2, maxVehicles=3),

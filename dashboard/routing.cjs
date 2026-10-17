@@ -33,7 +33,7 @@ function createRouter(restKey,data,{fetchImpl=fetch}={}){
   for(const o of data.origins){const target=id==='clinic'?o.clinic:places[id].target;
    if(!groups.has(target))groups.set(target,{origin:[],stops:new Set()});groups.get(target).origin.push(o);}
   for(const sample of data.demand){const o=origins[sample.origin],target=id==='clinic'?o.clinic:places[id].target;
-   for(const assignment of Object.values(sample.boarding))if(assignment)groups.get(target).stops.add(assignment.stop);}
+   for(const options of Object.values(sample.pickups))for(const assignment of options)groups.get(target).stops.add(assignment.stop);}
   for(const [target,g]of groups){
    Object.assign(baseline,await batch(g.origin,clinics[target]));
    const start=[...g.stops].map(sid=>({...stops[sid],key:sid+'|'+target}));
