@@ -31,14 +31,14 @@ function createRouter(restKey,data,{fetchImpl=fetch}={}){
  }
  async function calculate(id){
   const baseline={},boarding={},groups=new Map();
-  for(const o of data.origins){const target=id==='clinic'?o.clinic:places[id].target;
+  for(const o of data.origins){const target=places[id].target;
    if(!groups.has(target))groups.set(target,{origin:[],stops:new Set()});groups.get(target).origin.push(o);}
-  for(const sample of data.demand){const o=origins[sample.origin],target=id==='clinic'?o.clinic:places[id].target;
+  for(const sample of data.demand){const o=origins[sample.origin],target=places[id].target;
    for(const [tier,options] of Object.entries(sample.pickups))if(Object.hasOwn(scenarios,tier))for(const assignment of options)groups.get(target).stops.add(assignment.stop);}
   for(const [target,g]of groups){
    Object.assign(baseline,await batch(g.origin,clinics[target]));
    const start=[...g.stops].map(sid=>({...stops[sid],key:sid+'|'+target}));
-   Object.assign(boarding,await batch(start,id==='clinic'?clinics[target]:places[id]));
+   Object.assign(boarding,await batch(start,id==='baek'?clinics[target]:places[id]));
   }
   const result={destination:id,complete:true,queriedAt:new Date().toISOString(),runId:data.runId,priority:'DISTANCE',baseline,boarding};
   cache.set(id,result);return result;

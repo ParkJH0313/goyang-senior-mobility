@@ -1,5 +1,5 @@
 const model=require('./dist/model.js');
-const destinations={clinic:'가까운 내과·정형외과 직결',daehwa:'대화역 정류장 → 일산백병원',seogu:'일산서구청 정류장 → 일산백병원'};
+const destinations=model.destinations;
 const keys=['tier','destination','vehicles','vehicle','conversion','occupancy','waitBaseMin'];
 function validateScenario(value){
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!keys.includes(k)))throw Error('가상정류장과 운영 조건을 확인해 주세요.');

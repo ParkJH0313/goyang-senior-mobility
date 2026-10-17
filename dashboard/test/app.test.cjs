@@ -6,7 +6,7 @@ const {responseStream}=require('../ai.cjs');
 const {createScenarios}=require('../scenario.cjs');
 const model=require('../dist/model.js');
 const data=require('../dist/data.json');
-const scenario={tier:'t36',destination:'clinic',vehicles:2,vehicle:'lpg',conversion:.3,occupancy:2.5};
+const scenario={tier:'t36',destination:'baek',vehicles:2,vehicle:'lpg',conversion:.3,occupancy:2.5};
 const key='test-only-not-a-real-api-key';
 const {routeFixture}=require('./fixtures.cjs');
 const router={status:()=>({requests:0,ready:[],pending:[]}),get:async id=>routeFixture(data,id)};
@@ -25,6 +25,8 @@ test('no key: honest disabled status; dashboard and health still serve; private 
   let calls=0;const {base,post}=await app(t,{apiKey:''},async()=>{calls++;throw Error();});
   assert.equal((await (await fetch(base+'/api/chat/status')).json()).enabled,false);
   assert.equal((await fetch(base+'/')).status,200);assert.equal((await fetch(base+'/healthz')).status,200);
+  const direct=await fetch(base+'/api/distances');assert.equal(direct.status,200);assert.equal((await direct.json()).destination,'baek');
+  for(const id of ['clinic','seogu'])assert.equal((await fetch(base+'/api/distances?destination='+id)).status,400);
   const result=await post();assert.equal(result.status,503);assert.equal((await result.json()).code,'AI_NOT_CONFIGURED');assert.equal(calls,0);
   for(const file of ['/.env','/server.cjs','/knowledge.cjs','/package.json','/../.env'])assert.equal((await fetch(base+file)).status,404);
   const config=await (await fetch(base+'/config.js')).text();assert.ok(!config.includes(key));assert.ok(!config.includes('restKey'));

@@ -22,6 +22,8 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await page.goto(base);await ready(page);
   assert.equal(await page.evaluate(()=>dashboard.state().vehicle),'electric');
   assert.equal(await page.locator('[data-vehicle]').first().getAttribute('data-vehicle'),'electric');
+  assert.deepEqual(await page.locator('#destination option').evaluateAll(els=>els.map(el=>el.value)),['baek','daehwa']);
+  assert.equal(await page.locator('#access-now').textContent(),'1.4');
   const initialRequests=routeRequests,initialSaving=await page.evaluate(()=>dashboard.result().savingKg);
   assert.deepEqual(await page.locator('[data-tier]').evaluateAll(els=>els.map(el=>el.dataset.tier)),['none','t0','t21','t36']);
   await page.locator('[data-tier="none"]').click();
@@ -37,6 +39,8 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await page.locator('[data-vehicles="3"]').click();const three=await page.evaluate(()=>dashboard.evaluation());
   assert.ok(three.access.waitMin<one.access.waitMin);assert.equal(three.access.withDrt,one.access.withDrt);assert.ok(three.access.homeWaitMin<one.access.homeWaitMin);assert.equal(three.access.stationaryWaitMin,1.5);
   assert.equal(three.result.savingKg,one.result.savingKg);
+  assert.equal(await page.locator('#waitBaseMin').count(),0);assert.equal(await page.locator('#wait-vehicles').textContent(),'3');assert.equal(await page.locator('#wait-time').textContent(),'11.8');
+  assert.match(await page.locator('.controls').textContent(),/광교의 당시 운행대수는 10대/);assert.match(await page.locator('.controls').textContent(),/30분 도달률은 바뀌지 않습니다/);
   assert.equal(await page.locator('#waitMode').count(),0);assert.equal(await page.locator('#emissionScope').count(),0);
   assert.equal(await page.evaluate(()=>dashboard.result().drtKg),0);
   const electricBudget=await page.evaluate(()=>dashboard.evaluation().budget.annualWon);
@@ -48,13 +52,35 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   assert.match(await page.locator('#chat-open').evaluate(el=>getComputedStyle(el).backgroundImage),/linear-gradient/);
   assert.equal(routeRequests,initialRequests);
   report.checks.push('electric default; tailpipe only; scheduled pickup and home-departure metric; vehicle-specific cost; Gemini attribution; controls reuse routes');
-  for(const destination of ['daehwa','seogu']){
+  for(const destination of ['baek','daehwa']){
    await page.locator('#destination').selectOption(destination);
    await page.waitForFunction(id=>window.dashboard?.evaluation()?.scenario.destination===id,destination);
    assert.ok(await page.evaluate(()=>Number.isFinite(dashboard.result().savingKg)));
    assert.match(await page.locator('#destination-note').textContent(),/일산백병원/);
   }
-  report.checks.push('both actual bus-stop hub alternatives finish calculating');
+  report.checks.push('same-hospital direct and Daehwa feeder alternatives finish calculating');
+  // Execute the real map-label rendering with a local SDK stub, without a live map/API key.
+  const mapContext=await browser.newContext(),mapPage=await mapContext.newPage();
+  mapPage.on('pageerror',error=>report.errors.push(error.message));
+  await mapPage.route('**/config.js',r=>r.fulfill({contentType:'application/javascript',body:'window.KAKAO_TEST_CONFIG={javascriptKey:"test-only"};'}));
+  await mapPage.route('https://dapi.kakao.com/**',r=>r.fulfill({contentType:'application/javascript',body:`window.kakao={maps:{
+   load:fn=>fn(),LatLng:class{},LatLngBounds:class{extend(){}},Map:class{addControl(){}setBounds(){}relayout(){}},
+   Polygon:class{setOptions(){}},CustomOverlay:class{constructor(o){this.options=o;if(o.map)document.getElementById('map').append(o.content);}setMap(){}},
+   ZoomControl:class{},ControlPosition:{RIGHT:0},event:{addListener(){}}
+  }};`}));
+  await mapPage.goto(base);await mapPage.waitForFunction(()=>window.dashboard?.mapReady);
+  for(const destination of ['daehwa']){
+   await mapPage.locator('#destination').selectOption(destination);
+   assert.equal(await mapPage.locator('.place-label.chosen').count(),1);
+   assert.equal(await mapPage.locator('.place-label.chosen').getAttribute('data-place'),destination);
+   assert.equal(await mapPage.locator('.place-label.chosen .place-role').textContent(),'똑버스 하차');
+   assert.equal(await mapPage.locator('[data-place="baek"]').evaluate(el=>el.classList.contains('chosen')),false);
+   assert.equal(await mapPage.locator('.final-destination .place-role').textContent(),'최종 병원');
+  }
+  await mapPage.locator('#destination').selectOption('baek');assert.equal(await mapPage.locator('.place-label.chosen').getAttribute('data-place'),'baek');assert.equal(await mapPage.locator('.place-label.final-destination').count(),0);assert.match(await mapPage.locator('.place-label.chosen .place-role').textContent(),/진료 목적지/);
+  await mapPage.locator('[data-tier="none"]').click();assert.equal(await mapPage.locator('.place-label.chosen,.place-label.final-destination').count(),0);
+  await mapContext.close();report.checks.push('local map SDK stub: selected hub and final hospital have distinct roles; no duplicate selected destination');
+
   await page.locator('#reset').click();await ready(page);
   await page.locator('#chat-open').click();await page.waitForFunction(()=>document.getElementById('chat-connection').textContent.includes('키 등록'));
   assert.equal(await page.locator('#chat-input').isDisabled(),true);assert.equal(await page.locator('#chat-send').isDisabled(),true);

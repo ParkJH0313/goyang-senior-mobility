@@ -1,7 +1,7 @@
 (()=>{
   const $=id=>document.getElementById(id);let enabled=false,busy=false,controller=null,settingsReady=false,provider='Gemini';
-  const names={clinic:'병원까지 직행',daehwa:'주거지→대화역 거점',seogu:'주거지→일산서구청 거점'},vehicles={electric:'전기',lpg:'LPG',hybrid:'하이브리드'};
-  const summary=s=>s.tier==='none'?'똑버스 미도입 · 기존 대중교통·보행 · 집 출발 후 30분 기준\n추가 운영비·도입에 따른 탄소 감축 없음':`${CarbonModel.scenarios[s.tier]} · ${names[s.destination]} · ${s.vehicles}대\n스타리아 11인승 ${vehicles[s.vehicle]} · 전환 ${Math.round(s.conversion*100)}% · 재차 ${s.occupancy.toFixed(1)}명 · 집 출발 기준 · 정류장 대기 1.5분 · 배기관 CO₂`;
+  const names={baek:'백병원까지 직행',daehwa:'대화역 하차 후 백병원 이동'},vehicles={electric:'전기',lpg:'LPG',hybrid:'하이브리드'};
+  const summary=s=>s.tier==='none'?'똑버스 미도입 · 기존 대중교통·보행 → 일산백병원 · 집 출발 후 30분 기준\n추가 운영비·도입에 따른 탄소 감축 없음':`${CarbonModel.scenarios[s.tier]} · ${names[s.destination]} · ${s.vehicles}대\n스타리아 11인승 ${vehicles[s.vehicle]} · 전환 ${Math.round(s.conversion*100)}% · 재차 ${s.occupancy.toFixed(1)}명 · 집 출발 기준 · 정류장 대기 1.5분 · 배기관 CO₂`;
 
   const scroll=()=>{$('chat-scroll').scrollTop=$('chat-scroll').scrollHeight;};
   function controls(){
@@ -48,10 +48,10 @@
   }
   function resultCard(value){
     const card=create('div','chat-result-card');
-    if(value.scenario.tier==='none'){card.append(create('p','','똑버스 미도입 · 기존 대중교통·보행'),create('strong','',`집 출발 후 30분 ${(value.access.withDrt*100).toFixed(1)}% · 추가 운영비 0원 · 탄소 감축 0`),create('small','','도입 효과가 없다는 의미이며 지역 전체 배출량은 별도입니다.'));return card;}
+    if(value.scenario.tier==='none'){card.append(create('p','','똑버스 미도입 · 기존 대중교통·보행 → 일산백병원'),create('strong','',`집 출발 후 30분 ${(value.access.withDrt*100).toFixed(1)}% · 추가 운영비 0원 · 탄소 감축 0`),create('small','','도입 효과가 없다는 의미이며 지역 전체 배출량은 별도입니다.'));return card;}
     card.append(create('p','',`${CarbonModel.scenarios[value.scenario.tier]} · ${value.destinationTitle} · ${value.budget.vehicles}대 · 운영비 ${(value.budget.annualWon/1e8).toFixed(2)}억 원`),create('p','',`${value.vehicleTitle} · 전환 ${Math.round(value.scenario.conversion*100)}% · 재차 ${value.scenario.occupancy.toFixed(1)}명`));
     if(!value.available){card.append(create('p','',value.reason||'경로 확인 후 계산할 수 있습니다.'));return card;}
-    card.append(create('p','',`집 안 대기 ${value.access.homeWaitMin.toFixed(1)}분 별도 · 정류장 대기 1.5분 · 배기관 CO₂`));
+    card.append(create('p','',`기준 대기 ${value.scenario.waitBaseMin??14.5}분 가정 · 집 안 대기 ${value.access.homeWaitMin.toFixed(1)}분 별도 · 정류장 대기 1.5분 · 배기관 CO₂`));
     const negative=value.result.savingKg<-.000001;card.classList.toggle('negative',negative);
     card.append(create('strong','',`집 출발 후 30분 ${(value.access.withDrt*100).toFixed(1)}% · ${(Math.abs(value.result.savingKg)/1000).toFixed(2)} tCO₂ / 년 ${negative?'증가':'감축'}`),create('small','','같은 계산식으로 산출 · 비교 조건은 화면에 자동 적용되지 않습니다.'));
     return card;

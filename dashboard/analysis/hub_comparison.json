@@ -1,0 +1,88 @@
+{
+  "runId": "v7_695e8615ca9a",
+  "dataGeneratedAt": "2026-10-17T13:34:44.864902+00:00",
+  "dataSha256": "735f3af53ca02798699c2a84475f232e8bbef46d3c95e8ae55caf0f3f5b59109",
+  "routeQueries": [
+    {
+      "id": "daehwa",
+      "queriedAt": "2026-10-17T14:13:48.970Z",
+      "sha256": "fcd912588aeb97607e60a5e5ff14d91c4cd90aaba4ba8710a5a2b3882a1b89ea"
+    },
+    {
+      "id": "seogu",
+      "queriedAt": "2026-10-17T14:13:50.697Z",
+      "sha256": "1653926a4d49cd4a7589b3280ceb599725f4b26ca0ef8dc9a81cdb5529029c09"
+    }
+  ],
+  "basis": "Home departure; population and minute weighted; matched finite cases for travel means; same Baek hospital; fixed detour and scheduled 1.5-minute pickup buffer. DRT-only reach is separate from transit union.",
+  "selectedHub": "daehwa",
+  "selection": "Lower mean total travel time in all three active layouts among these two candidates only; not a citywide optimum.",
+  "rows": [
+    {
+      "tier": "t0",
+      "eligiblePopulation": 523.1856737671205,
+      "commonFinitePopulationEquivalent": 523.1378404877885,
+      "commonFiniteShare": 0.9999085730329969,
+      "alternatives": [
+        {
+          "id": "daehwa",
+          "meanHomeToHospitalMin": 34.366591286497545,
+          "meanDrivingMin": 16.708931036418043,
+          "meanAfterAlightingMin": 10.31229666099143,
+          "drtWithin30ShareOfPopulation": 0.06645093291743977
+        },
+        {
+          "id": "seogu",
+          "meanHomeToHospitalMin": 36.94470629448161,
+          "meanDrivingMin": 14.246053484260326,
+          "meanAfterAlightingMin": 15.266781490302423,
+          "drtWithin30ShareOfPopulation": 0.014740344454359986
+        }
+      ]
+    },
+    {
+      "tier": "t21",
+      "eligiblePopulation": 673.4738584623614,
+      "commonFinitePopulationEquivalent": 673.4214231164929,
+      "commonFiniteShare": 0.9999221419729813,
+      "alternatives": [
+        {
+          "id": "daehwa",
+          "meanHomeToHospitalMin": 32.99814230424871,
+          "meanDrivingMin": 17.386009242313175,
+          "meanAfterAlightingMin": 10.33477173931629,
+          "drtWithin30ShareOfPopulation": 0.1564177905945897
+        },
+        {
+          "id": "seogu",
+          "meanHomeToHospitalMin": 35.567107374917164,
+          "meanDrivingMin": 14.867945585209275,
+          "meanAfterAlightingMin": 15.183066994046419,
+          "drtWithin30ShareOfPopulation": 0.02931190917517738
+        }
+      ]
+    },
+    {
+      "tier": "t36",
+      "eligiblePopulation": 725.0153441515711,
+      "commonFinitePopulationEquivalent": 724.9343614712064,
+      "commonFiniteShare": 0.9998883021152339,
+      "alternatives": [
+        {
+          "id": "daehwa",
+          "meanHomeToHospitalMin": 32.87988427633896,
+          "meanDrivingMin": 17.542860813231616,
+          "meanAfterAlightingMin": 10.338760419426421,
+          "drtWithin30ShareOfPopulation": 0.19108098010612837
+        },
+        {
+          "id": "seogu",
+          "meanHomeToHospitalMin": 35.46480502329152,
+          "meanDrivingMin": 15.04294416058843,
+          "meanAfterAlightingMin": 15.196232767763325,
+          "drtWithin30ShareOfPopulation": 0.03960286543923494
+        }
+      ]
+    }
+  ]
+}

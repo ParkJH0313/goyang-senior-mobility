@@ -8,6 +8,7 @@
   hybrid:{name:'하이브리드',model:'스타리아 하이브리드 11인승',factor:.128,seats:10,purchaseWon:39990000,efficiency:12.7,energyWon:1750,maintenanceWonKm:70}
  };
  const costAssumptions={dailyKm:200,lifeYears:8,residualRate:0};
+ const destinations={baek:'백병원까지 직행',daehwa:'대화역 하차 후 백병원으로 이동'};
  const scenarios={none:'똑버스 미도입',t0:'기존 정류장에 도입',t21:'가상 정류장 21곳 추가',t36:'가상 정류장 36곳 추가'};
  function factor(vehicle,scope='tailpipe'){
   if(!Object.hasOwn(vehicles,vehicle)||scope!=='tailpipe')throw Error('Tailpipe CO2 only');return vehicles[vehicle].factor;
@@ -47,12 +48,13 @@
   }return decoded.get(data);
  }
  function evaluate(data,s,routes){
+  if(!Object.hasOwn(destinations,s.destination))throw Error('Unknown medical connection');
   if(s.tier==='none'){
    const profiles=busProfiles(data),cells=Object.fromEntries(data.grids.map(g=>[g.properties.gid,{gid:g.properties.gid,population:0,baseline:0}]));
    const origins=Object.fromEntries(data.origins.map(o=>[o.key,o]));
    for(const sample of data.demand){const c=cells[origins[sample.origin].parent_gid];c.population+=sample.population;c.baseline+=sample.population*profiles[sample.origin].reduce((x,y)=>x+y,0)/data.access.departureCount;}
    return {available:true,drtEnabled:false,scenario:s,scenarioTitle:scenarios.none,areaName:data.areaName,population:data.totalPopulation,gridCount:data.totalGrids,eligiblePopulation:0,
-    stops:{added:0,walk5:data.existing.walk5,walk10:data.existing.walk10,existingWalk5:data.existing.walk5,existingWalk10:data.existing.walk10},destinationTitle:'기존 대중교통·보행으로 의료기관 이동',vehicleTitle:'운행 없음',
+    stops:{added:0,walk5:data.existing.walk5,walk10:data.existing.walk10,existingWalk5:data.existing.walk5,existingWalk10:data.existing.walk10},destinationTitle:'기존 대중교통·보행으로 일산백병원 이동',vehicleTitle:'운행 없음',
     budget:{vehicles:0,annualWon:0,purchaseWon:0,dailyCostPerVehicle:0},distances:null,
     access:{current:data.access.baselineShare,withDrt:data.access.baselineShare,withDrtFromCall:null,timeBasis:'home-departure',waitMin:null,homeWaitMin:null,walkMin:null,stationaryWaitMin:null,driveMin:null,waitModel:'not-applicable'},
     cells:Object.values(cells).map(c=>({...c,eligible:0,baseline:c.baseline/c.population,withDrt:c.baseline/c.population,walkMin:null})),queriedAt:null,
@@ -65,7 +67,7 @@
   let eligible=0,baseKm=0,drtKm=0,walk=0,drive=0,homeWait=0,reachTotal=0,callReachTotal=0;
   const cells=Object.fromEntries(data.grids.map(g=>[g.properties.gid,{gid:g.properties.gid,population:0,eligible:0,baseline:0,withDrt:0,walkS:0}]));
   const onward=(first,i)=>{
-   if(s.destination==='clinic')return first+a.finalWalkS;
+   if(s.destination==='baek')return first+a.finalWalkS;
    const h=a.onward[s.destination],start=a.departureStartS+i*a.departureIntervalS,arrive=start+first+a.hubAlightS;
    const j=Math.ceil((arrive-h.departureStartS)/h.departureIntervalS),next=h.onwardS[j];
    return j>=0&&j<h.onwardS.length&&next!=null?h.departureStartS+j*h.departureIntervalS-start+next:Infinity;
@@ -75,7 +77,7 @@
    const options=sample.pickups[s.tier];let share=bs,callShare=bs;
    cell.population+=w;cell.baseline+=w*bs;
    if(options.length){
-    const target=s.destination==='clinic'?o.clinic:a.onward[s.destination].target,baseline=routes.baseline[o.key];
+    const target=a.target||'baek',baseline=routes.baseline[o.key];
     if(!baseline||[baseline.outKm,baseline.backKm].some(x=>!Number.isFinite(x)||x<0))throw Error('Incomplete baseline routes');
     const candidates=options.map(b=>{
      const route=routes.boarding[b.stop+'|'+target];
@@ -98,11 +100,11 @@
   const mean=x=>eligible?x/eligible:0,distances={baselineKm:mean(baseKm),drtKm:mean(drtKm)};
   const result=calculate({...s,...distances,population:eligible});
   return {available:true,drtEnabled:true,scenario:s,scenarioTitle:scenarios[s.tier]||('가상 정류장 '+tier.stops+'곳 추가'),areaName:data.areaName,population:data.totalPopulation,gridCount:data.totalGrids,eligiblePopulation:eligible,
-   stops:{added:tier.stops,walk5:tier.walk5,walk10:tier.walk10,existingWalk5:data.existing.walk5,existingWalk10:data.existing.walk10},destinationTitle:({clinic:'주거지→가까운 의료기관 직행',daehwa:'주거지→대화역 거점→일산백병원',seogu:'주거지→일산서구청 거점→일산백병원'})[s.destination],vehicleTitle:vehicles[s.vehicle].model,
+   stops:{added:tier.stops,walk5:tier.walk5,walk10:tier.walk10,existingWalk5:data.existing.walk5,existingWalk10:data.existing.walk10},destinationTitle:destinations[s.destination],vehicleTitle:vehicles[s.vehicle].model,
    budget:budgetEstimate(s.vehicles,data.budget,s.vehicle),distances,
    access:{current:data.access.baselineShare,withDrt:reachTotal/data.totalPopulation,withDrtFromCall:callReachTotal/data.totalPopulation,timeBasis:'home-departure',waitMin,homeWaitMin:mean(homeWait)/60,walkMin:mean(walk)/60,stationaryWaitMin:eligible?(a.pickupBufferS??90)/60:0,driveMin:mean(drive)/60,waitModel:'scheduled-pickup-sensitivity'},
    cells:Object.values(cells).map(c=>({...c,baseline:c.baseline/c.population,withDrt:c.withDrt/c.population,walkMin:c.eligible?c.walkS/c.eligible/60:null})),queriedAt:routes.queriedAt,result};
  }
- const model={defaults,vehicles,costAssumptions,scenarios,factor,calculate,annualCost,budgetEstimate,waitMinutes,pickupTiming,evaluate};
+ const model={defaults,vehicles,costAssumptions,scenarios,destinations,factor,calculate,annualCost,budgetEstimate,waitMinutes,pickupTiming,evaluate};
  if(typeof module!=='undefined'&&module.exports)module.exports=model;else root.CarbonModel=model;
 })(typeof window==='undefined'?globalThis:window);

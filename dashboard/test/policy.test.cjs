@@ -3,10 +3,20 @@ const model=require('../dist/model.js'),data=require('../dist/data.json');
 const {createScenarios,validateScenario}=require('../scenario.cjs');
 const {createRouter}=require('../routing.cjs');
 const {routeFixture}=require('./fixtures.cjs');
-const scenario={tier:'t36',destination:'clinic',vehicles:2,vehicle:'electric',conversion:.3,occupancy:2.5,waitBaseMin:14.5};
+const scenario={tier:'t36',destination:'baek',vehicles:2,vehicle:'electric',conversion:.3,occupancy:2.5,waitBaseMin:14.5};
+test('both connections use Baek; direct adds final walk and feeder adds onward travel',()=>{
+ assert.deepEqual(data.places.map(p=>p.id),['baek','daehwa']);assert.equal(data.access.target,'baek');
+ assert.ok(Math.abs(data.access.baselineShare-.01423820506676252)<1e-12);
+ for(const destination of ['clinic','seogu'])assert.throws(()=>validateScenario({...scenario,destination}));
+ const tiny={...data,origins:[{key:'o',parent_gid:'g',bus:Buffer.from([0]).toString('base64')}],grids:[{properties:{gid:'g',population:1}}],totalPopulation:1,
+  demand:[{origin:'o',population:1,pickups:{t36:[{stop:'s',walkS:60}]}}],access:{...data.access,baselineShare:0,departureCount:1,onward:{daehwa:{target:'baek',departureStartS:30600,departureIntervalS:60,onwardS:Array(541).fill(600)}}}};
+ const routes={complete:true,destination:'baek',baseline:{o:{outKm:5,backKm:5}},boarding:{'s|baek':{outKm:4,backKm:4,driveS:1200}}};
+ const direct=model.evaluate(tiny,scenario,routes),feeder=model.evaluate(tiny,{...scenario,destination:'daehwa'},{...routes,destination:'daehwa'});
+ assert.equal(direct.access.withDrt,1);assert.equal(feeder.access.withDrt,0);assert.equal(direct.distances.baselineKm,feeder.distances.baselineKm);
+});
 test('no DRT uses transit baseline without routes, cost or claimed emissions totals',async()=>{
  const evaluate=createScenarios(data,{get:async()=>{assert.fail('No DRT must not request driving routes');}});
- for(const destination of ['clinic','daehwa','seogu'])for(const vehicles of [1,2,3]){
+ for(const destination of ['baek','daehwa'])for(const vehicles of [1,2,3]){
   const s={...scenario,tier:'none',destination,vehicles},result=await evaluate(s);
   assert.deepEqual(result,model.evaluate(data,s));assert.equal(result.available,true);assert.equal(result.drtEnabled,false);
   assert.equal(result.access.withDrt,data.access.baselineShare);assert.equal(result.budget.annualWon,0);assert.equal(result.budget.vehicles,0);
@@ -30,7 +40,7 @@ test('scheduled pickup keeps 1.5 minutes at stop and separates home waiting from
  const t=model.pickupTiming(240,870);assert.deepEqual(t,{homeWaitS:540,walkS:240,stopWaitS:90,fromHomeS:330,fromCallS:870});
  assert.equal(t.homeWaitS+t.fromHomeS,t.fromCallS);
  assert.equal(model.pickupTiming(600,300).fromCallS,690);assert.equal(model.pickupTiming(600,300).homeWaitS,0);
- const r=routeFixture(data,'clinic',600),one=model.evaluate(data,{...scenario,vehicles:1},r),three=model.evaluate(data,{...scenario,vehicles:3},r);
+ const r=routeFixture(data,'baek',600),one=model.evaluate(data,{...scenario,vehicles:1},r),three=model.evaluate(data,{...scenario,vehicles:3},r);
  assert.ok(three.access.waitMin<one.access.waitMin);assert.ok(three.access.homeWaitMin<one.access.homeWaitMin);
  assert.equal(one.access.stationaryWaitMin,1.5);assert.equal(one.access.timeBasis,'home-departure');
  assert.equal(three.access.withDrt,one.access.withDrt);assert.equal(three.result.savingKg,one.result.savingKg);
@@ -69,7 +79,7 @@ test('17:00 departure may transfer after 17:00 and still reach within 30 minutes
  assert.equal(model.evaluate(tiny,{...scenario,destination:'daehwa'},r).access.withDrt,1);
 });
 test('snapshot assignments conserve population, obey walking cap, and reference selected stops',()=>{
- assert.equal(data.access.speedMps,.8);assert.equal(data.schemaVersion,4);
+ assert.equal(data.access.speedMps,.8);assert.equal(data.schemaVersion,5);
  assert.ok(Math.abs(data.demand.reduce((n,d)=>n+d.population,0)-784)<1e-6);
  const stops=Object.fromEntries(data.stops.map(s=>[s.id,s]));
  for(const t of data.tiers){
@@ -82,24 +92,27 @@ test('snapshot assignments conserve population, obey walking cap, and reference 
  for(const h of Object.values(data.access.onward))assert.equal(h.onwardS.length,541);
 });
 test('Kakao requests use boarding coordinates and same-hospital baseline; reuse on condition changes',async()=>{
- const small={origins:[{key:'o',x:126,y:37,clinic:'c'}],clinics:[{id:'c',lng:127,lat:38},{id:'baek',lng:128,lat:39}],stops:[{id:'s',lng:126.1,lat:37.1}],places:[{id:'clinic'},{id:'daehwa',lng:127.1,lat:38.1,target:'baek'}],demand:[{origin:'o',pickups:{t0:[{stop:'s',walkS:20}],t36:[{stop:'s',walkS:20}]}}]};
+ const small={origins:[{key:'o',x:126,y:37}],clinics:[{id:'baek',lng:128,lat:39}],stops:[{id:'s',lng:126.1,lat:37.1}],places:[{id:'baek',lng:128,lat:39,target:'baek'},{id:'daehwa',lng:127.1,lat:38.1,target:'baek'}],demand:[{origin:'o',pickups:{t0:[{stop:'s',walkS:20}],t36:[{stop:'s',walkS:20}]}}]};
  const calls=[];
  const router=createRouter('test-key',small,{fetchImpl:async(url,{body})=>{const q=JSON.parse(body);calls.push({url,q});const points=q.origins||q.destinations;return new Response(JSON.stringify({routes:points.map(p=>({key:p.key,result_code:0,summary:{distance:1000,duration:120}}))}));}});
  const r=await router.get('daehwa');assert.equal(r.boarding['s|baek'].outKm,1);
  assert.ok(calls.some(c=>c.q.origins?.[0].x===126.1&&c.q.destination.x===127.1));
  assert.ok(calls.some(c=>c.q.origins?.[0].x===126&&c.q.destination.x===128));
  const count=calls.length;await router.get('daehwa');assert.equal(calls.length,count);
+ const direct=await router.get('baek');assert.equal(direct.boarding['s|baek'].outKm,1);
+ assert.ok(calls.some(c=>c.q.origins?.[0].x===126.1&&c.q.destination.x===128));
+ assert.ok(!calls.slice(count).some(c=>c.q.origins?.[0].x===126));
 });
 
 test('a nearer new stop with slower vehicle travel cannot remove an existing reachable trip',()=>{
  const tiny={...data,origins:[{key:'o',parent_gid:'g',bus:Buffer.from([0]).toString('base64'),clinic:'c'}],grids:[{properties:{gid:'g',population:1}}],totalPopulation:1,
   demand:[{origin:'o',population:1,pickups:{t0:[{stop:'old',walkS:300}],t21:[{stop:'old',walkS:300},{stop:'new',walkS:10}]}}],access:{...data.access,baselineShare:0,departureCount:1}};
- const r={complete:true,destination:'clinic',baseline:{o:{outKm:5,backKm:5}},boarding:{'old|c':{outKm:2,backKm:2,driveS:600},'new|c':{outKm:4,backKm:4,driveS:1500}}};
+ const r={complete:true,destination:'baek',baseline:{o:{outKm:5,backKm:5}},boarding:{'old|baek':{outKm:2,backKm:2,driveS:600},'new|baek':{outKm:4,backKm:4,driveS:1500}}};
  const before=model.evaluate(tiny,{...scenario,tier:'t0'},r),after=model.evaluate(tiny,{...scenario,tier:'t21'},r);
  assert.equal(before.access.withDrt,1);assert.equal(after.access.withDrt,1);assert.equal(after.distances.drtKm,4);
 });
 test('all layouts preserve or improve every grid for every connection under fixed supply assumptions',()=>{
- for(const destination of ['clinic','daehwa','seogu']){
+ for(const destination of ['baek','daehwa']){
   const r=routeFixture(data,destination,900);let prev=null;
   for(const t of data.tiers){const now=model.evaluate(data,{...scenario,tier:t.id,destination},r);
    if(prev){assert.ok(now.access.withDrt>=prev.access.withDrt-1e-10);for(let i=0;i<now.cells.length;i++)assert.ok(now.cells[i].withDrt>=prev.cells[i].withDrt-1e-10);}

@@ -21,3 +21,5 @@
 @media(max-width:600px){.controls fieldset:nth-last-child(-n+2),.controls fieldset:nth-of-type(2),.fixed-scope{grid-column:1/-1}.control-explanation{font-size:11px}.journey-summary{gap:18px}}
 
 [hidden]{display:none!important}fieldset:disabled{opacity:.55}fieldset:disabled button,fieldset:disabled input,fieldset:disabled select{cursor:default}.scope .scope-badge{font-size:11px;white-space:nowrap}.scope>span{min-width:0}.scope>strong{flex-shrink:0}.scenario-explanation{margin-top:12px;font-size:10px}
+
+.fleet-wait{margin:12px 0 6px;font-size:11px}.place-role{display:block;font-size:9px;font-weight:400;margin-bottom:4px}.place-label.final-destination{background:#fff4e3;border-color:#b78030;color:#744b12}.legend .hospital{background:#e7bd79;border:1px solid #b78030}
