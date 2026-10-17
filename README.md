@@ -29,7 +29,7 @@ goyang-senior-mobility/
 │  ├─ raw/                # 원자료
 │  └─ processed/          # 전처리 자료
 ├─ outputs/               # 분석 결과
-└─ dashboard/             # 결과 시각화
+└─ dashboard/             # AI 대시보드
 ```
 
 ## 데이터
@@ -71,3 +71,19 @@ python -m venv .venv
 ```
 
 ## 주요 결과
+
+전체 결과는 분석 후 생성되는 `outputs/결과_보기.html`을 웹 브라우저에서 열어 확인할 수 있다.
+
+**의료접근성과 고령인구 상위 저접근 군집**
+
+![고양시 30분 의료접근성과 고령인구 상위 3개 저접근 군집](assets/results/accessibility_clusters.png)
+
+**시간예산 30·40·50분에 따른 대표 군집 비교**
+
+![같은 군집과 저접근 기준을 유지한 시간예산별 접근성 비교](assets/results/time_budget_comparison.png)
+
+## AI 대시보드
+
+가좌·송포 지역의 의료이동·탄소 시나리오를 살펴보고, AI에 질문하며 계산 결과를 확인할 수 있다.
+
+### [https://goyang-medical-dashboard.onrender.com](https://goyang-medical-dashboard.onrender.com)
