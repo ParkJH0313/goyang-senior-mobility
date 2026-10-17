@@ -74,11 +74,9 @@ python -m venv .venv
 
 전체 결과는 분석 후 생성되는 `outputs/결과_보기.html`을 웹 브라우저에서 열어 확인할 수 있다.
 
-**의료접근성과 고령인구 상위 저접근 군집**
 
 ![고양시 30분 의료접근성과 고령인구 상위 3개 저접근 군집](assets/results/accessibility_clusters.png)
 
-**시간예산 30·40·50분에 따른 대표 군집 비교**
 
 ![같은 군집과 저접근 기준을 유지한 시간예산별 접근성 비교](assets/results/time_budget_comparison.png)
 
