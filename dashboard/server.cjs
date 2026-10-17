@@ -18,8 +18,8 @@ function createApp(config,overrides={}){
   const evaluate=createScenarios(data,router);
   const answer=createAI({apiKey:config.apiKey,model:config.model,provider:config.provider,evaluate,fetchImpl:overrides.fetchImpl});
   const sessions=new Map();let active=0,daily=0,day='';
-  const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml'};
-  const files={'/':'index.html','/index.html':'index.html','/about.html':'about.html','/app.js':'app.js','/chat.js':'chat.js','/model.js':'model.js','/style.css':'style.css','/chat.css':'chat.css','/data.json':'data.json','/favicon.svg':'favicon.svg'};
+  const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png'};
+  const files={'/':'index.html','/index.html':'index.html','/about.html':'about.html','/app.js':'app.js','/chat.js':'chat.js','/model.js':'model.js','/style.css':'style.css','/chat.css':'chat.css','/data.json':'data.json','/favicon.png':'favicon.png'};
   const json=(res,status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(value));};
   const session=(req,res,create=true)=>{
     const now=Date.now();
