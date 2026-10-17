@@ -1,0 +1,20 @@
+{
+  "signature": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+  "status": "complete",
+  "completed_at": "2026-10-16T18:42:50.215257+00:00",
+  "summary": {
+    "population": 217395.3,
+    "positive_origins": 2587,
+    "included_origins": 2586,
+    "excluded_population": 3.0
+  },
+  "outputs": {
+    "step01/population.gpkg": "f8d138095a54ea6df1f0208ced2967edc9794d485187c6d3fa3c077f58da8080",
+    "step01/README.md": "8afdf436ee86b6ee8451da315c1554fc61dc8ed839e2bd75efeeefda58f70ffd",
+    "step01/figures/population_500m.png": "e9ce431249d0c2e787a4dafb7f0d4f6481f74813ac87d7ca4eeda04ad0fee40b",
+    "step01/tables/parent_child_weights.csv": "523657aaaba96c50de03e19b151e84d191a38f0f107a2204774afef9a25656f2",
+    "step01/tables/population_qa.csv": "4647b0219e2a98944202243c688b345e4ae909fb96423ece439c9b06f6630dff"
+  },
+  "schema_version": "1.0",
+  "parent_signatures": {}
+}

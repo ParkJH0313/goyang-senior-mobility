@@ -1,0 +1,46 @@
+{
+  "signature": "76149d4f3aea057f39fae40f2f8efb618dfab0e60a3b6879afd47163fe24007c",
+  "status": "complete",
+  "completed_at": "2026-10-17T02:42:44.796412+00:00",
+  "summary": {
+    "top3_origins": 328,
+    "scenarios": 9,
+    "figures": 5,
+    "speed_monotonic": true
+  },
+  "outputs": {
+    "step08/extended_checkpoint.parquet": "067d1116a7ce2425e01357b1e0b50c80160c7fde50529ad267e864d08d9ccfba",
+    "step08/README.md": "70d0adff6f6f3a9b1d4646122fc5366b615d86f8832e51a3300c2783cb6a1b05",
+    "step08/sensitivity.gpkg": "907aa0443aa67fce7eb260abe9d5dfc606eaf883b9bc4c21b2ccd97b08432e12",
+    "step08/sensitivity_minute_profiles.parquet": "be091baa77544c833cca43359123cc9ca7fd2b0c3e8aa7629544802f9d367a44",
+    "step08/speed_0.6_checkpoint.parquet": "154353734560e1601c75acf49e96aae6b6009b0ef56c25e3c19d592525fffec2",
+    "step08/speed_0.8_checkpoint.parquet": "702c3b21b0b04702e4251c913271b47ccc2f33be788a0243b75f8e71586ffd11",
+    "step08/figures/01_time_budget_top3.png": "d093f60713eb2ab11b7e02f1797803dc1aebbb4f1f1616d2e6cd3974363da049",
+    "step08/figures/02_time_budget_profiles.png": "fdf958d368f53cc5712812791a40f2a68bdc247970a88c89e725feca3c885612",
+    "step08/figures/03_walk_speed_top3.png": "2150455de0cf68f5677a34a422513beb13851a5b137ec7c534d30a6b0d9a325b",
+    "step08/figures/04_cutoff_cluster_maps.png": "d750dcf1f54a6eac248a24c2e0803bdec3715c80492d1385b0242bcf8ba6f4b4",
+    "step08/figures/05_cutoff_top3_overlap.png": "3a203d2a42d75247a41887c02b2f0075ac21bad888f65c8db704e4689e17b94d",
+    "step08/figures/06_extended_time_maps.png": "2d52e3396228e821f449568bcd02d001fca98604ce9cbb09c4bedb9df20a87b8",
+    "step08/tables/cluster_crosswalk.csv": "c1410244bedfd102e3070085f111b1a93f92b5dd7e8a2fd1bad29cf73b7d79ed",
+    "step08/tables/cutoff_25_membership.csv": "b9d124c5671d6fb76f4b89421093cd118c75c442fefba1d1c361a6904d043e4e",
+    "step08/tables/cutoff_25_summary.csv": "6f249e9974f784d46e4485dbd3ac463ac90ec7932e91b9e2290d3a06aae56adb",
+    "step08/tables/cutoff_30_membership.csv": "d6c3a9b85e5344ec5a7c1ad00479acd041036a02f32657c0b936b7da33684f57",
+    "step08/tables/cutoff_30_summary.csv": "f585d17e592a2a9daa032acf9d024b0cd04f916c9c7038de53673570384ec7a6",
+    "step08/tables/cutoff_35_membership.csv": "dda67100f0b3a7f15e59b1229a8f0d8e77a979b2cd84474d1f5658f450185319",
+    "step08/tables/cutoff_35_summary.csv": "b0485e4529c53fd9084b85a5609d464d60f475b9f9d7f9ee681db7a08cc13bd7",
+    "step08/tables/scenario_manifest.csv": "08a62691d06983f5541493fd562f30adae78a2269abde72a6903ccc6bce47141",
+    "step08/tables/sensitivity_cluster_metrics.csv": "f2f404fb620b8347d83e076165272c4530cbd76ecb1571aee11a8c456d72654f",
+    "step08/tables/sensitivity_grid_scores.csv": "fba61ff3bfdf918bf4233fd5a8f75d0b9bf1a8b035740bbfa6d35e2bc0ff7e56",
+    "step08/tables/top3_overlap.csv": "a321c4545d9d709e17a32a3d45ee1be348b4b5ad2c5f7d96c12d0149b962dda5"
+  },
+  "schema_version": "1.0",
+  "parent_signatures": {
+    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+    "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+    "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+    "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
+    "6": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf",
+    "7": "af2560a26ab5926a472a0375a70b3a085d1949960a2a5f3c50d87ca067e3e5dc"
+  }
+}

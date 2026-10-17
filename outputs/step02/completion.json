@@ -1,0 +1,22 @@
+{
+  "signature": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+  "status": "complete",
+  "completed_at": "2026-10-17T01:00:07.292910+00:00",
+  "summary": {
+    "origins": 2586,
+    "connected": 2586,
+    "unresolved": 0,
+    "provisional_centroids": 105
+  },
+  "outputs": {
+    "step02/origins.gpkg": "d548b5490ad458227c9733157154d8a3c7059a61ad754b1bc98403c81a318590",
+    "step02/README.md": "389bb485d4190287a2f6c5a6ca8418889429d02df02d3e1c9a09231fc0280db5",
+    "step02/figures/origins_overview.png": "64534ba98dccc0836c83a8e41edb4cd3afbd790ebabad46e3d2b030de2950e4c",
+    "step02/tables/origin_building_sources.csv": "5cf6c296ffb3b3871719eb750e358044543c695896e3dead0e79611f502b06c5",
+    "step02/tables/origin_status.csv": "33c4e19f4989c984b7f3511d663ad56ffc2504cbec7a8a08ce297a1b54b40daa"
+  },
+  "schema_version": "1.0",
+  "parent_signatures": {
+    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba"
+  }
+}

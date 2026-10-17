@@ -1,0 +1,432 @@
+{
+  "schema_version": "1.0",
+  "methodology_version": "v7",
+  "run_id": "v7_5764153bfb2c",
+  "mode": "report",
+  "settings": {
+    "methodology": "v7",
+    "crs": "EPSG:5179",
+    "departure_start_s": 30600,
+    "departure_end_s": 61200,
+    "departure_interval_s": 60,
+    "baseline_speed_mps": 0.7,
+    "walk_speeds_mps": [
+      0.6,
+      0.7,
+      0.8
+    ],
+    "max_continuous_walk_s": 600,
+    "max_boardings": 3,
+    "transfer_preparation_s": 60,
+    "rail_entrance_s": 180,
+    "rail_transfer_s": 240,
+    "same_platform_s": 120,
+    "baseline_budget_min": 30,
+    "sensitivity_budgets_min": [
+      30,
+      40,
+      50
+    ],
+    "diagnostic_budgets_min": [
+      45,
+      60,
+      80
+    ],
+    "baseline_cutoff": 0.3,
+    "cutoffs": [
+      0.25,
+      0.3,
+      0.35
+    ],
+    "top_clusters": 3,
+    "excluded_modes": [
+      "high_speed_rail",
+      "intercity_bus",
+      "airport_bus",
+      "gtx",
+      "air",
+      "ferry"
+    ],
+    "connector_search_m": 2000.0,
+    "rail_entrance_search_m": 500.0,
+    "spatial_tolerance_m": 1e-05,
+    "dpi": 300,
+    "median_crossing_search_m": 720.0,
+    "station_group_radius_m": 800.0,
+    "station_second_gap_m": 50.0,
+    "station_second_ratio": 1.5,
+    "stop_ground_fallback_m": 50.0,
+    "stop_poi_search_m": 40.0,
+    "stop_road_evidence_m": 20.0,
+    "service_profile_id": "KTDB_2025_03_weekday_with_056_2025_supplement",
+    "signal_wait_s": 0
+  },
+  "inputs": {
+    "data/processed/boundaries.gpkg": "65cb3dda4b4772f4725c64c33b3c61a21a8857073de5db192c75aecc3331c629",
+    "data/processed/elderly_population.gpkg": "2ada4d02c4c576403f8e4a78ad1f395aff847ac66943d80adf4a7ca7ce943fcb",
+    "data/processed/residential_buildings.gpkg": "5a68bb5716f3a1f332364a9974f658cd9c5a6e6ed80b8296e719010012407cfb",
+    "data/processed/medical_institutions.csv": "a33e9f266b1297353e9a65f6916b09be852ba777ea2ca133248b3511ede117dd",
+    "data/processed/osm_walk_network.gpkg": "0668a03b494e93b1bcfbae2a89ce578adce5e657247504c8eb8d0ac1a5fe4e29",
+    "data/processed/gtfs.sqlite": "6bc15da84e8b5a7d27d6aac3d35202262c52966f4df8bfc47ade8cbf486a10db",
+    "data/processed/gtfs_056_branch_parameters.csv": "d727a389125f1d582bef77e6881edb6c2e31c60289618a9b0d92ac0b387dc79b",
+    "overrides/transit_056/stops.csv": "3077c0d9320a73e7dd9e709f410070254fa5d3bb82fdfcac520bae34ecbf8661",
+    "overrides/transit_056/route_sources.csv": "87d947c2d759baa0f6a6f0651da91cd2d7a36b5427bd395691d70885184e9af5",
+    "overrides/transit_056/common_section.csv": "887ab2121eb81f94a14dca8dedd2b436667c28785bd479248e146c75e308dbdf",
+    "overrides/transit_056/weekday_departures.csv": "461116a609a270ccecb68e70803aeac49b633e10941c240da5532a85701cbf37",
+    "overrides/building_decisions.csv": "d29954d6efa3d15d98252b2294738347580a68d235126b7ff946f9b6eb6586a6",
+    "overrides/decision_register.csv": "2f7250737069349841008c749601e5b355bf150eb37c8cfa482be5351f166d17",
+    "overrides/evidence/attachment_inventory.csv": "b58304e2c6d71000b83403d5df7011931341e58ba265dc1f4acb6c975a3b4c6d",
+    "overrides/evidence/building_target_snapshot.csv": "db1fdaaeb7ac670875f334b63076c883e0ca0f44c2b03292efc6f5b7864663bd",
+    "overrides/evidence/decision_sources.md": "971143645932a91a7d6df3b55b8b1f5f3c6f3b4e6d0fcf09f53f1e9231beaaba",
+    "overrides/evidence/geocoded_facilities.csv": "af7c6046b08c5fcee1a4056d8317f220ea1b17d0f3f174a4287abca4a83658b9",
+    "overrides/evidence/package_files.csv": "74218f0c99b25bb1ab9ee63a7efdb28ef37471a94035df0620c8b8af1d8f6d1c",
+    "overrides/evidence/preprocessing_decision_excerpts.md": "bdedbb959f8b3ec8630dc15e4cc2a2124f4c468129eb989368ddf2f7bf7775ce",
+    "overrides/evidence/source_constant_membership.csv": "2741aa4798fbd8973265c27855567ba46561f7440af18705fd833e3b33647e4b",
+    "overrides/evidence/source_images/056_dochon_timetable_source.png": "d714bbb792b8e074f615d0393e52de486879551d4957621bbad421df0734db0b",
+    "overrides/evidence/source_images/056_myeokjeol_initial_capture_source.png": "ba0f24c6ca07be3fb378756130cc4c63e9d517c528516367469ccccc394da868",
+    "overrides/evidence/source_images/056_seochon_timetable_source.png": "4d684b9beb8730e926fcd160caec09149d98fd1daa7ade85e5f7b762bdac9ac0",
+    "overrides/evidence/source_images/unjeong_entrances_map_source.png": "6a65e2aef5df27f8a7874e5698311b805c0a06b221c9842cc127e580479af298",
+    "overrides/evidence/source_images/unjeong_exit1_coordinate.png": "c4cc9525971dc424defa8f09b857f52c32be2b0a2bfdddea0b3fd86195009726",
+    "overrides/evidence/source_images/unjeong_exit2_coordinate.png": "f31bc9b77fb2641c738795821111f30842fd046127d2ec1aad59107429c925d0",
+    "overrides/evidence/source_images/unjeong_sidewalk_source.png": "fff51c2d7b329633fb55b97718cfd57440249b366916c4178366ffd2a8101788",
+    "overrides/evidence/source_manifest.csv": "9558db526451213d9a9e1911a9aa05a845e8c71a1085a6145d71b99f84069678",
+    "overrides/evidence/target_nodes.csv": "a90a21dc7705236f597aa68ebd9b55bb033c3e73e9bb41427cc9df0f4b503967",
+    "overrides/evidence/target_segments.csv": "ecc416b25fa8a1fc6ae52f0cfb079925f002437c6e609af46cab1ffc5acbb862",
+    "overrides/evidence/target_stops.csv": "62a89c8b3d1275c73a36401b5e409493535b44abf7e2514913b7c94bb0b9919f",
+    "overrides/facility_decisions.csv": "0d87aae472a965e2ca8a16b87627346e2ce3be77d0e22af124d09ab485067d5e",
+    "overrides/geometry_overrides.csv": "a1c19851205d10b06196439d98c7e0ecd4cd0ca8a96402a6b8e02453669d72c9",
+    "overrides/implementation_notes.md": "9e18b363c8c15f0d1d15e3f16fddefce34a21e192cdfc43df9991b9ce0586452",
+    "overrides/migration_report.md": "175f45a31b010c43c1816d7cadf0c2c9131874ead44e72667ee70bc24f3270aa",
+    "overrides/network_decisions.csv": "759b8cafa0845cf6fe618f886087b21b1f512b4465a9bed964f1a2fd8d804ba5",
+    "overrides/origin_decisions.csv": "c2e343e90f44d0fd4af1f60ddeaa181b89ab872e6234cc9fb8434549676bf210",
+    "overrides/README.md": "9b509d8033890d7f0b66f03cd5d860eaf7742a7dcef8984c6deba0adf0a8a159",
+    "overrides/transit_056/README.md": "cad9b381b0ccf54bae935d577652d749c5bfd1e337e3c5cb575f23eea05c1e9a",
+    "overrides/transit_decisions.csv": "5885722b3083ea88280adb870f2a2c49d865953dd7509d120c069bf6c9190d4c",
+    "overrides/validate_overrides.py": "694fb5af4d82a41a67f19f25d723e07320d2da6f58301b0f22f12072f377400f",
+    "overrides/walk_access_decisions.csv": "7d0bdce5f763f5d13696658883a067ec22a125695273f32ce83a85357aea0ffe",
+    "data/processed/preprocessing_reports/boundaries.json": "bcc182dd6e9178df368f2045b6a47e78af6ca2d09da4ce0a693e5b2c805a73b9",
+    "data/processed/preprocessing_reports/elderly_population.json": "f7ffa5bfdfbe2d573f834530b314ff5a5a1f6f6afbdec943e00778af6be28e8d",
+    "data/processed/preprocessing_reports/gtfs.json": "d1fcf5466e6661c9eaab04637043c68d8aaf33119c52e4611a3356e2a6a4efc6",
+    "data/processed/preprocessing_reports/gtfs_056.json": "39fbef468cf6aa5fa46ae7b272f21b46e19496ac7b4d0f2d14b1bd4900701ec4",
+    "data/processed/preprocessing_reports/medical_institutions.json": "0a9372db0ced94e22b7d5d0f8f4ac52713fc66080951d401418c2476fe9cfe5d",
+    "data/processed/preprocessing_reports/migration_report.json": "42ad0a855d6f607d70ccdbe3c2a25bdb69cb51908333c00af588f11928f3f3cc",
+    "data/processed/preprocessing_reports/osm_walk_network.json": "52586f9aa7e18e78d22f0599e5831ad4885e98e099b0c0ce4a79285b90cf7bf8",
+    "data/processed/preprocessing_reports/override_handoff.json": "c3382fcb8525522114f92b63081fb9cdea294523f2175fa6c2b32f6b20985439",
+    "data/processed/preprocessing_reports/portability.json": "bc199687833664a3af0d217260c3812dfb35c7403af6d0a137f2c6460cf2001e",
+    "data/processed/preprocessing_reports/residential_buildings.json": "80ece40b13f9f18f5d3ecaac6f125cae72023e14f7af2634a8a5818cceffd5a2"
+  },
+  "started_at": "2026-10-17T00:58:41.711723+00:00",
+  "status": "complete",
+  "stages": {
+    "1": {
+      "signature": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+      "status": "complete",
+      "completed_at": "2026-10-16T18:42:50.215257+00:00",
+      "summary": {
+        "population": 217395.3,
+        "positive_origins": 2587,
+        "included_origins": 2586,
+        "excluded_population": 3.0
+      },
+      "outputs": {
+        "step01/population.gpkg": "f8d138095a54ea6df1f0208ced2967edc9794d485187c6d3fa3c077f58da8080",
+        "step01/README.md": "8afdf436ee86b6ee8451da315c1554fc61dc8ed839e2bd75efeeefda58f70ffd",
+        "step01/figures/population_500m.png": "e9ce431249d0c2e787a4dafb7f0d4f6481f74813ac87d7ca4eeda04ad0fee40b",
+        "step01/tables/parent_child_weights.csv": "523657aaaba96c50de03e19b151e84d191a38f0f107a2204774afef9a25656f2",
+        "step01/tables/population_qa.csv": "4647b0219e2a98944202243c688b345e4ae909fb96423ece439c9b06f6630dff"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {}
+    },
+    "2": {
+      "signature": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+      "status": "complete",
+      "completed_at": "2026-10-17T01:00:07.292910+00:00",
+      "summary": {
+        "origins": 2586,
+        "connected": 2586,
+        "unresolved": 0,
+        "provisional_centroids": 105
+      },
+      "outputs": {
+        "step02/origins.gpkg": "d548b5490ad458227c9733157154d8a3c7059a61ad754b1bc98403c81a318590",
+        "step02/README.md": "389bb485d4190287a2f6c5a6ca8418889429d02df02d3e1c9a09231fc0280db5",
+        "step02/figures/origins_overview.png": "64534ba98dccc0836c83a8e41edb4cd3afbd790ebabad46e3d2b030de2950e4c",
+        "step02/tables/origin_building_sources.csv": "5cf6c296ffb3b3871719eb750e358044543c695896e3dead0e79611f502b06c5",
+        "step02/tables/origin_status.csv": "33c4e19f4989c984b7f3511d663ad56ffc2504cbec7a8a08ce297a1b54b40daa"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba"
+      }
+    },
+    "3": {
+      "signature": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+      "status": "complete",
+      "completed_at": "2026-10-17T01:00:35.394725+00:00",
+      "summary": {
+        "facilities": 1143,
+        "connected": 1143,
+        "unresolved": 0
+      },
+      "outputs": {
+        "step03/facilities.gpkg": "26d0f947bf198ed3b15c3d69056703ef78a66bf76e337065ee7e3b05cd06c3ae",
+        "step03/README.md": "a47af1396f252cf1fb103b91bd68a7a5968c4e2295e9a2c06146a68797ff057b",
+        "step03/figures/facilities_overview.png": "0fd9e80b641a5ecd987d124b2018f28852df82ce28701177232d0c30473fd741",
+        "step03/tables/facility_status.csv": "219409dced66a71e7f3844bf5a6c1018896bd5198c84903c613e8d7dfe14b41b"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+        "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af"
+      }
+    },
+    "4": {
+      "signature": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+      "status": "complete",
+      "completed_at": "2026-10-17T02:06:34.701184+00:00",
+      "summary": {
+        "stops": 56911,
+        "access_points": 29532,
+        "graph_arcs": 832629,
+        "walk_links": 332830,
+        "unresolved_stop_candidates": 188
+      },
+      "outputs": {
+        "step04/connections.parquet": "9890b75a2ef060d02af83d4a8ee69107b837a111440628db2827f05645a226ef",
+        "step04/facility_index.parquet": "e75c29dd13c58de1687957a205930382a8444b37a630a3da4e76bc2932b5af85",
+        "step04/graph_nodes.parquet": "3cb63a4330f1bd9834f6601185f97d8bb7aa2ac3ea769825aef06639d8b07350",
+        "step04/network.gpkg": "2f8e96a7ec1b337acd7f29f4d299be919cf35c5734b96b94ea5c2b4da0b0a8a2",
+        "step04/network_qa.json": "13f81cdddd66a78ffe1a36831b94ec834f616510e161aada2ba46dada2d6eba7",
+        "step04/origin_index.parquet": "01f80354e6194d3d5bd002d2fa6f4350eda2ec2d3a0103b24e08a7e4b80cc27e",
+        "step04/README.md": "8593beaaba2968f64b0212b5e46d1d8f29633884fa2734238f9b321ac4060c5a",
+        "step04/stops.parquet": "f6c1dcde1cd6b4aa22b60ba9940ce2971dda9f13899ee126a154104a2fae7df9",
+        "step04/walk_graph.npz": "3046728ae6ee62a3fdf375499b8168b04bfa4ff43e62bef29c1fe73eb26c48f6",
+        "step04/walk_links.parquet": "504595e89b991371a857524da3cf38b8be1256b6fe1b5bb8f964e28abf7aa0f9",
+        "step04/figures/network_overview.png": "217133b4955ee0858c4217677d182db1ad7eea4470e1a2795c9e206b2d14c855",
+        "step04/tables/eligible_routes.csv": "08ca3f10b18850a8b610e8f0c5b4fdac48805549815992d15edeb2cb9f936fea",
+        "step04/tables/service_profile.csv": "df37861c83b1f7247eaacaa6a52ab6e1a57fda74713699395b59c31616f76148"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+        "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+        "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1"
+      }
+    },
+    "5": {
+      "signature": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
+      "status": "complete",
+      "completed_at": "2026-10-17T02:30:16.593982+00:00",
+      "summary": {
+        "origins_complete": 2586,
+        "departures_each": 511
+      },
+      "outputs": {
+        "step05/README.md": "e161cb9ae4c1d5dc0c994672cff71902ce7a34d5ce21533cf71b72dc3b5ffa46",
+        "step05/routing_checkpoint.parquet": "cf6386156a1e9192c0948bfada8c22b6c908f7d6856d5b11975fd5358cd00a20",
+        "step05/tables/departure_index.csv": "ab87404fa1f3eaec1fdbefeea2f4421ff053bd5e8d8052833ee4daf1ea786784",
+        "step05/tables/routing_checkpoint.csv": "1d797df6722d385cc1312716c79068073273b3aec75dac69a2549041c77da385"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+        "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+        "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+        "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d"
+      }
+    },
+    "6": {
+      "signature": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf",
+      "status": "complete",
+      "completed_at": "2026-10-17T02:30:36.601708+00:00",
+      "summary": {
+        "valid_250m": 2586,
+        "valid_500m": 874,
+        "excluded_or_unresolved_500m": 1
+      },
+      "outputs": {
+        "step06/accessibility.gpkg": "23792433690a980aa8349e37db60c14182e0000642059fc93553f789bbcdaaed",
+        "step06/minute_profiles.npz": "e4f91d51a71389596f006789aac7eb6299e3ca4ccb7c1a21df78c8908722faab",
+        "step06/README.md": "8b00e1d8a4ae0a4eb09743daa8d1fbb340154dc146035c9ec127416205903528",
+        "step06/tables/accessibility_250m.csv": "e59af10ded391459470c72945027929e2ff22e5d13bf348d852463937655864c",
+        "step06/tables/accessibility_500m.csv": "7ff8f423798fe940c3a07d368bbb762ee6ceb66ce3f1598cafaf787c28cafe86",
+        "step06/tables/coverage_summary.csv": "7fc35f25ec6fe76bc331093fb67a1ccaa5ebb274ed8f34a496a6c647ceeee87f",
+        "step06/tables/time_band_summary.csv": "825c9e384fa006519a554e48c446ded8e3d239e17e9acecc40c88f5059a50828"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+        "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+        "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+        "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+        "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5"
+      }
+    },
+    "7": {
+      "signature": "af2560a26ab5926a472a0375a70b3a085d1949960a2a5f3c50d87ca067e3e5dc",
+      "status": "complete",
+      "completed_at": "2026-10-17T02:30:36.838867+00:00",
+      "summary": {
+        "clusters": 49,
+        "top_clusters": 3,
+        "valid_grids": 874,
+        "cutoff": 0.3,
+        "order_statistic": 263,
+        "threshold": 1.0841487279843445,
+        "tied_at_boundary": 1,
+        "selected_grids": 263,
+        "selected_fraction": 0.3009153318077803,
+        "queen_tolerance_m": 1e-05
+      },
+      "outputs": {
+        "step07/clusters.gpkg": "2b860b65b2822a4507de8e9fa7f3d9f60e6e589f8edc89a10e351866fa020dc0",
+        "step07/cluster_qa.json": "43d431fcd2563be76b20eaebe68826a6f7b8c4e7fecc24daf0600e6b4d308ff4",
+        "step07/README.md": "83d0fe7744981964bf09de26959239dc3b2f2f347a849c6e11b35894ce19b61c",
+        "step07/figures/accessibility_clusters.png": "7db77d5e0f26fb92824736c5120485e8fbe1007a888e0aba8724d760f5d8027c",
+        "step07/tables/baseline_top3_membership.csv": "f67b16a94e0914f20b02cc68129c5f5895d1e31ef52542067dcfccecbc36848a",
+        "step07/tables/cluster_membership.csv": "d6c3a9b85e5344ec5a7c1ad00479acd041036a02f32657c0b936b7da33684f57",
+        "step07/tables/cluster_summary.csv": "f585d17e592a2a9daa032acf9d024b0cd04f916c9c7038de53673570384ec7a6"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+        "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+        "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+        "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+        "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
+        "6": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf"
+      }
+    },
+    "8": {
+      "signature": "76149d4f3aea057f39fae40f2f8efb618dfab0e60a3b6879afd47163fe24007c",
+      "status": "complete",
+      "completed_at": "2026-10-17T02:42:44.796412+00:00",
+      "summary": {
+        "top3_origins": 328,
+        "scenarios": 9,
+        "figures": 5,
+        "speed_monotonic": true
+      },
+      "outputs": {
+        "step08/extended_checkpoint.parquet": "067d1116a7ce2425e01357b1e0b50c80160c7fde50529ad267e864d08d9ccfba",
+        "step08/README.md": "70d0adff6f6f3a9b1d4646122fc5366b615d86f8832e51a3300c2783cb6a1b05",
+        "step08/sensitivity.gpkg": "907aa0443aa67fce7eb260abe9d5dfc606eaf883b9bc4c21b2ccd97b08432e12",
+        "step08/sensitivity_minute_profiles.parquet": "be091baa77544c833cca43359123cc9ca7fd2b0c3e8aa7629544802f9d367a44",
+        "step08/speed_0.6_checkpoint.parquet": "154353734560e1601c75acf49e96aae6b6009b0ef56c25e3c19d592525fffec2",
+        "step08/speed_0.8_checkpoint.parquet": "702c3b21b0b04702e4251c913271b47ccc2f33be788a0243b75f8e71586ffd11",
+        "step08/figures/01_time_budget_top3.png": "d093f60713eb2ab11b7e02f1797803dc1aebbb4f1f1616d2e6cd3974363da049",
+        "step08/figures/02_time_budget_profiles.png": "fdf958d368f53cc5712812791a40f2a68bdc247970a88c89e725feca3c885612",
+        "step08/figures/03_walk_speed_top3.png": "2150455de0cf68f5677a34a422513beb13851a5b137ec7c534d30a6b0d9a325b",
+        "step08/figures/04_cutoff_cluster_maps.png": "d750dcf1f54a6eac248a24c2e0803bdec3715c80492d1385b0242bcf8ba6f4b4",
+        "step08/figures/05_cutoff_top3_overlap.png": "3a203d2a42d75247a41887c02b2f0075ac21bad888f65c8db704e4689e17b94d",
+        "step08/figures/06_extended_time_maps.png": "2d52e3396228e821f449568bcd02d001fca98604ce9cbb09c4bedb9df20a87b8",
+        "step08/tables/cluster_crosswalk.csv": "c1410244bedfd102e3070085f111b1a93f92b5dd7e8a2fd1bad29cf73b7d79ed",
+        "step08/tables/cutoff_25_membership.csv": "b9d124c5671d6fb76f4b89421093cd118c75c442fefba1d1c361a6904d043e4e",
+        "step08/tables/cutoff_25_summary.csv": "6f249e9974f784d46e4485dbd3ac463ac90ec7932e91b9e2290d3a06aae56adb",
+        "step08/tables/cutoff_30_membership.csv": "d6c3a9b85e5344ec5a7c1ad00479acd041036a02f32657c0b936b7da33684f57",
+        "step08/tables/cutoff_30_summary.csv": "f585d17e592a2a9daa032acf9d024b0cd04f916c9c7038de53673570384ec7a6",
+        "step08/tables/cutoff_35_membership.csv": "dda67100f0b3a7f15e59b1229a8f0d8e77a979b2cd84474d1f5658f450185319",
+        "step08/tables/cutoff_35_summary.csv": "b0485e4529c53fd9084b85a5609d464d60f475b9f9d7f9ee681db7a08cc13bd7",
+        "step08/tables/scenario_manifest.csv": "08a62691d06983f5541493fd562f30adae78a2269abde72a6903ccc6bce47141",
+        "step08/tables/sensitivity_cluster_metrics.csv": "f2f404fb620b8347d83e076165272c4530cbd76ecb1571aee11a8c456d72654f",
+        "step08/tables/sensitivity_grid_scores.csv": "fba61ff3bfdf918bf4233fd5a8f75d0b9bf1a8b035740bbfa6d35e2bc0ff7e56",
+        "step08/tables/top3_overlap.csv": "a321c4545d9d709e17a32a3d45ee1be348b4b5ad2c5f7d96c12d0149b962dda5"
+      },
+      "schema_version": "1.0",
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+        "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+        "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+        "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+        "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
+        "6": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf",
+        "7": "af2560a26ab5926a472a0375a70b3a085d1949960a2a5f3c50d87ca067e3e5dc"
+      }
+    },
+    "9": {
+      "signature": "6e966836818061e25bd0f4020049ba5592d148a005fcfc37a067a472abf0f8f8",
+      "status": "complete",
+      "completed_at": "2026-10-17T04:44:41.545464+00:00",
+      "summary": {
+        "diagnostic_origins": 328,
+        "travel_rows": 167608,
+        "clusters": 3
+      },
+      "outputs": {
+        "step09/diagnosis.gpkg": "f0b6f0528ca4e038db8e887c81c3befa33756ac2297069a6679c6ccb99fc7c06",
+        "step09/README.md": "748d8bedb3f1a745383e7707335eeb3e0681906e0b4e9c6e7a1958a19fa16e7d",
+        "step09/travel_components.parquet": "7fd2c5711ef02d8b1f4cca1854661600df9f2de12d1284fdbf13e81691b448c5",
+        "step09/figures/cluster_diagnosis.png": "7b53ea1e1f5a1d4b1ee7c898d26625354c5f08ea103d965496a95623a81be994",
+        "step09/tables/cluster_diagnosis.csv": "842d9da7a56beab83ad863418cf9beb4135e539b34e57d14a1643df6817a243a",
+        "step09/tables/extended_arrival_bands.csv": "66e0fb215be973aad87c94395c6afa4490faca2e9a0fee74a62fa5f313a36b42",
+        "step09/tables/facility_contribution.csv": "7ee582cc6b8409623d214ee4745b966a84a8274b8ee7004deb1fbf7d57ceab09"
+      },
+      "parent_signatures": {
+        "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+        "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+        "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+        "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+        "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
+        "6": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf",
+        "7": "af2560a26ab5926a472a0375a70b3a085d1949960a2a5f3c50d87ca067e3e5dc",
+        "8": "76149d4f3aea057f39fae40f2f8efb618dfab0e60a3b6879afd47163fe24007c"
+      }
+    }
+  },
+  "packages": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.2",
+    "geopandas": "1.0.1",
+    "shapely": "2.0.6",
+    "scipy": "1.13.0",
+    "pyogrio": "0.9.0",
+    "numba": "0.61.2",
+    "matplotlib": "3.10.7",
+    "pyarrow": "21.0.0"
+  },
+  "python_version": "3.11.9",
+  "code_sha256": {
+    "run.py": "0492fe97792dd8554e290d44449ec5258c9330942e0611d26f6038fe4a47f0ec",
+    "src/aggregation.py": "ba825788a43be3005391b6e4b8d7c573285dae18e071a8a4b1662b026bc4a243",
+    "src/analysis_io.py": "488d3611ac07ae6e74d24b667854057ab9e4da6fe9739fed5f6cd0dc82e65298",
+    "src/artifact_cache.py": "a994759fe350217b6d040f8ecefecfd234d431137c2107d2106a2aae6a9d4a37",
+    "src/figures.py": "64121b8bff2df762970f77ec71d95ce8ffc344d48a20131949d1d0a3da1094fb",
+    "src/input_figures.py": "d7e24c88363d87d5adab0d1f98ed9003f4d8421cf976d53c521b509f4ae408b0",
+    "src/output_layout.py": "e90c96a1d8567ff11622ab5e8d44ad9fce609a86dd913b7c7ae72df32d6bdcbd",
+    "src/path_diagnosis.py": "e0c900a59c5d4c6a1365d0c6170ba97c49959987a559bd88772b808a92bd269d",
+    "src/preprocessing_common.py": "2627e38b271ffcd4be1cfc18e97b41b0b9300e7f6fa48ba209a8804f5048cd98",
+    "src/preprocessing_validation.py": "bf93a9ca67ed0ea6b730ff171092c2f07846811692299a0cdde27643e1ea0c43",
+    "src/reporting.py": "b881069ef88029e1fde9e1e03a800a39af4247c74f2ef6a806c9170311a1ba4f",
+    "src/router.py": "8226c6b75c8d98fb5becb55d93c2ad6d296f490bd65f73ed38547c9521c0f865",
+    "src/routing_runner.py": "b92d3be44033d0ba79ee7ff6abf4f01ca76f8782896234c64ad2748efcdecc7c",
+    "src/scope_check.py": "c7ba2bc36563b95e2655c49be0f063f892312d92da45ad4c40706ecd2736ecfc",
+    "src/spatial_network.py": "faea2df9b869201f0ec9e27b975186777a160713d9850e3da489039798704db0",
+    "src/stop_access.py": "5fe6189d41cf39c066406f37020cd47862f167bf82ae69ec657a1450616a1bc8",
+    "src/timetable.py": "7efca0b412d5c6b3cc7d82abc409bd389348eb6da24c445d2fb50e65b5ad06fb",
+    "src/walking.py": "ab788b75f70c28a55a1c0e64ceacc4d2b36cf9cc1697e15c37eba1888a52672d",
+    "src/__init__.py": "26484e1d66bc6ccdd90a166ea3e34617840d35573611d72b6af7688dfec78e8c",
+    "steps/step01_population.py": "89020fff7406b26d29c6e86c9732a25c57e21c81a2e788cd21ae1b6d6b258978",
+    "steps/step02_origins.py": "e5d27ffa2af911c87f0a423071a4652b24744608b2b9d8c39ebee73b3af335a0",
+    "steps/step03_facilities.py": "c89982ce5e7cc98e662f210b4e8b05fbbf0d263475fa57f149a61b50a0318742",
+    "steps/step04_network.py": "d6b6c8d369570eaa16bd011c3d92f3a6b1ee2b7e26084a19a7ed351a78838926",
+    "steps/step05_routing.py": "d487a4bf45d0252dc4e061285ed82af584d501d76caf3b1810768461a86fce38",
+    "steps/step06_accessibility.py": "b0e844305a6e71d678c1540d047f1d414c41e02c6e2e2229b5229d22f6356ec1",
+    "steps/step07_clusters.py": "7faf8eb61e48a82ba8e066451704adf9b8d670973351e6d650aa615f0077d0a4",
+    "steps/step08_sensitivity.py": "d44b425af036a8c8467698abd54faf23e646c86f317b7b57406ca3a204dc7e9c",
+    "steps/step09_diagnosis.py": "abf77b3bf94b1869c8f9dbb4e3f5c0fd37c36d20138af79dbbac6fd809fde28f",
+    "steps/__init__.py": "adb81f94a0d72047a6d6fc20ad527b840faaaa9b5eb88c922cd4f87766037d59",
+    "tests/test_execution.py": "38cb3250cb28d40588ed4151f98bd24569ad284cd2b5eab2775f995d7529f4b0",
+    "tests/test_geometry.py": "7275ba92f7c98091834cf5d595b67ca8b3de10b751e8b48b33f35afd1578cdd5",
+    "tests/test_router.py": "10817980c154570edb2504fe782d94c065cb9affabec4130a2a75523a67c29dd",
+    "tests/test_stop_access.py": "a5214ccdf0b7e785fc1a73535df0f006e07214efdeb70ee1d96cd7a6daf47104"
+  },
+  "methodology_sha256": "5d5d48adef0de824ff21ac9b870a7ea04b406cf0c66376d859ccc283415758e8",
+  "requirements_sha256": "56f419054e61fe00661324be50417d8a7c3f4fbae5f72846c9e862b5d96deba3",
+  "data_manifest_sha256": "789284e74a2cbb2501a5d54a6f460d7504a949fb2f030b89b008f849647e79da",
+  "report_code_sha256": "d9586a6080895eabe7f194b52fc989a9df97a85a09e7103fcfdcd64f07b8b26b",
+  "interpretation_status": "model_results_complete",
+  "valid_500m_population_ratio": 0.999958600760918,
+  "completed_at": "2026-10-17T04:45:14.196484+00:00",
+  "output_layout": "flat_steps"
+}

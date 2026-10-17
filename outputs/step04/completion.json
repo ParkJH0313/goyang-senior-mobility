@@ -1,0 +1,33 @@
+{
+  "signature": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+  "status": "complete",
+  "completed_at": "2026-10-17T02:06:34.701184+00:00",
+  "summary": {
+    "stops": 56911,
+    "access_points": 29532,
+    "graph_arcs": 832629,
+    "walk_links": 332830,
+    "unresolved_stop_candidates": 188
+  },
+  "outputs": {
+    "step04/connections.parquet": "9890b75a2ef060d02af83d4a8ee69107b837a111440628db2827f05645a226ef",
+    "step04/facility_index.parquet": "e75c29dd13c58de1687957a205930382a8444b37a630a3da4e76bc2932b5af85",
+    "step04/graph_nodes.parquet": "3cb63a4330f1bd9834f6601185f97d8bb7aa2ac3ea769825aef06639d8b07350",
+    "step04/network.gpkg": "2f8e96a7ec1b337acd7f29f4d299be919cf35c5734b96b94ea5c2b4da0b0a8a2",
+    "step04/network_qa.json": "13f81cdddd66a78ffe1a36831b94ec834f616510e161aada2ba46dada2d6eba7",
+    "step04/origin_index.parquet": "01f80354e6194d3d5bd002d2fa6f4350eda2ec2d3a0103b24e08a7e4b80cc27e",
+    "step04/README.md": "8593beaaba2968f64b0212b5e46d1d8f29633884fa2734238f9b321ac4060c5a",
+    "step04/stops.parquet": "f6c1dcde1cd6b4aa22b60ba9940ce2971dda9f13899ee126a154104a2fae7df9",
+    "step04/walk_graph.npz": "3046728ae6ee62a3fdf375499b8168b04bfa4ff43e62bef29c1fe73eb26c48f6",
+    "step04/walk_links.parquet": "504595e89b991371a857524da3cf38b8be1256b6fe1b5bb8f964e28abf7aa0f9",
+    "step04/figures/network_overview.png": "217133b4955ee0858c4217677d182db1ad7eea4470e1a2795c9e206b2d14c855",
+    "step04/tables/eligible_routes.csv": "08ca3f10b18850a8b610e8f0c5b4fdac48805549815992d15edeb2cb9f936fea",
+    "step04/tables/service_profile.csv": "df37861c83b1f7247eaacaa6a52ab6e1a57fda74713699395b59c31616f76148"
+  },
+  "schema_version": "1.0",
+  "parent_signatures": {
+    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+    "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1"
+  }
+}

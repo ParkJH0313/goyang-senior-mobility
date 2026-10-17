@@ -1,0 +1,13 @@
+{
+  "status_counts": {
+    "outside_walk_coverage": 29353,
+    "connected": 27370,
+    "connector_unresolved": 188
+  },
+  "graph_nodes": 316100,
+  "directed_arcs": 832629,
+  "walking_links": 332830,
+  "continuous_walk_basis": "source access + bounded directed ground path + target access + fixed internal walking; no reset at intermediate stop",
+  "service_profile_id": "KTDB_2025_03_weekday_with_056_2025_supplement",
+  "missing_access_not_zero": true
+}

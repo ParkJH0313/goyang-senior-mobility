@@ -28,7 +28,7 @@ goyang-senior-mobility/
 ├─ data/
 │  ├─ raw/                # 원자료
 │  └─ processed/          # 전처리 자료
-├─ outputs/               # 분석 결과
+├─ outputs/               # 분석 결과 (png,csv,gpkg)
 └─ dashboard/             # AI 대시보드
 ```
 

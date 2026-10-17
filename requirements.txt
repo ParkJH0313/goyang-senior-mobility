@@ -1,4 +1,4 @@
-# Python 3.11; preprocessing environment verified 2026-10-17
+# Python 3.11; preprocessing and v7 analysis environment
 certifi==2026.7.22
 charset-normalizer==3.5.2
 colorama==0.4.6
@@ -23,3 +23,13 @@ six==1.17.0
 tqdm==4.67.1
 tzdata==2026.5
 urllib3==2.8.0
+numba==0.61.2
+llvmlite==0.44.0
+matplotlib==3.10.7
+pyarrow==21.0.0
+contourpy==1.3.3
+cycler==0.12.1
+fonttools==4.67.0
+kiwisolver==1.5.1
+pillow==12.3.0
+pyparsing==3.3.3

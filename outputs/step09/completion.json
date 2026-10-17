@@ -1,0 +1,29 @@
+{
+  "signature": "6e966836818061e25bd0f4020049ba5592d148a005fcfc37a067a472abf0f8f8",
+  "status": "complete",
+  "completed_at": "2026-10-17T04:44:41.545464+00:00",
+  "summary": {
+    "diagnostic_origins": 328,
+    "travel_rows": 167608,
+    "clusters": 3
+  },
+  "outputs": {
+    "step09/diagnosis.gpkg": "f0b6f0528ca4e038db8e887c81c3befa33756ac2297069a6679c6ccb99fc7c06",
+    "step09/README.md": "748d8bedb3f1a745383e7707335eeb3e0681906e0b4e9c6e7a1958a19fa16e7d",
+    "step09/travel_components.parquet": "7fd2c5711ef02d8b1f4cca1854661600df9f2de12d1284fdbf13e81691b448c5",
+    "step09/figures/cluster_diagnosis.png": "7b53ea1e1f5a1d4b1ee7c898d26625354c5f08ea103d965496a95623a81be994",
+    "step09/tables/cluster_diagnosis.csv": "842d9da7a56beab83ad863418cf9beb4135e539b34e57d14a1643df6817a243a",
+    "step09/tables/extended_arrival_bands.csv": "66e0fb215be973aad87c94395c6afa4490faca2e9a0fee74a62fa5f313a36b42",
+    "step09/tables/facility_contribution.csv": "7ee582cc6b8409623d214ee4745b966a84a8274b8ee7004deb1fbf7d57ceab09"
+  },
+  "parent_signatures": {
+    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+    "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+    "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+    "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
+    "6": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf",
+    "7": "af2560a26ab5926a472a0375a70b3a085d1949960a2a5f3c50d87ca067e3e5dc",
+    "8": "76149d4f3aea057f39fae40f2f8efb618dfab0e60a3b6879afd47163fe24007c"
+  }
+}

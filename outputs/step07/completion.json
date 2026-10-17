@@ -1,0 +1,35 @@
+{
+  "signature": "af2560a26ab5926a472a0375a70b3a085d1949960a2a5f3c50d87ca067e3e5dc",
+  "status": "complete",
+  "completed_at": "2026-10-17T02:30:36.838867+00:00",
+  "summary": {
+    "clusters": 49,
+    "top_clusters": 3,
+    "valid_grids": 874,
+    "cutoff": 0.3,
+    "order_statistic": 263,
+    "threshold": 1.0841487279843445,
+    "tied_at_boundary": 1,
+    "selected_grids": 263,
+    "selected_fraction": 0.3009153318077803,
+    "queen_tolerance_m": 1e-05
+  },
+  "outputs": {
+    "step07/clusters.gpkg": "2b860b65b2822a4507de8e9fa7f3d9f60e6e589f8edc89a10e351866fa020dc0",
+    "step07/cluster_qa.json": "43d431fcd2563be76b20eaebe68826a6f7b8c4e7fecc24daf0600e6b4d308ff4",
+    "step07/README.md": "83d0fe7744981964bf09de26959239dc3b2f2f347a849c6e11b35894ce19b61c",
+    "step07/figures/accessibility_clusters.png": "7db77d5e0f26fb92824736c5120485e8fbe1007a888e0aba8724d760f5d8027c",
+    "step07/tables/baseline_top3_membership.csv": "f67b16a94e0914f20b02cc68129c5f5895d1e31ef52542067dcfccecbc36848a",
+    "step07/tables/cluster_membership.csv": "d6c3a9b85e5344ec5a7c1ad00479acd041036a02f32657c0b936b7da33684f57",
+    "step07/tables/cluster_summary.csv": "f585d17e592a2a9daa032acf9d024b0cd04f916c9c7038de53673570384ec7a6"
+  },
+  "schema_version": "1.0",
+  "parent_signatures": {
+    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
+    "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+    "4": "d05616dd3852121c8e95d5966a56d49960d7b4300eed36989a39f7cd7676159d",
+    "5": "4a0b8554cb5e4c887e3bc02e587340d505d6ca61462639a5f57ba40e7f7e88d5",
+    "6": "1bfd054238ebe5f1a16a50cf623744cbd8616fda2409bda3a2ed51ef5ab1cebf"
+  }
+}

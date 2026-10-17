@@ -1,0 +1,21 @@
+{
+  "signature": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+  "status": "complete",
+  "completed_at": "2026-10-17T01:00:35.394725+00:00",
+  "summary": {
+    "facilities": 1143,
+    "connected": 1143,
+    "unresolved": 0
+  },
+  "outputs": {
+    "step03/facilities.gpkg": "26d0f947bf198ed3b15c3d69056703ef78a66bf76e337065ee7e3b05cd06c3ae",
+    "step03/README.md": "a47af1396f252cf1fb103b91bd68a7a5968c4e2295e9a2c06146a68797ff057b",
+    "step03/figures/facilities_overview.png": "0fd9e80b641a5ecd987d124b2018f28852df82ce28701177232d0c30473fd741",
+    "step03/tables/facility_status.csv": "219409dced66a71e7f3844bf5a6c1018896bd5198c84903c613e8d7dfe14b41b"
+  },
+  "schema_version": "1.0",
+  "parent_signatures": {
+    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
+    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af"
+  }
+}
