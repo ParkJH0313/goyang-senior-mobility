@@ -1,6 +1,6 @@
 (()=>{
   const $=id=>document.getElementById(id);let enabled=false,busy=false,controller=null,settingsReady=false,provider='Gemini';
-  const names={clinic:'주변 내과·정형외과 직행',baek:'백병원까지 직행',daehwa:'대화역 하차 후 백병원 이동'},vehicles={electric:'전기',lpg:'LPG',hybrid:'하이브리드'};
+  const names={clinic:'가까운 내과·정형외과로 직행',baek:'백병원까지 직행',daehwa:'대화역 하차 후 백병원 이동'},vehicles={electric:'전기',lpg:'LPG',hybrid:'하이브리드'};
   const summary=s=>s.tier==='none'?'똑버스 미도입 · 기존 대중교통·보행 → '+CarbonModel.medicalTarget(s.destination)+' · 집 출발 후 30분 기준\n추가 운영비·도입에 따른 탄소 감축 없음':`${CarbonModel.scenarios[s.tier]} · ${names[s.destination]} · ${s.vehicles}대\n스타리아 11인승 ${vehicles[s.vehicle]} · 전환 ${Math.round(s.conversion*100)}% · 재차 ${s.occupancy.toFixed(1)}명 · 집 출발 기준 · 정류장 대기 1.5분 · 배기관 CO₂`;
 
   const scroll=()=>{$('chat-scroll').scrollTop=$('chat-scroll').scrollHeight;};

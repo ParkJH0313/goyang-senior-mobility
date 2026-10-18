@@ -8,7 +8,7 @@
   hybrid:{name:'하이브리드',model:'스타리아 하이브리드 11인승',factor:.128,seats:10,purchaseWon:39990000,efficiency:12.7,energyWon:1750,maintenanceWonKm:70}
  };
  const costAssumptions={dailyKm:200,lifeYears:8,residualRate:0};
- const destinations={clinic:'주변 내과·정형외과 직행',baek:'백병원까지 직행',daehwa:'대화역 하차 후 백병원 이동'};
+ const destinations={clinic:'가까운 내과·정형외과로 직행',baek:'백병원까지 직행',daehwa:'대화역 하차 후 백병원 이동'};
  const medicalTarget=destination=>destination==='clinic'?'주변 내과·정형외과':'일산백병원';
  const baselineShare=(data,destination)=>destination==='clinic'?data.access.baselineShare:data.access.baekBaselineShare;
  const scenarios={none:'똑버스 미도입',t0:'기존 정류장에 도입',t21:'가상 정류장 21곳 추가',t36:'가상 정류장 36곳 추가'};

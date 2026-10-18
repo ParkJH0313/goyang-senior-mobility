@@ -14,21 +14,43 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
  const report={checks:[],errors:[],syntheticRoutes:true,liveAI:false,liveKakao:false};
  const ready=page=>page.waitForFunction(()=>window.dashboard?.result());
  const noOverflow=async page=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ const pinnedResults=async page=>{
+  assert.ok(await page.evaluate(()=>scrollY)>300);
+  const sizes=await page.evaluate(()=>({height:innerHeight,results:document.querySelector('.results').getBoundingClientRect().toJSON(),numbers:['access','budget','saving'].map(id=>document.getElementById(id).getBoundingClientRect().toJSON())}));
+  assert.ok(sizes.results.top>=0&&sizes.results.top<=10);
+  assert.ok(sizes.results.height<170);
+  for(const r of sizes.numbers)assert.ok(r.top>=0&&r.bottom<sizes.height);
+ };
+ const editWithPinnedResults=async page=>{
+  await page.locator('[data-vehicles="1"]').evaluate(el=>el.scrollIntoView({block:'center'}));
+  await page.locator('[data-vehicles="1"]').click();const one=Number(await page.locator('#budget').textContent());
+  await page.locator('[data-vehicles="3"]').click();assert.ok(Number(await page.locator('#budget').textContent())>one*2.9);await pinnedResults(page);
+  await page.locator('#conversion').evaluate(el=>el.scrollIntoView({block:'start'}));
+  const positions=await page.evaluate(()=>({input:document.getElementById('conversion').getBoundingClientRect().top,panel:document.querySelector('.results').getBoundingClientRect().bottom}));
+  assert.ok(positions.input>positions.panel,'Pinned results must not cover the focused control');
+  await page.locator('#conversion').focus();await page.locator('#conversion').press('Home');
+  assert.equal(await page.locator('#saving').textContent(),'0.00');await pinnedResults(page);
+  await page.locator('#conversion').fill('50');await page.locator('#conversion').dispatchEvent('input');
+  await page.locator('[data-vehicles="2"]').click();
+ };
  const mark=page=>page.evaluate(()=>{const e=document.createElement('div');e.textContent='검증용 가상 경로 · 실제 운영 결과 아님';e.style.cssText='position:fixed;bottom:0;left:0;z-index:10000;background:#852b18;color:white;padding:6px 12px;font-size:12px';document.body.append(e);});
  try{
   browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
   const context=await browser.newContext({viewport:{width:1440,height:1050}}),page=await context.newPage();
   page.on('pageerror',error=>report.errors.push(error.message));
   await page.goto(base);await ready(page);
+  assert.ok(await page.locator('.results').evaluate(el=>el.getBoundingClientRect().height)<170);
   assert.equal(await page.evaluate(()=>dashboard.state().vehicle),'electric');
   assert.equal(await page.locator('[data-vehicle]').first().getAttribute('data-vehicle'),'electric');
   assert.deepEqual(await page.locator('#destination option').evaluateAll(els=>els.map(el=>el.value)),['clinic','baek','daehwa']);
-  assert.equal(await page.locator('#access-now').textContent(),'14.6');
+  assert.equal(await page.locator('#conversion').inputValue(),'50');
+  assert.equal(await page.evaluate(()=>dashboard.state().conversion),.5);
+  assert.equal(await page.locator('#access-now, #access-mode, .result-baseline').count(),0);
   const initialRequests=routeRequests,initialSaving=await page.evaluate(()=>dashboard.result().savingKg);
   assert.deepEqual(await page.locator('[data-tier]').evaluateAll(els=>els.map(el=>el.dataset.tier)),['none','t0','t21','t36']);
   await page.locator('[data-tier="none"]').click();
   assert.equal(await page.locator('#budget').textContent(),'0.00');assert.equal(await page.locator('#saving').textContent(),'0.00');
-  assert.equal(await page.locator('#access').textContent(),await page.locator('#access-now').textContent());
+  assert.equal(await page.locator('#access').textContent(),'14.6');
   assert.equal(await page.locator('#baseline-total').textContent(),'—');assert.equal(await page.locator('#destination').isDisabled(),false);
   assert.equal(await page.locator('[data-vehicles="1"]').isDisabled(),true);assert.equal(await page.locator('#journey-summary').isVisible(),false);
   assert.match(await page.locator('#chat-context').textContent(),/똑버스 미도입/);
@@ -53,13 +75,15 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   assert.match(await page.locator('#chat-open').textContent(),/Gemini/);
   assert.match(await page.locator('#chat-open').evaluate(el=>getComputedStyle(el).backgroundImage),/linear-gradient/);
   assert.equal(routeRequests,initialRequests);
+  await editWithPinnedResults(page);
+  report.checks.push('compact results stay visible while editing lower controls; budget and carbon update; focus clears the sticky panel');
   report.checks.push('electric default; tailpipe only; scheduled pickup and home-departure metric; vehicle-specific cost; Gemini attribution; controls reuse routes');
   for(const destination of ['clinic','baek','daehwa']){
    await page.locator('#destination').selectOption(destination);
    await page.waitForFunction(id=>window.dashboard?.evaluation()?.scenario.destination===id,destination);
    assert.ok(await page.evaluate(()=>Number.isFinite(dashboard.result().savingKg)));
    assert.match(await page.locator('#destination-note').textContent(),destination==='clinic'?/원내과의원/:/일산백병원/);
-   assert.equal(await page.locator('#access-now').textContent(),destination==='clinic'?'14.6':'1.4');
+   assert.equal(await page.evaluate(()=> (dashboard.evaluation().access.current*100).toFixed(1)),destination==='clinic'?'14.6':'1.4');
    assert.match(await page.locator('#access-title').textContent(),destination==='clinic'?/주변 의료기관/:/백병원/);
   }
   report.checks.push('three medical connections calculate with their respective transit baselines');
@@ -90,15 +114,22 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await mapContext.close();report.checks.push('local map SDK stub: selected hub and final hospital have distinct roles; no duplicate selected destination');
 
   await page.locator('#reset').click();await ready(page);
+  assert.equal(await page.locator('#conversion').inputValue(),'50');
   await page.locator('#chat-open').click();await page.waitForFunction(()=>document.getElementById('chat-connection').textContent.includes('키 등록'));
   assert.equal(await page.locator('#chat-input').isDisabled(),true);assert.equal(await page.locator('#chat-send').isDisabled(),true);
   await page.locator('#occupancy').fill('3');await page.locator('#occupancy').dispatchEvent('input');assert.match(await page.locator('#chat-context').textContent(),/3.0명/);
   await page.locator('[data-tier="t21"]').click();assert.match(await page.locator('#chat-context').textContent(),/21곳/);
   await page.locator('#chat-close').click();await page.locator('#reset').click();await noOverflow(page);await mark(page);
+  await page.locator('#conversion').evaluate(el=>el.scrollIntoView({block:'center'}));await pinnedResults(page);
+  await page.screenshot({path:path.join(artifact,'results-pinned-desktop.png')});await page.evaluate(()=>scrollTo(0,0));
   await page.screenshot({path:path.join(artifact,'dashboard-desktop.png'),fullPage:true});
   report.checks.push('honest keyless map/AI state; live chat context follows new scenario');
   const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true}),mp=await mobile.newPage();
   mp.on('pageerror',error=>report.errors.push(error.message));await mp.goto(base);await ready(mp);await noOverflow(mp);await mark(mp);
+  await editWithPinnedResults(mp);await noOverflow(mp);
+  await mp.locator('#conversion').evaluate(el=>el.scrollIntoView({block:'center'}));await pinnedResults(mp);
+  await mp.screenshot({path:path.join(artifact,'results-pinned-mobile.png')});await mp.evaluate(()=>scrollTo(0,0));
+  assert.equal(await mp.locator('.result-baseline').count(),0);
   await mp.screenshot({path:path.join(artifact,'dashboard-mobile.png'),fullPage:true});
   await mp.locator('[data-tier="none"]').click();await noOverflow(mp);await mp.screenshot({path:path.join(artifact,'baseline-mobile.png'),fullPage:true});
   await mp.locator('#chat-open').click();await noOverflow(mp);assert.equal(await mp.locator('.workspace').evaluate(el=>el.inert),true);
@@ -132,7 +163,7 @@ const artifact=path.join(__dirname,'../artifacts');fs.mkdirSync(artifact,{recurs
   await op.route('**/api/distances?**',route=>route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({error:'검증용 경로 실패'})}));
   await op.goto(base);await op.locator('#retry').waitFor({state:'visible'});assert.equal(await op.locator('#saving').textContent(),'—');assert.equal(await op.evaluate(()=>dashboard.result()),null);
   await op.locator('[data-tier="none"]').click();await ready(op);assert.equal(await op.locator('#retry').isVisible(),false);
-  assert.equal(await op.locator('#access').textContent(),await op.locator('#access-now').textContent());
+  assert.equal(await op.locator('#access').textContent(),'14.6');
   await op.reload();await ready(op);assert.equal(await op.locator('#destination').isDisabled(),false);
   await op.unroute('**/api/distances?**');await op.locator('[data-tier="t36"]').click();await ready(op);
   assert.equal(await op.locator('#destination').isEnabled(),true);

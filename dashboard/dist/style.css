@@ -23,3 +23,35 @@
 [hidden]{display:none!important}fieldset:disabled{opacity:.55}fieldset:disabled button,fieldset:disabled input,fieldset:disabled select{cursor:default}.scope .scope-badge{font-size:11px;white-space:nowrap}.scope>span{min-width:0}.scope>strong{flex-shrink:0}.scenario-explanation{margin-top:12px;font-size:10px}
 
 .fleet-wait{margin:12px 0 6px;font-size:11px}.place-role{display:block;font-size:9px;font-weight:400;margin-bottom:4px}.place-label.final-destination{background:#fff4e3;border-color:#b78030;color:#744b12}.legend .hospital{background:#e7bd79;border:1px solid #b78030}
+
+/* Keep the live results in view while editing the controls below. */
+html{scroll-padding-top:var(--results-clearance,0px)}
+.dashboard{position:relative;z-index:0}
+.results{position:sticky;top:0;z-index:20;isolation:isolate;gap:12px;padding:8px 0;margin-top:-8px;margin-bottom:16px;background:#f5f5ef;box-shadow:0 8px 12px #f5f5ef}
+.results .result{min-width:0;min-height:0;padding:9px 16px}
+.results .result-label{min-height:0;line-height:1.45}
+.results .result-number{margin-top:4px;gap:7px}
+.results .result-number strong{font-size:36px;line-height:1.1}
+.results .primary .result-number strong{font-size:40px}
+.results .result p{margin-top:4px;line-height:1.4}
+.results .label-note{font-size:9px}
+@media(max-width:800px){
+ .results{gap:8px}
+ .results .result{padding:9px 11px}
+ .results .result-number strong{font-size:30px}
+ .results .primary .result-number strong{font-size:34px}
+}
+@media(max-width:600px){
+ .results{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;top:0;padding:6px 0;margin-top:-6px;margin-bottom:12px}
+ .results .result,.results .result.primary{grid-column:auto;min-height:0;padding:8px;border-radius:10px}
+ .results .result-label,.results .primary .result-label{display:block;min-height:41px;font-size:10px;line-height:1.35;word-break:keep-all;overflow-wrap:anywhere}
+ .results .label-note,.results .pill,.results .mini-icon,.results .result p{display:none}
+ .results .result-number{flex-direction:column;align-items:flex-start;gap:2px;margin-top:4px}
+ .results .result-number strong,.results .primary .result-number strong{font-size:clamp(22px,6.7vw,28px);letter-spacing:-1px}
+ .results .result-number>span,.results .primary .result-number>span{font-size:9px;line-height:1.2}
+}
+@media(max-height:500px) and (min-width:601px){
+ .results .result{padding:9px 12px}
+ .results .result p,.results .label-note{display:none}
+ .results .result-number strong,.results .primary .result-number strong{font-size:30px}
+}
