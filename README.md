@@ -29,7 +29,6 @@ goyang-senior-mobility/
 │  ├─ manifest.json       # 제공 자료의 목록과 검증값
 │  ├─ raw/                # 원자료
 │  └─ processed/          # 전처리 자료
-│     └─ preprocessing_reports/  # 분석 시작 시 확인하는 전처리 검증 기록
 ├─ outputs/               # 분석 결과 (png,csv,gpkg)
 └─ dashboard/             # AI 대시보드
 ```
@@ -43,12 +42,10 @@ goyang-senior-mobility/
 | 자료 | 배치 경로 | 용도 |
 | --- | --- | --- |
 | 원자료 | `data/raw/` | 전처리부터 전체 분석 실행 |
-| 전처리 자료 (`preprocessing_reports/` 포함) | `data/processed/` | 전처리를 생략하고 분석 실행 |
+| 전처리 자료 | `data/processed/` | 전처리를 생략하고 분석 실행 |
 | 자료 명세 파일 | `data/manifest.json` | 제공 자료의 목록과 파일 검증값 확인 |
 
-전처리 자료로 실행할 때는 `preprocessing_reports/`가 포함된 **`processed` 폴더 전체와 같은 배포본의 `manifest.json`을 함께 내려받아** 위 경로에 배치한다. `manifest.json`은 `processed` 폴더 안이 아닌 `data` 폴더 바로 아래에 둔다. 분석 시작 시 검증하므로 `preprocessing_reports/`를 제외하면 실행할 수 없다.
-
-원자료부터 실행하면 필요한 전처리 검증 기록과 `manifest.json`이 자동 생성된다. 전처리 자료로 실행할 때는 이 파일들을 새로 생성하지 않는다.
+전처리 자료와 같은 배포본의 `manifest.json`을 함께 내려받아 위 경로에 배치한다. `preprocessing_reports/`는 분석 실행에 필요하지 않아 공유에서 제외해도 된다.
 
 ## 실행 방법
 

@@ -51,7 +51,8 @@ def preflight():
     for d in metadata['datasets']:
         if d['kind'] not in {'processed','override_input'}:continue
         for f in d['files']:files[f['path']]=f
-    for f in metadata['overrides']+metadata['preprocessing_reports']:files[f['path']]=f
+    # Preprocessing reports are audit records, not analysis inputs.
+    for f in metadata['overrides']:files[f['path']]=f
     verified={}
     for name,f in files.items():
         if name.startswith('data/raw/'):raise AssertionError('raw dependency in processed mode')
