@@ -9,7 +9,7 @@
   },
   "outputs": {
     "step09/diagnosis.gpkg": "eb9548c6208c0485e8b3cd9e003927434bbf92142e43f1a4f5d12093984d18d0",
-    "step09/README.md": "e1e797ca03b5647cbf1ca44dcfec58431bb6a8fa9d33c4b9311a79359ccbbb94",
+    "step09/README.md": "f96683b8b62814d0d2040c44c4cc006bdfc5d4f38e3da8e7266c4fd448de33e3",
     "step09/travel_components.parquet": "9998be35ff791c57962928f10eafcd767c3a81c0186667a9f50bdca5722d4a4a",
     "step09/figures/arrival_diagnosis_C001.png": "846083b0137ea4984e5a1933de760cb5744cfc814530424f2153b1f6f747dd88",
     "step09/figures/arrival_diagnosis_C002.png": "1035564135423c42b65814bb7d2935d37d62d50df192362b5af06990b0eec200",
@@ -17,12 +17,14 @@
     "step09/figures/bus_walk_population_C001.png": "5deb4b4f836a901c6aee91e340e7e7531bfab119e56b1be70905b4e80d91c9a1",
     "step09/figures/bus_walk_population_C002.png": "376b7a689229b612f290d54f74a6790a01cab5a48462773cdb0dfea19b879bfd",
     "step09/figures/bus_walk_population_C003.png": "eebea78629843f711df4b4a6c6d7de4e26e02e3a5c953631d21d820346dc68ad",
+    "step09/figures/waiting_time_by_departure.png": "66e1a2f0001f3876661305ef6c9815a45d79dada15734b506821950113d69b6e",
     "step09/tables/arrival_status.csv": "84e5faf444926de5789f3916dfe124ad1616da61274ec7ffe2177fcb1beb5e8a",
     "step09/tables/arrival_time_components.csv": "5fd7314702b7651a984e3471400622affaa7fdbb029787118feff09e4114b2b4",
     "step09/tables/bus_walk_population.csv": "07d426fc2a91b3e626fa7c2a96bf17ea8a189d9590ee491733aec6c372d7b0b0",
     "step09/tables/cluster_diagnosis.csv": "662a19e65c6c2039a7fe838c12a8c1c101556afdcfbb4c446514add541aab9b2",
     "step09/tables/facility_contribution.csv": "5461fa7cc581489ff58e24bad75d5f260f21dbacc9fbeecf970086c5077614c2",
-    "step09/tables/nearest_bus_walk.csv": "abf4f09ff1b959390aad07ca3d6e33b1994e99e4d1e77841d3b43d0d2ca4aa19"
+    "step09/tables/nearest_bus_walk.csv": "abf4f09ff1b959390aad07ca3d6e33b1994e99e4d1e77841d3b43d0d2ca4aa19",
+    "step09/tables/waiting_time_by_departure.csv": "bd3f841178b1e62e7fa4cd54ad296cdf8e956d743a7316d12838c6e71ac9d24f"
   },
   "parent_signatures": {
     "1": "7be3e593a90458043ecc5a488cd44beacd8dd11c993e2541890832eedaefee74",

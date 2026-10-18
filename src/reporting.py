@@ -14,7 +14,7 @@ METHODS=[
 '시각별 도달 의료기관 수를 평균하고 원래 고령인구를 가중치로 사용해 250m에서 500m로 집계한다.',
 '유효 500m 점수의 하위 30%에 경계 동점을 포함한다. Queen 인접 군집을 구성하고 고령인구 합계로 상위 3개를 선정한다.',
 '기준 보행속도와 상위 3개 군집의 격자·인구를 고정해 시간예산을 비교한다. 하위 비율 변경은 전체 유효 격자에서 다시 군집화한다.',
-'군집별 보행·대기·차내·추가 탑승 준비시간을 집계한다. 도달 경로의 조건부 평균과 전체 인구·시각의 미도달 비중을 함께 제시한다.']
+'군집별 보행·대기·차내·추가 탑승 준비시간을 집계한다. 도달 경로의 조건부 평균과 전체 인구·시각의 미도달 비중을 제시하고, 출발시각에 따른 평균 대기시간을 비교한다.']
 LAYERS={
 'population_250m':'원래 250m 격자와 추정 고령인구·자료 상태.','population_500m':'250m 자식 인구를 합친 원래 500m 격자.',
 'origins_250m':'주거 면적 중심 또는 잠정 격자 중심점.','origin_connectors':'출발점 전용 접속선. 전체 길이를 시간으로 환산한다.',
@@ -33,7 +33,7 @@ COMMON={
 5:'src/router.py · src/timetable.py · src/routing_runner.py: 시간표 경로 탐색과 중단 재개.',
 6:'src/aggregation.py: 시각 평균과 인구 가중 집계. src/figures.py의 accessibility_distribution: 전체 500m 접근성 점수 지도와 하단 범례.',7:'src/aggregation.py: 경계 동점·Queen 군집·인구 순위. src/cluster_labels.py: 표·지도·보고서의 지역명 통일.',
 8:'src/aggregation.py · src/routing_runner.py: 시나리오 계산. src/figures.py: 저장된 OD의 500m 집계와 비교 지도.',
-9:'src/path_diagnosis.py: 경로 성분 재구성. src/cluster_diagnostics.py: 도달 상태·조건부 평균 및 버스정류장 최단보행 계산. src/diagnostic_figures.py: 군집별 막대그래프·보행시간과 고령인구 지도.'}
+9:'src/path_diagnosis.py: 경로 성분 재구성. src/cluster_diagnostics.py: 도달 상태·조건부 평균 및 버스정류장 최단보행 계산. src/diagnostic_figures.py: 군집별 막대그래프·보행시간과 고령인구 지도, 출발시각별 대기시간 집계표와 히트맵.'}
 
 def progress(ctx):
     rows=['# 분석 실행 상태','',f'상태: {ctx.state["status"]}','','결과: outputs/step01 ~ step09. 계산 재개: python run.py processed. 그림·보고서: python run.py report.','','| 단계 | 상태 |','|---|---|']
@@ -66,6 +66,9 @@ def document_steps(ctx):
         if n==6:lines+=['','figures/accessibility_distribution.png는 accessibility.gpkg의 accessibility_500m 레이어에서 유효 점수 전체를 그린다. 범례는 지도 아래에 두며 0 / 0 초과~5 / 5 초과~15 / 15 초과~30 / 30 초과~60 / 60 초과(곳)의 고정 구간이다. 이는 군집 선정용 하위 30% 구분과 별개이며 수치와 군집을 바꾸지 않는다. 점수 0은 모든 출발시각에서 도달 기관이 없는 경우다. 고령인구가 있지만 점수를 산정하지 않은 격자는 빗금으로 구분한다. 중앙값은 유효 500m 격자 점수의 중앙값이다.', 'python run.py processed는 분석 후 그림까지 생성하고, python run.py report는 저장된 결과로 그림과 보고서만 재생성한다.']
         if n==8:lines+=['','지도 경계는 기본 30분 점수의 하위 30% 경계로 고정한다. 시간예산은 30·40·50분만 비교하며 기준 군집을 바꾸지 않는다. 평균 0 / 0 초과~경계 / 경계 초과를 공통 색으로 표현한다.']
         if n==9:lines+=['','arrival_status.csv는 상호 배타적인 도달 상태의 인구·출발시각 가중 비율이다. 첫 보행 불가는 첫 정류장과 의료기관 직접 보행이 모두 10분 이내에 불가능한 경우다. 80분 내 미도달은 첫 보행은 가능하지만 탐색 한도 안에 도달하지 못한 경우다. 자료 미해결은 별도 분류한다.', 'arrival_time_components.csv는 30분 이내 도달 및 30분 초과~80분 도달 그룹별 시간 성분 평균이다. 전체 비율은 고유 인원 비율이 아니며, 두 그룹의 차이는 정책의 인과효과가 아니다.', 'nearest_bus_walk.csv와 bus_walk_population.csv는 보행시간 상한 없이 가장 가까운 평일 버스 승차 정류장을 찾은 결과 및 구간별 인구 집계다. 신호·휴식·배차 대기는 제외한다. 지도는 보행 부담 진단이고 본 접근성 계산의 연속보행 10분 조건을 변경하지 않는다. 500m 인구는 원래 격자값이며 구간별 인구는 250m 배분값으로 합산한다.']
+        if n==9:lines+=['','figures/waiting_time_by_departure.png는 travel_components.parquet에서 80분 내 의료기관에 도달한 출발 격자·시각의 경로를 대상으로 첫 탑승 대기와 환승 대기의 합계를 30분 구간별로 비교한다. 보행속도 0.8m/s와 연속보행 10분 조건을 유지한다. 시각별 도달 경로 구성은 달라질 수 있으며 미도달·자료 미해결을 대기 0분으로 넣지 않는다. 환승 준비시간과 신호 대기는 포함하지 않는다.',
+            'tables/waiting_time_by_departure.csv의 mean_wait_min은 고령인구 가중 평균 대기시간(분)이다. period=30min은 해당 출발시각 구간, overall은 전체 08:30~17:00의 도달 경로를 직접 가중한 값이다. 전체 평균은 구간별 평균의 단순평균이 아니다. departure_start_s와 departure_end_s는 자정부터 센 초이며 시작은 포함하고 끝은 end_inclusive=True일 때만 포함한다. 마지막 16:30 구간은 17:00를 포함한다. 도달 경로가 없는 구간의 평균은 빈값이며 그림에서는 —로 표시한다.',
+            'src/diagnostic_figures.py의 waiting_time_figure가 집계표와 그림을 함께 생성한다. python run.py processed는 분석 후 전체 결과를 생성하고, python run.py report는 저장된 경로 자료로 그림·집계표·보고서를 재생성한다.']
         (folder/'README.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
 
 def image_block(ctx,rel,title,description=''):
@@ -109,7 +112,10 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
     image_block(ctx,'step08/figures/04_cutoff_cluster_maps.png','저접근 기준 하위 25·30·35%','전체 유효 격자에서 군집과 고령인구 순위를 다시 계산한다.'),
     '<details><summary>출발시각별 변화와 군집 중첩</summary>',image_block(ctx,'step08/figures/02_time_budget_profiles.png','출발시각별 평균 기관 수'),image_block(ctx,'step08/figures/05_cutoff_top3_overlap.png','군집 선정 범위의 중첩'),'</details></section>',
     '<section id="diagnosis"><h2>취약 원인 진단</h2>',
-    '<p class="sub">전체 비율은 고령인구와 511개 출발시각을 가중한 값이다. 첫 보행 불가와 운행·환승을 거친 미도달을 구분하고, 도달한 경로는 30분 이내와 초과로 나누어 비교한다.</p>']
+    '<p class="sub">전체 비율은 고령인구와 511개 출발시각을 가중한 값이다. 첫 보행 불가와 운행·환승을 거친 미도달을 구분하고, 도달한 경로는 30분 이내와 초과로 나누어 비교한다.</p>',
+    '<div id="waiting-time">',
+    image_block(ctx,'step09/figures/waiting_time_by_departure.png','출발시각별 평균 대기시간','80분 내 의료기관에 도달한 출발 격자·시각의 경로를 대상으로 첫 탑승과 환승 대기를 합산했다. 출발시각은 30분 구간의 시작이며, 오른쪽 전체 평균은 전체 출발시각의 도달 경로를 고령인구로 가중한 값이다. 연속보행 10분 조건을 유지하며 미도달을 0분으로 계산하지 않는다. 시각별로 도달 경로 구성은 달라질 수 있다.'),
+    '</div>']
     for r in top.itertuples():
         parts += [f'<h3 id="diagnosis-{r.cluster_id}">{escape(cluster_title(r.area_name))}</h3>',
             image_block(ctx,f'step09/figures/arrival_diagnosis_{r.cluster_id}.png','도달 상태와 시간 구성','80분은 진단 탐색 한도다. 두 도달 그룹의 시간 차이는 관측된 경로 차이이며 정책 효과 추정이 아니다.'),

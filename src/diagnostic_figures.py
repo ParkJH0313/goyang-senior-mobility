@@ -5,8 +5,10 @@ import geopandas as gpd
 import pyogrio
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
+from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Patch, Rectangle
 from matplotlib.lines import Line2D
+from src.analysis_io import csv
 from src.figures import setup, save, boundaries, map_base, compass_scale, NAVY, MUTED, ZERO, LIGHT, LINE
 from src.cluster_diagnostics import STATUS_ORDER, WALK_BANDS
 from src.cluster_labels import cluster_title
@@ -131,6 +133,82 @@ def walking_figure(ctx, cluster, walks, parents, stops, bands):
         '인구: 500m 격자값 표시, 추정 인구는 소수 유지 · 우측 인구는 250m 배분값 합산 · 이 지도는 보행 부담 진단이며 본 분석의 연속보행 10분 상한은 유지',layout=False)
 
 
+def waiting_time_figure(ctx, clusters):
+    """Population-weighted waiting among reachable origin/departure pairs."""
+    columns=['cluster_id','gid','departure_s','population','status','total_s','wait_s']
+    routes=pd.read_parquet(ctx.step(9)/'travel_components.parquet',columns=columns)
+    begin=ctx.config['departure_start_s'];end=ctx.config['departure_end_s']
+    horizon=max(ctx.config['diagnostic_budgets_min'])
+    rows=routes[routes.status.eq('reachable') & np.isfinite(routes.total_s)
+                & routes.total_s.le(horizon*60+1e-8) & routes.population.gt(0)
+                & routes.departure_s.between(begin,end) & routes.cluster_id.isin(clusters.cluster_id)].copy()
+    assert np.isfinite(rows.wait_s).all() and rows.wait_s.ge(-1e-6).all()
+    rows['wait_s']=rows.wait_s.clip(lower=0)
+    bins=max(1,int(np.ceil((end-begin)/1800)))
+    rows['time_bin']=np.minimum((rows.departure_s-begin)//1800,bins-1)
+    means=np.full((len(clusters),bins),np.nan);overall_means=[];labels=[];records=[]
+    def clock(seconds):return f'{int(seconds)//3600}:{int(seconds)%3600//60:02d}'
+    def weighted_minutes(frame):
+        return float(np.average(frame.wait_s,weights=frame.population)/60) if len(frame) else np.nan
+    for i,c in enumerate(clusters.itertuples()):
+        name=cluster_title(c.area_name)
+        if name.endswith(' 지역'):name=name.removesuffix(' 지역')+' 군집'
+        labels.append(name);local=rows[rows.cluster_id.eq(c.cluster_id)]
+        # Pool individual records, not bin means: both sample weights and the
+        # number of departure times in the inclusive final bin can differ.
+        overall_means.append(weighted_minutes(local))
+        for j in range(bins):
+            selected=local[local.time_bin.eq(j)];means[i,j]=weighted_minutes(selected)
+            start=begin+j*1800;stop=min(start+1800,end)
+            records.append(dict(cluster_id=c.cluster_id,cluster_name=name,period='30min',
+                departure_start_s=start,departure_end_s=stop,end_inclusive=j==bins-1,
+                mean_wait_min=means[i,j]))
+        records.append(dict(cluster_id=c.cluster_id,cluster_name=name,period='overall',
+            departure_start_s=begin,departure_end_s=end,end_inclusive=True,
+            mean_wait_min=overall_means[-1]))
+    csv(pd.DataFrame(records),ctx.step(9)/'tables/waiting_time_by_departure.csv')
+    maximum=np.nanmax(means) if np.isfinite(means).any() else 0
+    limit=max(10,10*np.ceil(maximum/10))
+    cmap=LinearSegmentedColormap.from_list('waiting_time',['#faf1e0','#f0c2a0','#d78d7d','#aa536b'])
+    cmap.set_bad(LIGHT)
+    fig=plt.figure(figsize=(18,7.6))
+    fig.text(.035,.955,'출발시각별 평균 대기시간',fontsize=25,fontweight='bold',va='top')
+    fig.text(.035,.875,f'{horizon:g}분 내 의료기관에 도달한 출발 격자·시각의 경로 대상  |  첫 탑승 + 환승 대기',fontsize=12,color=MUTED)
+    ax=fig.add_axes([.18,.36,.69,.39])
+    im=ax.imshow(means,cmap=cmap,vmin=0,vmax=limit,aspect='auto')
+    ax.set_yticks(range(len(clusters)),labels,fontsize=13,fontweight='bold')
+    ax.tick_params(length=0,pad=14)
+    for i in range(len(clusters)):
+        for j in range(bins):
+            value=means[i,j];finite=np.isfinite(value)
+            # Apply the cutoff to displayed precision, including 16.0 exactly.
+            color='white' if finite and float(f'{value:.1f}')>=16 else NAVY
+            ax.text(j,i,f'{value:.1f}' if finite else '—',ha='center',va='center',
+                    fontsize=17,fontweight='bold',color=color)
+    ax.set_title('평균 총 대기시간 (분)',loc='left',fontsize=14,fontweight='bold',pad=17)
+    ax.set_xticks(range(bins),[clock(begin+j*1800) for j in range(bins)],fontsize=12,fontweight='bold')
+    ax.set_xlabel('출발시각',fontsize=12,labelpad=12)
+    for spine in ax.spines.values():spine.set_visible(False)
+    ax.set_xticks(np.arange(-.5,bins,1),minor=True);ax.set_yticks(np.arange(-.5,len(clusters),1),minor=True)
+    ax.grid(which='minor',color='white',linewidth=1.5);ax.tick_params(which='minor',length=0)
+    summary=fig.add_axes([.887,.36,.087,.39])
+    summary.set_xlim(0,1);summary.set_ylim(ax.get_ylim());summary.set_axis_off()
+    summary.set_title('전체 평균',fontsize=14,fontweight='bold',pad=17)
+    for i,value in enumerate(overall_means):
+        summary.add_patch(Rectangle((0,i-.5),1,1,facecolor=LIGHT,edgecolor='white',linewidth=1.5))
+        summary.text(.5,i,f'{value:.1f}분' if np.isfinite(value) else '—',ha='center',va='center',fontsize=22,fontweight='bold',color=NAVY)
+    cax=fig.add_axes([.34,.215,.37,.021])
+    cb=fig.colorbar(im,cax=cax,orientation='horizontal',ticks=np.arange(0,limit+.1,5))
+    cb.ax.tick_params(labelsize=11,length=3);cb.outline.set_visible(False)
+    fig.text(.725,.219,'분 · 세 군집 같은 색 기준',fontsize=11,va='center',color=MUTED)
+    speed=ctx.config['baseline_speed_mps'];walk_minutes=ctx.config['max_continuous_walk_s']/60
+    fig.text(.035,.085,f'전체 평균: {clock(begin)}~{clock(end)}의 도달 경로를 고령인구로 가중 · 보행속도 {speed:g}m/s · 연속보행 {walk_minutes:g}분 유지',fontsize=9.5,color=MUTED)
+    interval=ctx.config['departure_interval_s'];count=(end-begin)//interval+1
+    fig.text(.035,.052,f'{clock(begin)}은 {clock(begin)}~{clock(begin+1800)} 직전의 출발시각을 집계 · 마지막 {clock(begin+(bins-1)*1800)} 구간은 {clock(end)} 포함 · {clock(begin)}~{clock(end)} 매 {interval/60:g}분 {count}시각',fontsize=9,color=MUTED)
+    save(ctx,fig,ctx.step(9)/'figures/waiting_time_by_departure.png',
+         f'시간표 모형의 최단 도달 경로 · {horizon:g}분 내 도달 사례의 조건부 값 · 미도달을 대기 0분으로 대체하지 않음',layout=False)
+
+
 def render_diagnostics(ctx, summary):
     setup();folder=ctx.step(9)
     states=pd.read_csv(folder/'tables/arrival_status.csv');means=pd.read_csv(folder/'tables/arrival_time_components.csv')
@@ -144,3 +222,4 @@ def render_diagnostics(ctx, summary):
         selected=walks[walks.cluster_id.eq(r.cluster_id)]
         arrival_figure(ctx,r,states[states.cluster_id.eq(r.cluster_id)],means[means.cluster_id.eq(r.cluster_id)],len(selected),axis_limit)
         walking_figure(ctx,r,selected,parents[parents.cluster_id.eq(r.cluster_id)],stops[stops.cluster_id.eq(r.cluster_id)],bands[bands.cluster_id.eq(r.cluster_id)])
+    waiting_time_figure(ctx,summary[summary.is_top3].sort_values('rank'))
