@@ -45,8 +45,7 @@ goyang-senior-mobility/
 | 전처리 자료 | `data/processed/` | 전처리를 생략하고 분석 실행 |
 | 자료 명세 파일 | `data/manifest.json` | 제공 자료의 목록과 파일 검증값 확인 |
 
-전처리 자료와 같은 배포본의 `manifest.json`을 함께 내려받아 위 경로에 배치한다. `preprocessing_reports/`는 분석 실행에 필요하지 않아 공유에서 제외해도 된다.
-
+전처리 자료와 같은 배포본의 `manifest.json`을 함께 내려받아 위 경로에 배치한다. 
 ## 실행 방법
 
 프로젝트 폴더에서 실행환경을 구성한다.
