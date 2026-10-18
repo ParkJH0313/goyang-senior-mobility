@@ -31,7 +31,7 @@ COMMON={
 1:'src/analysis_io.py: 입력 검증과 원자적 저장.',2:'src/spatial_network.py: 최근접 접속과 통행 조건.',
 3:'src/spatial_network.py: 기관 도착점 접속.',4:'src/spatial_network.py · src/stop_access.py · src/walking.py: 접속 도형, 방향성 거리망, 연속보행.',
 5:'src/router.py · src/timetable.py · src/routing_runner.py: 시간표 경로 탐색과 중단 재개.',
-6:'src/aggregation.py: 시각 평균과 인구 가중 집계.',7:'src/aggregation.py: 경계 동점·Queen 군집·인구 순위. src/cluster_labels.py: 표·지도·보고서의 지역명 통일.',
+6:'src/aggregation.py: 시각 평균과 인구 가중 집계. src/figures.py의 accessibility_distribution: 전체 500m 접근성 점수 지도와 하단 범례.',7:'src/aggregation.py: 경계 동점·Queen 군집·인구 순위. src/cluster_labels.py: 표·지도·보고서의 지역명 통일.',
 8:'src/aggregation.py · src/routing_runner.py: 시나리오 계산. src/figures.py: 저장된 OD의 500m 집계와 비교 지도.',
 9:'src/path_diagnosis.py: 경로 성분 재구성. src/cluster_diagnostics.py: 도달 상태·조건부 평균 및 버스정류장 최단보행 계산. src/diagnostic_figures.py: 군집별 막대그래프·보행시간과 고령인구 지도.'}
 
@@ -63,6 +63,7 @@ def document_steps(ctx):
         lines+=['','## 해석','','좌표계 EPSG:5179, 거리 m, 계산시간 초, 점수는 기관 수(곳)다. 미도달 0과 자료가 불완전한 NaN은 구분한다.',
         '도착 위치와 보행 접속에는 자료 기반 대리점·근사가 포함된다. 056번 중간 정차시각은 추정값이며 진료 가능 여부까지 나타내는 지표는 아니다.']
         if n>=5:lines+=['',f'기본 보행속도는 {ctx.config["baseline_speed_mps"]:g}m/s이고 시간예산은 {ctx.config["baseline_budget_min"]}분이다.']
+        if n==6:lines+=['','figures/accessibility_distribution.png는 accessibility.gpkg의 accessibility_500m 레이어에서 유효 점수 전체를 그린다. 범례는 지도 아래에 두며 0 / 0 초과~5 / 5 초과~15 / 15 초과~30 / 30 초과~60 / 60 초과(곳)의 고정 구간이다. 이는 군집 선정용 하위 30% 구분과 별개이며 수치와 군집을 바꾸지 않는다. 점수 0은 모든 출발시각에서 도달 기관이 없는 경우다. 고령인구가 있지만 점수를 산정하지 않은 격자는 빗금으로 구분한다. 중앙값은 유효 500m 격자 점수의 중앙값이다.', 'python run.py processed는 분석 후 그림까지 생성하고, python run.py report는 저장된 결과로 그림과 보고서만 재생성한다.']
         if n==8:lines+=['','지도 경계는 기본 30분 점수의 하위 30% 경계로 고정한다. 시간예산은 30·40·50분만 비교하며 기준 군집을 바꾸지 않는다. 평균 0 / 0 초과~경계 / 경계 초과를 공통 색으로 표현한다.']
         if n==9:lines+=['','arrival_status.csv는 상호 배타적인 도달 상태의 인구·출발시각 가중 비율이다. 첫 보행 불가는 첫 정류장과 의료기관 직접 보행이 모두 10분 이내에 불가능한 경우다. 80분 내 미도달은 첫 보행은 가능하지만 탐색 한도 안에 도달하지 못한 경우다. 자료 미해결은 별도 분류한다.', 'arrival_time_components.csv는 30분 이내 도달 및 30분 초과~80분 도달 그룹별 시간 성분 평균이다. 전체 비율은 고유 인원 비율이 아니며, 두 그룹의 차이는 정책의 인과효과가 아니다.', 'nearest_bus_walk.csv와 bus_walk_population.csv는 보행시간 상한 없이 가장 가까운 평일 버스 승차 정류장을 찾은 결과 및 구간별 인구 집계다. 신호·휴식·배차 대기는 제외한다. 지도는 보행 부담 진단이고 본 접근성 계산의 연속보행 10분 조건을 변경하지 않는다. 500m 인구는 원래 격자값이며 구간별 인구는 250m 배분값으로 합산한다.']
         (folder/'README.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
@@ -98,7 +99,9 @@ figure{margin:32px 0 12px}figure img{display:block;width:100%;height:auto}figcap
     ('이동 조건',f'{ctx.config["baseline_speed_mps"]:g}m/s · 연속보행 10분 · 최대 3회 탑승'),('교통수단','시내·마을버스, 도시철도 및 일반철도'),('군집 선정','하위 30%·경계 동점 포함 · Queen 인접 · 고령인구 상위 3개')]
     parts += [f'<div><b>{a}</b>{b}</div>' for a,b in methods]
     parts+=['</div><p class="sub">고양시와 지정된 주변 지역의 내과 또는 정형외과 전문의가 있는 기관을 대상으로 한다. 기관 수는 진료용량이나 진료시간까지 고려한 공급량은 아니다.</p></section>',
-    '<section id="baseline"><h2>접근성과 고령인구 집중 지역</h2>',image_block(ctx,'step07/figures/accessibility_clusters.png','기준 접근성과 상위 저접근 군집','공통 분류와 별도 군집 색으로 접근성 수준과 선정 범위를 구분했다.'),
+    '<section id="baseline"><h2>접근성과 고령인구 집중 지역</h2>',
+    image_block(ctx,'step06/figures/accessibility_distribution.png','고양시 전체 의료접근성 점수','30분 이내 평균 도달 의료기관 수를 500m 격자별로 표시했다. 지도 아래 범례는 실제 점수 구간이며, 점수 산정 제외와 0곳을 구분한다.'),
+    image_block(ctx,'step07/figures/accessibility_clusters.png','기준 접근성과 상위 저접근 군집','공통 분류와 별도 군집 색으로 접근성 수준과 선정 범위를 구분했다.'),
     top[['rank','area_name','population','score','grid_count']].rename(columns={'rank':'인구 순위','area_name':'지역명','population':'고령인구(명)','score':'평균 기관 수(곳)','grid_count':'500m 격자 수'}).to_html(index=False,border=0,float_format=lambda x:f'{x:,.2f}'),
     f'<p class="sub">저접근 경계는 {qa["threshold"]:.4f}곳이다. 군집명은 구성 지역을 설명하는 명칭이며 행정동 전체를 뜻하지 않는다. 유효 점수의 고령인구 비중은 {float(valid.population.sum())/total:.3%}다.</p></section>',
     '<section id="sensitivity"><h2>민감도 분석</h2><p>시간예산 비교는 기준 군집의 격자·인구를 고정한다. 막대는 같은 군집에서 저접근 격자에 거주하는 고령인구 비율이다.</p>',

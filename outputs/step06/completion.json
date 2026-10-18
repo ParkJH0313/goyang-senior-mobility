@@ -1,5 +1,5 @@
 {
-  "signature": "adf6fffc2954910d1a6367a9a0c9a01c258d456b8638fbb7f0054bccbb355df1",
+  "signature": "44a07b3bf965a334a1e39d33ae3b518e56b0240bdc42374034dc7cb597fe9e64",
   "status": "complete",
   "completed_at": "2026-10-17T14:26:53.995675+00:00",
   "summary": {
@@ -10,17 +10,18 @@
   "outputs": {
     "step06/accessibility.gpkg": "b14577cb60dee948c45d92778ba9c051ed78af74df2eddae6438daf86a14c556",
     "step06/minute_profiles.npz": "712f2b654d8659b4a3b79e6a77312fd040adfb2c755b7d8ec2ef9ec66406f274",
-    "step06/README.md": "b41f8562b5b66dd6abfc3ec9f58a1a21efaa2a24c8c4f0f1e3fb688fcd0f649d",
+    "step06/README.md": "da7e68533b0745f421c2bdeae5a4d846811f8ff402733d0fa962b7ac73bfa82e",
+    "step06/figures/accessibility_distribution.png": "96f24ad8279644847b5c205da091ec47fed31509a8803933049e22a3bef13d4e",
     "step06/tables/accessibility_250m.csv": "ba6fd3f8ff9b2d40a3316ee9c158a1fb8ceaaf65201f692910e9af895a35f498",
     "step06/tables/accessibility_500m.csv": "562d7f010428890f4b048eb3a6e2fdea3564cbc9097b00cd9223a673bf82b341",
     "step06/tables/coverage_summary.csv": "7fc35f25ec6fe76bc331093fb67a1ccaa5ebb274ed8f34a496a6c647ceeee87f",
     "step06/tables/time_band_summary.csv": "754ec34ebfcd0ff50f2cb48a0509f2a44482aa38f9a61e55a4fb3658ae1980c4"
   },
   "parent_signatures": {
-    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
-    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
-    "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
-    "4": "b558ffea41baad48ccf14e8dff4ad6ec73ba22c32767764dd371b7547fe74d86",
-    "5": "99e1228e6c7a713124f8b2c8cedd5d2f9acf8698e537dc1573846d84e2f2982a"
+    "1": "7be3e593a90458043ecc5a488cd44beacd8dd11c993e2541890832eedaefee74",
+    "2": "4e9b5c1e1c3623fe7e2159db4917027ac233194f010dc1344b61cfc3ee5842ba",
+    "3": "6ffdbcf8b376b37dc5de98ed7460cf6bb502cb007eab3150c8f99dedf2fed14d",
+    "4": "4a4489f5f85a98a6273df164a1eabae48e53b47109c021b382e2107b4fd9e9b9",
+    "5": "59061056d8ae48ecd1cdb10ba63198dbcaa7eb594b803cba1c26d2a2db0b1dd2"
   }
 }

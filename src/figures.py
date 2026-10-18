@@ -23,11 +23,18 @@ def setup():
         'figure.facecolor':'white','axes.facecolor':'white','legend.frameon':False})
 
 def save(ctx,fig,path,caption,layout=True):
+    from io import BytesIO
     path=inside(path);path.parent.mkdir(parents=True,exist_ok=True)
     fig.text(.035,.012,caption,fontsize=8,color=MUTED,va='bottom')
     if layout:fig.tight_layout(rect=[.015,.075,.985,.97])
-    fig.savefig(path,dpi=ctx.config['dpi'],facecolor='white',bbox_inches='tight',pad_inches=.16)
+    buffer=BytesIO()
+    fig.savefig(buffer,format='png',dpi=ctx.config['dpi'],facecolor='white',bbox_inches='tight',pad_inches=.16)
     plt.close(fig)
+    content=buffer.getvalue()
+    # Report-only updates need not overwrite unchanged figures open in a viewer.
+    if path.exists() and path.read_bytes()==content:return
+    temporary=path.with_name(path.name+'.tmp')
+    temporary.write_bytes(content);temporary.replace(path)
 
 @lru_cache(maxsize=1)
 def boundaries():
@@ -64,6 +71,46 @@ def score_legend(fig,threshold,y=.045):
     fig.legend(handles=[Patch(facecolor=ZERO,label='평균 0곳'),Patch(facecolor=LOW,label=f'0곳 초과 ~ {threshold:.2f}곳 이하'),
         Patch(facecolor=ABOVE,label='기준 초과'),Patch(facecolor=LIGHT,edgecolor=LINE,label='배경 지역')],
         loc='lower center',bbox_to_anchor=(.5,y),ncol=4,fontsize=9,handlelength=1.4)
+
+def accessibility_distribution(ctx,grid):
+    """Show the full Step 6 score range, independently of low-access clustering."""
+    setup()
+    valid=grid[grid.score_status.eq('valid')&grid.population.gt(0)&np.isfinite(grid.score)].copy()
+    if valid.empty:raise ValueError('No valid 500m accessibility scores to map.')
+    assert valid.score.ge(0).all()
+    # Fixed score intervals, not quantiles; zero and unavailable scores stay distinct.
+    breaks=np.array([0.,5.,15.,30.,60.])
+    colors=['#df9fae','#f0c5aa','#f3dfb6','#c4ded9','#8dbbb6','#568f94']
+    labels=['0곳','0곳 초과 ~ 5곳 이하','5곳 초과 ~ 15곳 이하',
+            '15곳 초과 ~ 30곳 이하','30곳 초과 ~ 60곳 이하','60곳 초과']
+    bins=np.searchsorted(breaks,valid.score.to_numpy(),side='left')
+    unavailable=grid[grid.population.gt(0)&~grid.index.isin(valid.index)]
+    fig=plt.figure(figsize=(13,11.5))
+    fig.text(.04,.965,'고양시 전체 의료접근성 점수 분포',fontsize=22,fontweight='bold',va='top')
+    fig.text(.04,.924,f'{ctx.config["baseline_budget_min"]}분 이내 도달 가능한 의료기관 수의 평균  |  고령인구 가중 500m 격자',fontsize=11,color=MUTED)
+    stats=[('유효 500m 격자',f'{len(valid):,}개'),('점수 0인 격자',f'{valid.score.eq(0).sum():,}개'),
+           ('격자 점수 중앙값',f'{valid.score.median():.2f}곳'),('최대 점수',f'{valid.score.max():.2f}곳')]
+    for x,(label,value) in zip([.04,.28,.52,.76],stats):
+        fig.text(x,.88,label,fontsize=10,color=MUTED)
+        fig.text(x,.85,value,fontsize=16,fontweight='bold')
+    ax=fig.add_axes([.035,.205,.93,.62]);map_base(ax)
+    valid.plot(ax=ax,color=[colors[i] for i in bins],edgecolor='white',linewidth=.3,zorder=3)
+    if len(unavailable):
+        unavailable.plot(ax=ax,facecolor='white',edgecolor=MUTED,hatch='////',linewidth=.5,zorder=4)
+    compass_scale(ax)
+    fig.text(.5,.179,'의료접근성 점수 · 평균 도달 의료기관 수 (곳)',ha='center',fontsize=11,fontweight='bold')
+    handles=[Patch(facecolor=c,label=label) for c,label in zip(colors,labels)]
+    # Matplotlib fills columns first; reorder so the two rows read low to high.
+    fig.legend(handles=[handles[i] for i in [0,3,1,4,2,5]],loc='lower center',
+               bbox_to_anchor=(.5,.108),ncol=3,fontsize=10,handlelength=1.8,columnspacing=2.8,labelspacing=.85)
+    fig.legend(handles=[Patch(facecolor='white',edgecolor=MUTED,hatch='////',label='점수 산정 제외'),
+                        Patch(facecolor=LIGHT,edgecolor=LINE,label='배경 지역')],
+               loc='lower center',bbox_to_anchor=(.5,.074),ncol=2,fontsize=9,columnspacing=2.8)
+    fig.text(.04,.055,'고정된 점수 구간으로 전체 분포를 표현 · 군집 선정용 하위 30% 분류와는 별개',fontsize=9,color=MUTED)
+    fig.text(.04,.036,'0곳은 모든 출발시각에서 도달 기관이 없는 경우 · 빗금은 점수를 산정하지 않은 격자이며 0곳과 구분',fontsize=9,color=MUTED)
+    save(ctx,fig,ctx.step(6)/'figures/accessibility_distribution.png',
+         f'08:30–17:00 매분 511시각 평균 · 보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 연속보행 10분 · 기관 수는 진료용량이 아님 · EPSG:5179',layout=False)
+
 
 def overview(ctx,grid,clusters):
     setup();threshold=read_json(ctx.step(7)/'cluster_qa.json')['threshold'];top=clusters[clusters.is_top3].sort_values('rank')
@@ -199,7 +246,7 @@ def render_all(ctx):
     from src.input_figures import render
     render(ctx)
     large=pyogrio.read_dataframe(ctx.step(6)/'accessibility.gpkg',layer='accessibility_500m');summary=pyogrio.read_dataframe(ctx.step(7)/'clusters.gpkg',layer='cluster_summary')
-    overview(ctx,large,summary);data=grid_scenarios(ctx)
+    accessibility_distribution(ctx,large);overview(ctx,large,summary);data=grid_scenarios(ctx)
     speed=ctx.config['baseline_speed_mps']
     budget_values=ctx.config['sensitivity_budgets_min']
     budget_atlas(ctx,budget_values,data,summary,'01_time_budget_top3.png','시간예산에 따른 저접근 지역의 변화',f'시간예산 {"·".join(map(str,budget_values))}분  |  보행속도 {speed:g}m/s  |  같은 군집·인구·저접근 경계 유지')

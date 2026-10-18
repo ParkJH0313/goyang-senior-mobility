@@ -1,5 +1,5 @@
 {
-  "signature": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1",
+  "signature": "6ffdbcf8b376b37dc5de98ed7460cf6bb502cb007eab3150c8f99dedf2fed14d",
   "status": "complete",
   "completed_at": "2026-10-17T01:00:35.394725+00:00",
   "summary": {
@@ -15,7 +15,7 @@
   },
   "schema_version": "1.0",
   "parent_signatures": {
-    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
-    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af"
+    "1": "7be3e593a90458043ecc5a488cd44beacd8dd11c993e2541890832eedaefee74",
+    "2": "4e9b5c1e1c3623fe7e2159db4917027ac233194f010dc1344b61cfc3ee5842ba"
   }
 }

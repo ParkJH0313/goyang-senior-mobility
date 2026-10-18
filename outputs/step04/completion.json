@@ -1,5 +1,5 @@
 {
-  "signature": "b558ffea41baad48ccf14e8dff4ad6ec73ba22c32767764dd371b7547fe74d86",
+  "signature": "4a4489f5f85a98a6273df164a1eabae48e53b47109c021b382e2107b4fd9e9b9",
   "status": "complete",
   "completed_at": "2026-10-17T14:25:12.444395+00:00",
   "summary": {
@@ -25,8 +25,8 @@
     "step04/tables/service_profile.csv": "df37861c83b1f7247eaacaa6a52ab6e1a57fda74713699395b59c31616f76148"
   },
   "parent_signatures": {
-    "1": "e0e25c25fb118b96970856c2676cac948f35d8cea12d7c5083612aecf4bbc3ba",
-    "2": "5bf6cb806b91baf32060fe36cf26d13a69672437bfcdbcce8453e5e1373835af",
-    "3": "866273a60b80cf6612b48ae7d33826cd47250f5f8882a26be98f06dc4c3506e1"
+    "1": "7be3e593a90458043ecc5a488cd44beacd8dd11c993e2541890832eedaefee74",
+    "2": "4e9b5c1e1c3623fe7e2159db4917027ac233194f010dc1344b61cfc3ee5842ba",
+    "3": "6ffdbcf8b376b37dc5de98ed7460cf6bb502cb007eab3150c8f99dedf2fed14d"
   }
 }

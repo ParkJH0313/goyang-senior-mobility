@@ -5,7 +5,7 @@
 ## 코드 구성
 
 - steps/step06_accessibility.py: 입력 읽기 → 계산 → 표·공간자료 저장.
-- src/aggregation.py: 시각 평균과 인구 가중 집계.
+- src/aggregation.py: 시각 평균과 인구 가중 집계. src/figures.py의 accessibility_distribution: 전체 500m 접근성 점수 지도와 하단 범례.
 - src/reporting.py: 결과 설명과 보고서 구성.
 - src/figures.py 및 src/input_figures.py: 전체 결과 지도·그래프.
 
@@ -18,6 +18,7 @@
 
 ## 결과 파일
 
+- figures/accessibility_distribution.png: 전체 결과 지도·그래프.
 - minute_profiles.npz: 압축 배열.
 - tables/accessibility_250m.csv: 수치 표. UTF-8 BOM.
 - tables/accessibility_500m.csv: 수치 표. UTF-8 BOM.
@@ -36,3 +37,6 @@
 도착 위치와 보행 접속에는 자료 기반 대리점·근사가 포함된다. 056번 중간 정차시각은 추정값이며 진료 가능 여부까지 나타내는 지표는 아니다.
 
 기본 보행속도는 0.8m/s이고 시간예산은 30분이다.
+
+figures/accessibility_distribution.png는 accessibility.gpkg의 accessibility_500m 레이어에서 유효 점수 전체를 그린다. 범례는 지도 아래에 두며 0 / 0 초과~5 / 5 초과~15 / 15 초과~30 / 30 초과~60 / 60 초과(곳)의 고정 구간이다. 이는 군집 선정용 하위 30% 구분과 별개이며 수치와 군집을 바꾸지 않는다. 점수 0은 모든 출발시각에서 도달 기관이 없는 경우다. 고령인구가 있지만 점수를 산정하지 않은 격자는 빗금으로 구분한다. 중앙값은 유효 500m 격자 점수의 중앙값이다.
+python run.py processed는 분석 후 그림까지 생성하고, python run.py report는 저장된 결과로 그림과 보고서만 재생성한다.
