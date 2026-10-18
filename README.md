@@ -85,6 +85,7 @@ python -m venv .venv
 
 전체 결과는 분석 후 생성되는 `outputs/결과_보기.html`을 웹 브라우저에서 열어 확인할 수 있다.
 
+![고양시 전체 의료접근성 점수 분포](outputs/step06/figures/accessibility_distribution.png)
 
 ![고양시 30분 의료접근성과 고령인구 상위 3개 저접근 군집](assets/results/accessibility_clusters.png)
 
