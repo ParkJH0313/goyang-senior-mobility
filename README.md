@@ -87,7 +87,7 @@ python -m venv .venv
 
 ![고양시 전체 의료접근성 점수 분포](outputs/step06/figures/accessibility_distribution.png)
 
-![고양시 30분 의료접근성과 고령인구 상위 3개 저접근 군집](assets/results/accessibility_clusters.png)
+![하위 30% 저접근 격자와 고령인구 상위 3개 군집](assets/results/accessibility_clusters.png)
 
 
 ![법곳·구산·가좌 지역의 정류장 보행시간과 고령인구](assets/results/beopgot_gusan_gajwa_bus_walk.png)

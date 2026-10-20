@@ -17,8 +17,8 @@
   "outputs": {
     "step07/clusters.gpkg": "9fe1d51e5b02991a0177eb3a5e4b6fa48f515610f04505ed0ecf0cbed949201f",
     "step07/cluster_qa.json": "7302bfbe66859680013d0a9f1181de1855a5c62c0cfe22de21ca36e0606815d7",
-    "step07/README.md": "04b822725c03f968bde73fb8ab577f4402b726d86e52a53a709579e74a2a137f",
-    "step07/figures/accessibility_clusters.png": "3cab5fba871af7d3b4f584f6bc5e7d7f32d7f87b14a4fe9f262f04d6f0d62602",
+    "step07/README.md": "ba7fa21ff2de8ff77886ffff06a13734dd12365663be1e77cdfd1d577b051669",
+    "step07/figures/accessibility_clusters.png": "37baf6cf194b9fc6d3895ffe5b0028cbda07bff0a28a7c6d21e75fb53c5ddb01",
     "step07/tables/baseline_top3_membership.csv": "7bbd4cc6b67e63405c0187efe0de4aa039244cd8d86125f57ea27710afc773b3",
     "step07/tables/cluster_membership.csv": "cf609989fd2aa3da97464417d5b85ffecf891728f70b6469f9d83e9368a3c973",
     "step07/tables/cluster_summary.csv": "61f91b0a9cbc4fba0a26a7222977023ec18944788ed79943178e6b48793117ee"

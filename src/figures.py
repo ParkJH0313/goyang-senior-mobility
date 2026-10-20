@@ -1,6 +1,6 @@
 """Submission figures from saved model results; no route search or manual raster edits."""
 from functools import lru_cache
-from src.cluster_labels import area_title
+from src.cluster_labels import area_title,cluster_title
 import numpy as np,pandas as pd,geopandas as gpd,pyogrio
 from src.analysis_io import inside,csv,gpkg,read_json,sha,digest,atomic_json
 import matplotlib
@@ -113,25 +113,48 @@ def accessibility_distribution(ctx,grid):
 
 
 def overview(ctx,grid,clusters):
-    setup();threshold=read_json(ctx.step(7)/'cluster_qa.json')['threshold'];top=clusters[clusters.is_top3].sort_values('rank')
-    fig,axes=plt.subplots(1,2,figsize=(15,8));fig.suptitle('의료접근성이 낮고 고령인구가 집중된 지역',x=.035,ha='left',fontsize=19,fontweight='bold')
-    for ax in axes:map_base(ax)
-    valid=grid[grid.score.notna()&grid.population.gt(0)];score_map(axes[0],valid,threshold,top)
-    axes[0].set_title('30분 접근성 · 같은 기준으로 구분',loc='left',fontsize=12,pad=16)
-    grid[grid.population.gt(0)].plot(ax=axes[1],color='#e5eaef',edgecolor='white',linewidth=.25,zorder=2)
+    """Show every saved low-access cell alongside the selected top clusters."""
+    setup();qa=read_json(ctx.step(7)/'cluster_qa.json')
+    top=clusters[clusters.is_top3].sort_values('rank')
+    low=pyogrio.read_dataframe(ctx.step(7)/'clusters.gpkg',layer='low_access_500m')
     member=pd.read_csv(ctx.step(7)/'tables/baseline_top3_membership.csv')
-    for r,color in zip(top.itertuples(),PALETTE):
-        f=grid[grid.gid.isin(member.loc[member.cluster_id.eq(r.cluster_id),'gid'])]
-        f.plot(ax=axes[1],color=color,edgecolor='white',linewidth=.35,zorder=3)
-        gpd.GeoSeries([r.geometry],crs=grid.crs).boundary.plot(ax=axes[1],color=NAVY,linewidth=1,zorder=4)
-        p=r.geometry.representative_point()
-        axes[1].annotate(f'{r.area_name}\n{r.population:,.0f}명 · 평균 {r.score:.2f}곳',(p.x,p.y),xytext=(0,18 if r.rank==2 else -20),
-            textcoords='offset points',ha='center',fontsize=9,zorder=6,
-            arrowprops={'arrowstyle':'-','color':NAVY,'lw':.7},bbox={'facecolor':'white','alpha':.95,'edgecolor':LINE,'pad':4})
-    axes[1].set_title('하위 30% 중 고령인구 상위 3개 군집',loc='left',fontsize=12,pad=16)
-    for ax in axes:compass_scale(ax)
-    score_legend(fig,threshold,.045)
-    save(ctx,fig,ctx.step(7)/'figures/accessibility_clusters.png',f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 500m 고령인구 가중평균 · 경계 동점 포함 · Queen 인접 · 윤곽은 군집 범위이며 행정동 전체가 아님')
+    selected=low[low.gid.isin(member.gid)];remaining=low[~low.gid.isin(member.gid)]
+    expected=grid[grid.population.gt(0)&grid.score.notna()&grid.score.le(qa['threshold']+1e-10)]
+    assert set(low.gid)==set(expected.gid)
+    assert set(selected.gid)==set(member.gid)
+    assert len(low)==qa['selected_grids']==len(selected)+len(remaining)
+    assert len(top)==3 and set(selected.cluster_id)==set(top.cluster_id)
+    other_low='#aeb2b8';other_grid='#e7edf2';cutoff=f'{qa["cutoff"]:.0%}'
+    fig=plt.figure(figsize=(14,11.5))
+    fig.text(.035,.965,f'하위 {cutoff} 저접근 격자와 고령인구 상위 3개 군집',fontsize=23,fontweight='bold',va='top')
+    fig.text(.035,.917,f'500m 격자 · 하위 {cutoff} 전체 {len(low):,}개 = 선정 군집 {len(selected):,}개 + 그 외 {len(remaining):,}개',fontsize=12,color=MUTED)
+    ax=fig.add_axes([.025,.165,.95,.69]);map_base(ax)
+    grid[grid.population.gt(0)].plot(ax=ax,color=other_grid,edgecolor='white',linewidth=.3,zorder=2)
+    if len(remaining):remaining.plot(ax=ax,color=other_low,edgecolor='white',linewidth=.45,zorder=3)
+    positions={1:(.43,.94),2:(.13,.81),3:(.74,.90)}
+    for c,color in zip(top.itertuples(),PALETTE):
+        cells=selected[selected.cluster_id.eq(c.cluster_id)]
+        assert len(cells)==c.grid_count and np.isclose(cells.population.sum(),c.population)
+        assert set(cells.gid)==set(member.loc[member.cluster_id.eq(c.cluster_id),'gid'])
+        cells.plot(ax=ax,color=color,edgecolor='white',linewidth=.45,zorder=4)
+        gpd.GeoSeries([c.geometry],crs=grid.crs).boundary.plot(ax=ax,color=NAVY,linewidth=1.25,zorder=5)
+        p=c.geometry.representative_point();name=cluster_title(c.area_name)
+        if name.endswith(' 지역'):name=name.removesuffix(' 지역')+' 군집'
+        ax.annotate(f'{c.rank}위 · {name}\n{c.population:,.0f}명 · 평균 {c.score:.2f}곳',
+                    xy=(p.x,p.y),xytext=positions[c.rank],textcoords='axes fraction',
+                    ha='center',va='center',fontsize=11,zorder=8,
+                    arrowprops={'arrowstyle':'-','color':NAVY,'lw':.85},
+                    bbox={'facecolor':'white','edgecolor':color,'linewidth':1.3,'pad':5})
+    compass_scale(ax)
+    handles=[Patch(facecolor=color,edgecolor=NAVY,label=f'선정 군집 {c.rank}위')
+             for c,color in zip(top.itertuples(),PALETTE)]
+    handles.extend([Patch(facecolor=other_low,label=f'그 외 하위 {cutoff} 격자'),
+                    Patch(facecolor=other_grid,edgecolor=LINE,label='그 외 인구 격자')])
+    fig.legend(handles=[handles[i] for i in [0,3,1,4,2]],loc='center',bbox_to_anchor=(.5,.112),
+               ncol=3,fontsize=11,columnspacing=2.6,labelspacing=1.0)
+    fig.text(.035,.058,f'저접근 경계: {ctx.config["baseline_budget_min"]}분 이내 평균 도달 의료기관 수 {qa["threshold"]:.4f}곳 이하 · 경계 동점 포함 · 순위는 군집별 고령인구 합계 기준',fontsize=9.5,color=MUTED)
+    save(ctx,fig,ctx.step(7)/'figures/accessibility_clusters.png',
+         f'보행속도 {ctx.config["baseline_speed_mps"]:g}m/s · 연속보행 {ctx.config["max_continuous_walk_s"]/60:g}분 · 고령인구 가중 500m 점수 · Queen 인접 · 군집은 행정동 전체가 아님',layout=False)
 
 def grid_scenarios(ctx):
     """Aggregate saved baseline-speed OD arrays to time-budget map grids; never reroute."""
