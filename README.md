@@ -92,6 +92,8 @@ python -m venv .venv
 
 ![법곳·구산·가좌 지역의 정류장 보행시간과 고령인구](assets/results/beopgot_gusan_gajwa_bus_walk.png)
 
+![출발시각별 평균 대기시간](outputs/step09/figures/waiting_time_by_departure.png)
+
 ## AI 대시보드
 
 법곳·구산·가좌 지역의 의료이동·탄소 시나리오를 살펴보고, AI에 질문하며 계산 결과를 확인할 수 있다.
