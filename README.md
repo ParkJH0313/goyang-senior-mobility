@@ -83,7 +83,7 @@ python -m venv .venv
 
 ## 주요 결과
 
-전체 결과는 분석 후 생성되는 `outputs/결과_보기.html`을 웹 브라우저에서 열어 확인할 수 있다.
+전체 결과는 [outputs 폴더의 README](outputs/README.md)에서 확인하거나, [결과 HTML](outputs/결과_보기.html)을 내려받아 웹 브라우저에서 열어 확인할 수 있다.
 
 ![고양시 전체 의료접근성 점수 분포](outputs/step06/figures/accessibility_distribution.png)
 
