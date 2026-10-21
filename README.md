@@ -89,10 +89,10 @@ python -m venv .venv
 
 ![하위 30% 저접근 격자와 고령인구 상위 3개 군집](assets/results/accessibility_clusters.png)
 
+![출발시각별 평균 대기시간](outputs/step09/figures/waiting_time_by_departure.png)
 
 ![법곳·구산·가좌 지역의 정류장 보행시간과 고령인구](assets/results/beopgot_gusan_gajwa_bus_walk.png)
 
-![출발시각별 평균 대기시간](outputs/step09/figures/waiting_time_by_departure.png)
 
 ## AI 대시보드
 
