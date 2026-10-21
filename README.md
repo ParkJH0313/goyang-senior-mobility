@@ -37,7 +37,7 @@ goyang-senior-mobility/
 
 분석 데이터는 **Google Drive**로 제공한다. 실행 방식에 맞는 자료를 내려받아 아래 경로에 배치한다.
 
-**다운로드 링크:** 추후 추가
+**다운로드:** [원자료(raw)](https://drive.google.com/drive/folders/12Kn5woR2mmdcVZ2g2LijFFmtiva7W1Ff?usp=sharing) · [전처리 자료(processed)](https://drive.google.com/drive/folders/1zsjCr_UtKH0dD-FVk5Bx-g5aYuo8Rt3l?usp=sharing)
 
 | 자료 | 배치 경로 | 용도 |
 | --- | --- | --- |
