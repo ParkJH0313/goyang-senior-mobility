@@ -1,6 +1,6 @@
 # 고양시 고령자의 대중교통 의료접근성 분석
 
-고양시 고령자가 대중교통으로 의료기관에 접근할 수 있는 정도를 분석하는 프로젝트다. 접근성이 낮은 지역 중 고령인구가 많이 거주하는 군집을 선정하고, 보행·대기·환승에 따른 이동부담을 살펴본다.
+고양시 고령자가 대중교통으로 의료기관에 접근할 수 있는 정도를 분석하는 프로젝트입니다. 접근성이 낮은 지역 중 고령인구가 많이 거주하는 군집을 선정하고, 보행·대기·환승에 따른 이동부담을 살펴봅니다.
 
 ## 분석 개요
 
@@ -13,7 +13,7 @@
 | 이동 조건 | 보행속도 0.8m/s, 연속보행 최대 10분, 환승 최대 2회 |
 | 분석 대상 군집 | 접근성 하위 30% 격자를 Queen 인접으로 묶고, 고령인구 합계가 큰 상위 3개 군집 선정 |
 
-분석은 자료 준비 → 이동경로 계산 → 접근성 집계 → 저접근 군집 진단 순서로 진행한다. 시간예산·저접근 기준을 바꾼 민감도 분석도 함께 수행한다.
+분석은 자료 준비 → 이동경로 계산 → 접근성 집계 → 저접근 군집 진단 순서로 진행합니다. 시간예산·저접근 기준을 바꾼 민감도 분석도 함께 수행합니다.
 
 ## 프로젝트 구조
 
@@ -35,7 +35,7 @@ goyang-senior-mobility/
 
 ## 데이터
 
-분석 데이터는 **Google Drive**로 제공한다. 실행 방식에 맞는 자료를 내려받아 아래 경로에 배치한다.
+분석 데이터는 **Google Drive**로 제공합니다. 실행 방식에 맞는 자료를 내려받아 아래 경로에 배치합니다.
 
 **다운로드:** [원자료(raw)](https://drive.google.com/drive/folders/12Kn5woR2mmdcVZ2g2LijFFmtiva7W1Ff?usp=sharing) · [전처리 자료(processed)](https://drive.google.com/drive/folders/1zsjCr_UtKH0dD-FVk5Bx-g5aYuo8Rt3l?usp=sharing)
 
@@ -45,21 +45,21 @@ goyang-senior-mobility/
 | 전처리 자료 | `data/processed/` | 전처리를 생략하고 분석 실행 |
 | 자료 명세 파일 | `data/manifest.json` | 제공 자료의 목록과 파일 검증값 확인 |
 
-전처리 자료와 같은 배포본의 `manifest.json`을 함께 내려받아 위 경로에 배치한다. 
+전처리 자료와 같은 배포본의 `manifest.json`을 함께 내려받아 위 경로에 배치합니다.
 ## 실행 방법
 
-프로젝트 폴더에서 실행환경을 구성한다.
+프로젝트 폴더에서 실행환경을 구성합니다.
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-실행 방식은 다음과 같다.
+실행 방식은 다음과 같습니다.
 
 **1. 원자료부터 실행 (`raw`)**
 
-원자료를 전처리한 뒤 전체 분석을 수행한다.
+원자료를 전처리한 뒤 전체 분석을 수행합니다.
 
 ```powershell
 .\.venv\Scripts\python.exe run.py raw
@@ -67,7 +67,7 @@ python -m venv .venv
 
 **2. 전처리 자료로 실행 (`processed`)**
 
-제공된 전처리 자료를 사용해 분석부터 수행한다.
+제공된 전처리 자료를 사용해 분석부터 수행합니다.
 
 ```powershell
 .\.venv\Scripts\python.exe run.py processed
@@ -75,7 +75,7 @@ python -m venv .venv
 
 **3. 결과 보고서 재생성 (`report`)**
 
-분석 완료 후 저장된 계산 결과를 사용해 그림과 HTML 보고서를 다시 생성한다. 경로 분석은 다시 수행하지 않는다.
+분석 완료 후 저장된 계산 결과를 사용해 그림과 HTML 보고서를 다시 생성합니다. 경로 분석은 다시 수행하지 않습니다.
 
 ```powershell
 .\.venv\Scripts\python.exe run.py report
@@ -83,7 +83,7 @@ python -m venv .venv
 
 ## 주요 결과
 
-전체 결과는 [outputs 폴더의 README](outputs/README.md)에서 확인하거나, [결과 HTML](outputs/결과_보기.html)을 내려받아 웹 브라우저에서 열어 확인할 수 있다.
+전체 결과는 [outputs 폴더의 README](outputs/README.md)에서 확인하거나, [결과 HTML](outputs/결과_보기.html)을 내려받아 웹 브라우저에서 열어 확인할 수 있습니다.
 
 ![고양시 전체 의료접근성 점수 분포](outputs/step06/figures/accessibility_distribution.png)
 
@@ -96,6 +96,6 @@ python -m venv .venv
 
 ## AI 대시보드
 
-법곳·구산·가좌 지역의 의료이동·탄소 시나리오를 살펴보고, AI에 질문하며 계산 결과를 확인할 수 있다.
+법곳·구산·가좌 지역의 의료이동·탄소 시나리오를 살펴보고, AI에 질문하며 계산 결과를 확인할 수 있습니다.
 
 ### [https://goyang-medical-dashboard.onrender.com](https://goyang-medical-dashboard.onrender.com)

@@ -1,6 +1,6 @@
 # Step 7 저접근 군집
 
-유효 500m 점수의 하위 30%에 경계 동점을 포함한다. Queen 인접 군집을 구성하고 고령인구 합계로 상위 3개를 선정한다.
+유효 500m 점수의 하위 30%에 경계 동점을 포함합니다. Queen 인접 군집을 구성하고 고령인구 합계로 상위 3개를 선정합니다.
 
 ## 코드 구성
 
@@ -39,10 +39,10 @@
 
 ## 해석
 
-좌표계 EPSG:5179, 거리 m, 계산시간 초, 점수는 기관 수(곳)다. 미도달 0과 자료가 불완전한 NaN은 구분한다.
-도착 위치와 보행 접속에는 자료 기반 대리점·근사가 포함된다. 056번 중간 정차시각은 추정값이며 진료 가능 여부까지 나타내는 지표는 아니다.
+좌표계 EPSG:5179, 거리 m, 계산시간 초, 점수는 기관 수(곳)입니다. 미도달 0과 자료가 불완전한 NaN은 구분합니다.
+도착 위치와 보행 접속에는 자료 기반 대리점·근사가 포함됩니다. 056번 중간 정차시각은 추정값이며 진료 가능 여부까지 나타내는 지표는 아닙니다.
 
-기본 보행속도는 0.8m/s이고 시간예산은 30분이다.
+기본 보행속도는 0.8m/s이고 시간예산은 30분입니다.
 
-figures/accessibility_clusters.png는 clusters.gpkg의 low_access_500m에 저장된 하위 30% 격자 전체를 한 지도에 표시한다. baseline_top3_membership.csv에 속하는 상위 3개 군집은 고령인구 순위별 색과 윤곽으로, 그 외 저접근 격자는 회색 단색으로 표시한다. 연한 배경 격자는 나머지 고령인구 격자다. 군집별 인구·평균 접근성·순위와 경계 동점을 포함한 저접근 경계를 함께 표기한다.
-python run.py processed는 분석 후 그림을 생성하고, python run.py report는 저장된 격자·군집 자료로 그림과 HTML을 재생성한다. README의 assets/results/accessibility_clusters.png에도 같은 지도가 저장된다.
+figures/accessibility_clusters.png는 clusters.gpkg의 low_access_500m에 저장된 하위 30% 격자 전체를 한 지도에 표시합니다. baseline_top3_membership.csv에 속하는 상위 3개 군집은 고령인구 순위별 색과 윤곽으로, 그 외 저접근 격자는 회색 단색으로 표시합니다. 연한 배경 격자는 나머지 고령인구 격자입니다. 군집별 인구·평균 접근성·순위와 경계 동점을 포함한 저접근 경계를 함께 표기합니다.
+python run.py processed는 분석 후 그림을 생성하고, python run.py report는 저장된 격자·군집 자료로 그림과 HTML을 재생성합니다. README의 assets/results/accessibility_clusters.png에도 같은 지도가 저장됩니다.
